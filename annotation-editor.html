@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anatomy Annotation Studio Pro</title>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="annotation-editor.css">
+</head>
+
+<body>
+
+  <!-- ============== TOP BAR ============== -->
+  <header class="topbar">
+    <div class="brand">
+      <i class="fas fa-bone"></i>
+      <div>
+        <p class="eyebrow">ANATOMY ANNOTATION STUDIO</p>
+        <h1 id="image-title">Untitled image</h1>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <!-- Image source -->
+      <div class="btn-group" title="Image source">
+        <input id="file-input" type="file" accept="image/*" hidden>
+        <button class="tb-btn" onclick="document.getElementById('file-input').click()" title="Open / upload image (O)">
+          <i class="fas fa-folder-open"></i> Open
+        </button>
+        <button class="tb-btn" id="paste-btn" title="Paste image from clipboard (Ctrl+V)">
+          <i class="fas fa-paste"></i> Paste
+        </button>
+      </div>
+
+      <!-- Image switcher -->
+      <select class="tb-select" id="image-switcher" title="Switch between annotated images">
+        <option value="">— No images yet —</option>
+      </select>
+      <button class="tb-btn danger-on-hover" id="delete-image-btn" title="Delete this image set">
+        <i class="fas fa-trash"></i>
+      </button>
+
+      <span class="tb-divider"></span>
+
+      <!-- History -->
+      <div class="btn-group">
+        <button class="tb-btn" id="undo-btn" title="Undo (Ctrl+Z)"><i class="fas fa-rotate-left"></i></button>
+        <button class="tb-btn" id="redo-btn" title="Redo (Ctrl+Y)"><i class="fas fa-rotate-right"></i></button>
+      </div>
+
+      <span class="tb-divider"></span>
+
+      <!-- Zoom -->
+      <div class="btn-group zoom-group">
+        <button class="tb-btn" id="zoom-out-btn" title="Zoom out (-)"><i class="fas fa-minus"></i></button>
+        <input type="text" class="zoom-input" id="zoom-display" value="100%" title="Click to type exact zoom %" />
+        <button class="tb-btn" id="zoom-in-btn" title="Zoom in (+)"><i class="fas fa-plus"></i></button>
+        <button class="tb-btn" id="fit-btn" title="Fit to screen (F)"><i class="fas fa-expand"></i> Fit</button>
+        <button class="tb-btn" id="actual-btn" title="100% (1)"><i class="fas fa-magnifying-glass"></i> 1:1</button>
+      </div>
+
+      <span class="tb-divider"></span>
+
+      <!-- View -->
+      <button class="tb-btn" id="lines-toggle" title="Toggle leader lines (L)">
+        <i class="fas fa-arrows-left-right-to-line"></i> Lines
+      </button>
+      <button class="tb-btn" id="preview-toggle" title="Preview / clean view (P)">
+        <i class="fas fa-eye"></i> Preview
+      </button>
+
+      <span class="tb-divider"></span>
+
+      <!-- Export -->
+      <div class="btn-group">
+        <button class="tb-btn primary" id="export-png-btn" title="Export annotated image as PNG (E)">
+          <i class="fas fa-image"></i> Export PNG
+        </button>
+        <button class="tb-btn" id="copy-json-btn" title="Copy JSON">
+          <i class="fas fa-copy"></i> JSON
+        </button>
+        <button class="tb-btn" id="download-json-btn" title="Download JS data file">
+          <i class="fas fa-download"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============== MAIN LAYOUT ============== -->
+  <main class="layout">
+
+    <!-- LEFT: Quick landmark library -->
+    <aside class="left-panel">
+      <div class="panel-section">
+        <h3><i class="fas fa-magic-wand-sparkles"></i> Quick Landmarks</h3>
+        <p class="hint">Click → adds at center, then click on image to place.</p>
+        <input type="search" class="search-box" id="landmark-search" placeholder="Search (e.g. trochanter)…">
+        <div class="landmark-tabs">
+          <button class="tab-btn active" data-tab="bones">Bones</button>
+          <button class="tab-btn" data-tab="muscles">Muscles</button>
+          <button class="tab-btn" data-tab="generic">Generic</button>
+        </div>
+        <div class="landmark-list" id="landmark-list"><!-- filled by JS --></div>
+      </div>
+
+      <div class="panel-section">
+        <h3><i class="fas fa-list"></i> Labels (<span id="label-count">0</span>)</h3>
+        <input type="search" class="search-box" id="label-search" placeholder="Search this image's labels…">
+        <div class="label-list" id="label-list"></div>
+      </div>
+    </aside>
+
+    <!-- CENTER: Stage -->
+    <section class="stage-wrap" id="stage-wrap">
+      <div class="empty-state" id="empty-state">
+        <i class="fas fa-image"></i>
+        <h2>No image yet</h2>
+        <p>Click <b>Open</b> above, drag &amp; drop a file here, or paste with <kbd>Ctrl</kbd>+<kbd>V</kbd>.</p>
+      </div>
+      <div class="stage-pannable" id="stage-pannable">
+        <div class="annotation-stage" id="annotation-stage" aria-label="Editable annotated image">
+          <!-- image, svg leaders, dots, labels rendered here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Selected label inspector -->
+    <aside class="right-panel">
+      <div class="panel-section">
+        <h3><i class="fas fa-pen-to-square"></i> Selected Label</h3>
+        <div class="empty-hint" id="no-selection">No label selected. Click a label or dot to edit it.</div>
+        <div class="inspector" id="inspector" hidden>
+
+          <label class="field">
+            <span>Text</span>
+            <input id="i-text" type="text" placeholder="e.g. Greater Trochanter">
+          </label>
+
+          <label class="field">
+            <span>Species / Group</span>
+            <input id="i-species" type="text" placeholder="Ox, Horse…">
+          </label>
+
+          <label class="field">
+            <span>Note (optional)</span>
+            <textarea id="i-note" rows="3" placeholder="Anatomy note shown on hover…"></textarea>
+          </label>
+
+          <div class="color-row">
+            <span class="color-row-label">Color</span>
+            <div class="color-swatches" id="color-swatches"><!-- filled by JS --></div>
+          </div>
+
+          <!-- ===== NEW: Appearance Controls ===== -->
+          <div class="appearance-section">
+            <span class="section-label">Appearance</span>
+
+            <div class="slider-row">
+              <label for="i-font-size"><i class="fas fa-text-height"></i> Font Size</label>
+              <input id="i-font-size" type="range" min="8" max="28" step="1" value="13">
+              <span class="slider-value" id="font-size-val">13px</span>
+            </div>
+
+            <div class="slider-row">
+              <label for="i-line-width"><i class="fas fa-grip-lines"></i> Line Width</label>
+              <input id="i-line-width" type="range" min="0.5" max="5" step="0.25" value="1.5">
+              <span class="slider-value" id="line-width-val">1.5</span>
+            </div>
+
+            <div class="slider-row">
+              <label for="i-dot-size"><i class="fas fa-circle"></i> Dot Size</label>
+              <input id="i-dot-size" type="range" min="6" max="28" step="1" value="14">
+              <span class="slider-value" id="dot-size-val">14px</span>
+            </div>
+          </div>
+          <!-- ===== END Appearance Controls ===== -->
+
+          <div class="grid-fields">
+            <label class="field"><span>Dot X</span><input id="i-tx" type="number" step="0.1" min="0" max="100"></label>
+            <label class="field"><span>Dot Y</span><input id="i-ty" type="number" step="0.1" min="0" max="100"></label>
+            <label class="field"><span>Label X</span><input id="i-lx" type="number" step="0.1" min="0" max="100"></label>
+            <label class="field"><span>Label Y</span><input id="i-ly" type="number" step="0.1" min="0" max="100"></label>
+            <label class="field"><span>Bend X</span><input id="i-cx" type="number" step="0.1" min="0" max="100"></label>
+            <label class="field"><span>Bend Y</span><input id="i-cy" type="number" step="0.1" min="0" max="100"></label>
+          </div>
+
+          <div class="row-actions">
+            <button class="tb-btn" id="auto-route-btn" title="Auto-position label on the empty side"><i class="fas fa-route"></i> Auto-route</button>
+            <button class="tb-btn" id="duplicate-btn" title="Duplicate (Ctrl+D)"><i class="fas fa-clone"></i> Duplicate</button>
+            <button class="tb-btn danger-on-hover" id="delete-btn" title="Delete (Del)"><i class="fas fa-trash"></i> Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3><i class="fas fa-keyboard"></i> Shortcuts</h3>
+        <ul class="shortcuts-list">
+          <li><kbd>N</kbd> Add label at cursor</li>
+          <li><kbd>D</kbd> / <kbd>Del</kbd> Duplicate / delete</li>
+          <li><kbd>L</kbd> Lines on/off</li>
+          <li><kbd>P</kbd> Preview</li>
+          <li><kbd>F</kbd> Fit • <kbd>1</kbd> Actual size</li>
+          <li><kbd>+</kbd> / <kbd>-</kbd> Zoom in/out</li>
+          <li><kbd>Space</kbd>+drag  <kbd>Middle</kbd>  <kbd>Right</kbd> Pan</li>
+          <li><kbd>↑↓←→</kbd> Nudge (Shift = bigger)</li>
+          <li><kbd>Ctrl</kbd>+<kbd>Z/Y</kbd> Undo / redo</li>
+          <li><kbd>1-8</kbd> Quick colors</li>
+          <li><kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> Cycle labels</li>
+          <li><kbd>Dbl-click</kbd> label → rename inline</li>
+          <li><kbd>E</kbd> Export PNG</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ============== STATUS BAR ============== -->
+  <footer class="statusbar">
+    <span id="status-coords"><i class="fas fa-crosshairs"></i> —</span>
+    <span id="status-zoom"><i class="fas fa-magnifying-glass"></i> 100%</span>
+    <span id="status-count"><i class="fas fa-tags"></i> 0 labels</span>
+    <span id="status-selection"><i class="fas fa-check"></i> 0 selected</span>
+    <span id="status-message" class="status-message"></span>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="data-image-annotations.JS"></script>
+  <script src="annotation-editor.js"></script>
+</body>
+
+</html>
