@@ -1768,70 +1768,19 @@ body.professional-mode .credit-foot { color: #607d8b; }
     line-height: 1.6;
 }
 
-/* Premium AI Monospace Terminal Console */
 #why-view .ai-response-box {
-    margin-top: 20px !important;
-    padding: 20px !important;
-    background: rgba(2, 12, 27, 0.95) !important;
-    border: 1px solid var(--why-cyan) !important;
-    border-radius: 8px !important;
-    font-family: 'Fira Code', 'Consolas', monospace !important;
-    color: #00ffcc !important;
-    font-size: 0.92rem !important;
-    line-height: 1.6 !important;
-    box-shadow: 0 0 20px rgba(0, 242, 255, 0.1) !important;
-    position: relative !important;
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(0, 242, 255, 0.05);
+    border: 1px dashed var(--why-cyan);
+    border-radius: 8px;
+    font-size: 0.95rem;
     display: none;
-    overflow: hidden !important;
+    animation: fadeIn 0.3s ease;
 }
 
-/* Computer grid line print overlay */
-#why-view .ai-response-box::before {
-    content: '' !important;
-    position: absolute !important;
-    inset: 0 !important;
-    background: linear-gradient(
-        rgba(18, 16, 16, 0) 50%,
-        rgba(0, 0, 0, 0.25) 50%
-    ), linear-gradient(
-        90deg,
-        rgba(255, 0, 0, 0.05),
-        rgba(0, 255, 0, 0.02),
-        rgba(0, 0, 255, 0.05)
-    ) !important;
-    background-size: 100% 4px, 6px 100% !important;
-    pointer-events: none !important;
-    z-index: 2;
-}
-
-/* Pulsing status indicator dot */
-#why-view .ai-response-box::after {
-    content: '' !important;
-    position: absolute !important;
-    top: 18px; right: 18px !important;
-    width: 8px; height: 8px !important;
-    background: #00ffcc !important;
-    border-radius: 50% !important;
-    box-shadow: 0 0 8px #00ffcc !important;
-    animation: terminal-blink 1s infinite alternate !important;
-    z-index: 3;
-}
-
-@keyframes terminal-blink {
-    0% { opacity: 0.2; }
-    100% { opacity: 1; }
-}
-
-#why-view .ai-response-box i {
-    color: #00ffcc !important;
-    margin-right: 8px !important;
-    z-index: 3;
-    position: relative;
-}
-
-#why-view #aiResponseText {
-    z-index: 3;
-    position: relative;
+#why-view .ai-response-box strong {
+    color: var(--why-cyan);
 }
 
 /* Quiz Overlay */
@@ -4491,20 +4440,7 @@ body.professional-mode {
 .floating-cell-1 { animation: float-cell-drift 20s ease-in-out infinite; }
 .floating-cell-2 { animation: float-cell-drift 24s ease-in-out infinite; }
 
-/* Text Shimmer for Hero Title - Optimized clipping with NO text-shadow (prevents repaint) */
-.hero-title {
-    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 30%, #00f2ff 70%, #ffd700 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: none !important; /* Strictly no shadow on background-clipped gradients to prevent CPU thrashing */
-}
 
-body.professional-mode .hero-title {
-    background: linear-gradient(135deg, #1565c0 0%, #5e35b1 40%, #00796b 80%, #1565c0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: none !important;
-}
 
 /* Highly Performant Glassmorphic Card Overrides (Student Dark Mode) */
 .portal-card {

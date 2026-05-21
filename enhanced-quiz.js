@@ -54,11 +54,6 @@ const quizApp = {
         try { dashboard.renderSrsPanel(); } catch (e) { /* dashboard may not be visible */ }
       }
       quizApp._isSmartReview = false;
-      // Always clear exam-mode state on close — next quiz starts fresh
-      quizApp.examMode = false;
-      quizApp.examFeedback = null;
-      quizApp.examEndsAt = null;
-      document.querySelector('.quiz-modal')?.classList.remove('exam-no-feedback');
     };
 
     if (quizApp.quizState === 'active') {
@@ -87,10 +82,6 @@ const quizApp = {
     quizApp.userAnswers = [];
     quizApp.bookmarks.clear();
     quizApp.flagged.clear();
-    // Always reset exam state so a fresh menu open never inherits silent mode
-    quizApp.examMode = false;
-    quizApp.examFeedback = null;
-    quizApp.examEndsAt = null;
     quizApp.startTime = null;
     quizApp.endTime = null;
     quizApp.quizState = 'menu';
@@ -244,107 +235,6 @@ const quizApp = {
     document.getElementById('quiz-review-view').style.display = 'none';
   },
 
-  // ==================== CUSTOMISABLE EXAM MODE ====================
-  // Triggered by the "EXAM MODE" card on the format-select screen.
-  openExamConfig: () => {
-    const overlay = document.getElementById('exam-config-overlay');
-    if (!overlay) return;
-    document.getElementById('exam-cfg-scope').innerText =
-      `${quizApp.selectedRegion} → ${quizApp.selectedSystem}`;
-    overlay.style.display = 'flex';
-    // Wire chip selectors (idempotent)
-    overlay.querySelectorAll('.exam-cfg-chips').forEach(group => {
-      group.querySelectorAll('.exam-chip').forEach(chip => {
-        chip.onclick = () => {
-          group.querySelectorAll('.exam-chip').forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          quizApp._updateExamPoolCount();
-        };
-      });
-    });
-    quizApp._updateExamPoolCount();
-  },
-
-  closeExamConfig: () => {
-    const overlay = document.getElementById('exam-config-overlay');
-    if (overlay) overlay.style.display = 'none';
-  },
-
-  _readExamCfg: () => {
-    const pick = (id) => {
-      const el = document.querySelector(`#${id} .exam-chip.active`);
-      return el ? el.dataset.value : null;
-    };
-    return {
-      duration: parseInt(pick('exam-cfg-duration') || '30', 10),
-      count:    parseInt(pick('exam-cfg-count')    || '45', 10),
-      format:   pick('exam-cfg-format') || 'mcq',
-      feedback: pick('exam-cfg-feedback') || 'end'
-    };
-  },
-
-  _buildExamPool: (format) => {
-    // Reuse buildQuestionPool for each mode
-    if (format === 'mixed') {
-      return [
-        ...quizApp.buildQuestionPool('mcq'),
-        ...quizApp.buildQuestionPool('tf'),
-        ...quizApp.buildQuestionPool('fib')
-      ];
-    }
-    return quizApp.buildQuestionPool(format);
-  },
-
-  _updateExamPoolCount: () => {
-    const cfg = quizApp._readExamCfg();
-    const pool = quizApp._buildExamPool(cfg.format);
-    const el = document.getElementById('exam-pool-count');
-    if (el) el.innerText = pool.length;
-  },
-
-  startExamMode: () => {
-    const cfg = quizApp._readExamCfg();
-    let pool = quizApp._buildExamPool(cfg.format);
-    if (pool.length === 0) {
-      alert('No questions available in this format for the selected region/system.');
-      return;
-    }
-    // Shuffle then trim to requested count
-    for (let i = pool.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-    const requested = Math.min(cfg.count, pool.length);
-    pool = pool.slice(0, requested);
-
-    // Setup quiz state in EXAM mode
-    quizApp.mode = 'mixed';     // active view handles per-question rendering by q.mode if present
-    quizApp.score = 0;
-    quizApp.wrong = 0;
-    quizApp.currentIndex = 0;
-    quizApp.bookmarks.clear();
-    quizApp.flagged.clear();
-    quizApp.quizState = 'active';
-    quizApp.questions = pool;
-    quizApp.userAnswers = new Array(pool.length).fill(null);
-    quizApp.examMode = true;
-    quizApp.examFeedback = cfg.feedback;       // 'end' or 'instant'
-    quizApp.examDurationSec = cfg.duration * 60;
-    quizApp.examEndsAt = Date.now() + quizApp.examDurationSec * 1000;
-    quizApp.startTime = Date.now();
-    quizApp.startTimer();
-
-    // Close config + show active view
-    quizApp.closeExamConfig();
-    quizApp.hideAllViews();
-    document.getElementById('quiz-active-view').style.display = 'flex';
-    quizApp.renderQuestion();
-    quizApp.updateNavigationControls();
-
-    // Hide instant feedback if feedback === 'end' — disable the per-answer reveal hooks
-    document.querySelector('.quiz-modal').classList.toggle('exam-no-feedback', cfg.feedback === 'end');
-  },
-
   // ==================== QUIZ START ====================
 
   // ===== SMART REVIEW (Spaced Repetition) =====
@@ -381,11 +271,6 @@ const quizApp = {
     quizApp.selectedRegion = label.region;
     quizApp.selectedSystem = label.system;
     quizApp._isSmartReview = true;   // flag used by close() to refresh dashboard
-    // Reset exam state — Smart Review uses instant feedback like normal quizzes
-    quizApp.examMode = false;
-    quizApp.examFeedback = null;
-    quizApp.examEndsAt = null;
-    document.querySelector('.quiz-modal')?.classList.remove('exam-no-feedback');
 
     // Map review entries → quiz questions, tagging metadata for SRS auto-recording
     quizApp.questions = reviewSet.map(entry => {
@@ -440,11 +325,6 @@ const quizApp = {
     quizApp.bookmarks.clear();
     quizApp.flagged.clear();
     quizApp.quizState = 'active';
-    // CRITICAL: reset exam state so regular quizzes show instant feedback again
-    quizApp.examMode = false;
-    quizApp.examFeedback = null;
-    quizApp.examEndsAt = null;
-    document.querySelector('.quiz-modal')?.classList.remove('exam-no-feedback');
 
     // Build filtered pool
     quizApp.questions = quizApp.buildQuestionPool(mode);
@@ -564,14 +444,12 @@ const quizApp = {
     interactionArea.innerHTML = '';
     document.getElementById('quiz-feedback').style.display = 'none';
 
-    // Render based on question type — use per-question _mode for mixed/exam mode,
-    // fall back to global mode for normal single-format quizzes
-    const qMode = q._mode || quizApp.mode;
-    if (qMode === 'mcq') {
+    // Render based on question type
+    if (quizApp.mode === 'mcq') {
       quizApp.renderMCQ(q, userAnswer, interactionArea);
-    } else if (qMode === 'tf') {
+    } else if (quizApp.mode === 'tf') {
       quizApp.renderTF(q, userAnswer, interactionArea);
-    } else if (qMode === 'fib') {
+    } else if (quizApp.mode === 'fib') {
       quizApp.renderFIB(q, userAnswer, interactionArea);
     }
 
@@ -676,7 +554,7 @@ const quizApp = {
 
   checkMCQ: (isCorrect, btn, selectedIdx, qData) => {
     const btns = document.querySelectorAll('.quiz-option');
-    const examSilent = (quizApp.examMode && quizApp.examFeedback === 'end');
+    btns.forEach(b => b.disabled = true);
 
     // Store answer
     quizApp.userAnswers[quizApp.currentIndex] = {
@@ -685,118 +563,105 @@ const quizApp = {
       correctAnswer: qData.o[qData.a]
     };
 
-    if (examSilent) {
-      // EXAM-mode (deferred feedback): just visually mark the user's choice as "selected"
-      // — DO NOT reveal correctness. Let user change answer until they move on.
-      btns.forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
+    if (isCorrect) {
+      btn.classList.add('correct');
+      quizApp.score++;
+      quizApp.showFeedback(true, qData.e);
     } else {
-      btns.forEach(b => b.disabled = true);
-      if (isCorrect) {
-        btn.classList.add('correct');
-        quizApp.score++;
-      } else {
-        btn.classList.add('wrong');
-        btns.forEach(b => {
-          if (b.innerText === qData.o[qData.a]) b.classList.add('correct');
-        });
-        quizApp.wrong++;
-      }
-      quizApp.showFeedback(isCorrect, isCorrect ? qData.e : `Correct Answer: ${qData.o[qData.a]}<br>${qData.e}`);
+      btn.classList.add('wrong');
+      // Highlight correct answer
+      btns.forEach(b => {
+        if (b.innerText === qData.o[qData.a]) {
+          b.classList.add('correct');
+        }
+      });
+      quizApp.wrong++;
+      quizApp.showFeedback(false, `Correct Answer: ${qData.o[qData.a]}<br>${qData.e}`);
     }
 
     quizApp.updateNavigationControls();
     quizApp.renderQuestionGrid();
 
-    // ---- SRS hook (only when feedback is shown — otherwise count at exam end) ----
-    if (!examSilent && typeof srs !== 'undefined' && qData._region) {
+    // ---- SRS hook ----
+    if (typeof srs !== 'undefined' && qData._region) {
       srs.recordAnswer(srs.qid(qData._region, qData._system, qData._mode, qData._index), isCorrect);
     }
   },
 
   checkTF: (userBool, btn, qData) => {
     const btns = document.querySelectorAll('.quiz-option');
-    const examSilent = (quizApp.examMode && quizApp.examFeedback === 'end');
+    btns.forEach(b => b.disabled = true);
+
     const isCorrect = userBool === qData.a;
 
+    // Store answer
     quizApp.userAnswers[quizApp.currentIndex] = {
       answer: userBool,
       isCorrect: isCorrect,
       correctAnswer: qData.a
     };
 
-    if (examSilent) {
-      btns.forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
+    if (isCorrect) {
+      btn.classList.add('correct');
+      quizApp.score++;
+      quizApp.showFeedback(true, qData.e);
     } else {
-      btns.forEach(b => b.disabled = true);
-      if (isCorrect) {
-        btn.classList.add('correct');
-        quizApp.score++;
-      } else {
-        btn.classList.add('wrong');
-        btns.forEach(b => {
-          if ((qData.a && b.innerText.includes('TRUE')) || (!qData.a && b.innerText.includes('FALSE'))) {
-            b.classList.add('correct');
-          }
-        });
-        quizApp.wrong++;
-      }
-      quizApp.showFeedback(isCorrect, qData.e);
+      btn.classList.add('wrong');
+      // Highlight correct answer
+      btns.forEach(b => {
+        if ((qData.a && b.innerText.includes('TRUE')) || (!qData.a && b.innerText.includes('FALSE'))) {
+          b.classList.add('correct');
+        }
+      });
+      quizApp.wrong++;
+      quizApp.showFeedback(false, qData.e);
     }
 
     quizApp.updateNavigationControls();
     quizApp.renderQuestionGrid();
 
-    if (!examSilent && typeof srs !== 'undefined' && qData._region) {
+    // ---- SRS hook ----
+    if (typeof srs !== 'undefined' && qData._region) {
       srs.recordAnswer(srs.qid(qData._region, qData._system, qData._mode, qData._index), isCorrect);
     }
   },
 
   checkFIB: (userText, input, qData) => {
     if (!userText) return;
-    const examSilent = (quizApp.examMode && quizApp.examFeedback === 'end');
+    input.disabled = true;
+
     const cleanUser = userText.trim().toLowerCase();
     const isMatch = qData.a.some(ans => ans.toLowerCase() === cleanUser);
 
+    // Store answer
     quizApp.userAnswers[quizApp.currentIndex] = {
       answer: userText,
       isCorrect: isMatch,
       correctAnswer: qData.a[0]
     };
 
-    if (examSilent) {
-      // Just visually accept the input; no colour reveal, no feedback
-      input.style.borderColor = 'var(--why-cyan, #00f2ff)';
-      input.style.color = 'var(--text-main, #fff)';
+    if (isMatch) {
+      input.style.borderColor = '#00ff9d';
+      input.style.color = '#00ff9d';
+      quizApp.score++;
+      quizApp.showFeedback(true, qData.e);
     } else {
-      input.disabled = true;
-      if (isMatch) {
-        input.style.borderColor = '#00ff9d';
-        input.style.color = '#00ff9d';
-        quizApp.score++;
-      } else {
-        input.style.borderColor = '#ff6b6b';
-        input.style.color = '#ff6b6b';
-        quizApp.wrong++;
-      }
-      quizApp.showFeedback(isMatch, isMatch ? qData.e : `Correct Answer: ${qData.a[0].toUpperCase()}<br>${qData.e}`);
+      input.style.borderColor = '#ff6b6b';
+      input.style.color = '#ff6b6b';
+      quizApp.wrong++;
+      quizApp.showFeedback(false, `Correct Answer: ${qData.a[0].toUpperCase()}<br>${qData.e}`);
     }
 
     quizApp.updateNavigationControls();
     quizApp.renderQuestionGrid();
 
-    if (!examSilent && typeof srs !== 'undefined' && qData._region) {
+    // ---- SRS hook ----
+    if (typeof srs !== 'undefined' && qData._region) {
       srs.recordAnswer(srs.qid(qData._region, qData._system, qData._mode, qData._index), isMatch);
     }
   },
 
   showFeedback: (isCorrect, text) => {
-    // === Suppress instant feedback in EXAM mode (when feedback is set to 'end') ===
-    // Real exams don't reveal answers between questions — only at the end.
-    if (quizApp.examMode && quizApp.examFeedback === 'end') {
-      return;
-    }
     const fb = document.getElementById('quiz-feedback');
     fb.style.display = 'block';
     fb.innerHTML = `
@@ -992,34 +857,10 @@ const quizApp = {
     const backToTop = document.getElementById('review-back-to-top');
     if (backToTop) backToTop.remove();
 
-    // ===== Recompute counters from userAnswers (truth source) =====
-    // In normal quizzes the score/wrong counters tick up on each answer.
-    // In EXAM mode they don't (no instant feedback) — so we recount from
-    // userAnswers at submission. Also fires SRS recording for exam answers.
-    let computedScore = 0;
-    let computedWrong = 0;
-    let attemptedCount = 0;
-    quizApp.userAnswers.forEach((ans, i) => {
-      if (ans == null) return;
-      attemptedCount++;
-      if (ans.isCorrect) computedScore++;
-      else                computedWrong++;
-      // Late SRS recording for exam-mode questions (no instant feedback path)
-      if (quizApp.examMode && typeof srs !== 'undefined') {
-        const q = quizApp.questions[i];
-        if (q && q._region) {
-          srs.recordAnswer(srs.qid(q._region, q._system, q._mode, q._index), !!ans.isCorrect);
-        }
-      }
-    });
-    // If exam mode, overwrite the counters; otherwise verify with existing
-    if (quizApp.examMode || (quizApp.score + quizApp.wrong) !== attemptedCount) {
-      quizApp.score = computedScore;
-      quizApp.wrong = computedWrong;
-    }
-
-    const attempted = attemptedCount;
+    const attempted = quizApp.score + quizApp.wrong; // Questions actually answered
     const unanswered = quizApp.questions.length - attempted;
+
+    // BUG FIX: Calculate accuracy based on attempted questions, not total questions
     const accuracy = attempted === 0 ? 0 : Math.round((quizApp.score / attempted) * 100);
 
     // Update stats
