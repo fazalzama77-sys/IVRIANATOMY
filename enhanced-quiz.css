@@ -8,8 +8,13 @@
   position: relative;
   width: 900px;
   max-width: 95%;
-  height: 85vh;
-  max-height: 800px;
+  /* Hard-cap by viewport with generous nav-bar clearance so the inner grid
+     ALWAYS has room to scroll instead of bleeding off-screen. */
+  height: calc(100vh - 160px);
+  max-height: 760px;
+  min-height: 420px;
+  /* Trim outer padding too — was eating ~80px of usable height. */
+  padding: 24px 28px !important;
 }
 
 /* Full-screen mode when reviewing answers */
@@ -73,7 +78,7 @@
 
 .quiz-view-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 18px;     /* was 30px — tightened so the grid gets more room */
   flex-shrink: 0;
 }
 
@@ -1405,4 +1410,282 @@ body.professional-mode .review-tag.system {
   background: rgba(0, 137, 123, 0.1);
   color: var(--why-cyan);
   border-color: rgba(0, 137, 123, 0.3);
+}
+
+/* ==================== EXAM CONFIG OVERLAY ==================== */
+.exam-config-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(2, 12, 27, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body.professional-mode .exam-config-overlay {
+  background: rgba(240, 244, 248, 0.98);
+}
+
+.exam-config-card {
+  background: var(--void, #020c1b);
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  padding: 35px;
+  width: 550px;
+  max-width: 90%;
+  border-radius: 20px;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+body.professional-mode .exam-config-card {
+  background: var(--bg-card, #ffffff);
+  border: 2px solid var(--border, #e2e8f0);
+  box-shadow: 0 20px 40px rgba(21, 101, 192, 0.15);
+  border-top: 4px solid var(--atlas-gold, #ffd700);
+}
+
+.exam-cfg-title {
+  color: var(--atlas-gold, #ffd700);
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+body.professional-mode .exam-cfg-title {
+  color: #1e293b;
+}
+
+.exam-cfg-sub {
+  color: var(--text-mute, #8892b0);
+  font-family: var(--font-code, monospace);
+  font-size: 0.8rem;
+  margin-bottom: 25px;
+}
+
+.exam-cfg-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.exam-cfg-label {
+  color: var(--text-main, #e6f1ff);
+  font-family: var(--font-code, monospace);
+  font-size: 0.85rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+body.professional-mode .exam-cfg-label {
+  color: #334155;
+}
+
+.exam-cfg-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.exam-chip {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  color: var(--text-mute, #8892b0);
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: var(--font-code, monospace);
+  font-size: 0.85rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.professional-mode .exam-chip {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.exam-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--text-mute, #8892b0);
+  color: var(--text-main, #e6f1ff);
+}
+
+body.professional-mode .exam-chip:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.exam-chip.active {
+  background: rgba(0, 242, 255, 0.12) !important;
+  border-color: var(--why-cyan, #00f2ff) !important;
+  color: var(--why-cyan, #00f2ff) !important;
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.15);
+  font-weight: bold;
+}
+
+body.professional-mode .exam-chip.active {
+  background: rgba(126, 87, 194, 0.15) !important;
+  border-color: var(--medical-purple, #7e57c2) !important;
+  color: var(--medical-purple, #7e57c2) !important;
+  box-shadow: 0 0 10px rgba(126, 87, 194, 0.15);
+}
+
+.exam-cfg-summary {
+  background: rgba(0, 242, 255, 0.04);
+  border: 1px solid rgba(0, 242, 255, 0.15);
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-family: var(--font-code, monospace);
+  font-size: 0.85rem;
+  color: var(--why-cyan, #00f2ff);
+  margin-top: 10px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body.professional-mode .exam-cfg-summary {
+  background: rgba(126, 87, 194, 0.04);
+  border: 1px solid rgba(126, 87, 194, 0.15);
+  color: var(--medical-purple, #7e57c2);
+}
+
+.exam-cfg-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.srs-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: var(--font-code, monospace);
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+}
+
+.srs-btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  color: var(--text-mute, #8892b0);
+}
+
+body.professional-mode .srs-btn-ghost {
+  border: 1px solid #cbd5e1;
+  color: #475569;
+}
+
+.srs-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main, #e6f1ff);
+}
+
+body.professional-mode .srs-btn-ghost:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.srs-btn-primary {
+  background: linear-gradient(135deg, rgba(0, 242, 255, 0.2), rgba(0, 242, 255, 0.1));
+  border: 1px solid var(--why-cyan, #00f2ff);
+  color: var(--why-cyan, #00f2ff);
+}
+
+body.professional-mode .srs-btn-primary {
+  background: linear-gradient(135deg, rgba(126, 87, 194, 0.2), rgba(126, 87, 194, 0.1));
+  border: 1px solid var(--medical-purple, #7e57c2);
+  color: var(--medical-purple, #7e57c2);
+}
+
+.srs-btn-primary:hover {
+  background: var(--why-cyan, #00f2ff);
+  color: #020c1b;
+  box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+}
+
+body.professional-mode .srs-btn-primary:hover {
+  background: var(--medical-purple, #7e57c2);
+  color: white;
+  box-shadow: 0 0 20px rgba(126, 87, 194, 0.3);
+}
+
+/* ==================== GRID ANSWERED STATES ==================== */
+.question-grid-btn.answered {
+  background: rgba(0, 242, 255, 0.15);
+  border-color: var(--why-cyan, #00f2ff);
+  color: var(--why-cyan, #00f2ff);
+}
+
+body.professional-mode .question-grid-btn.answered {
+  background: rgba(126, 87, 194, 0.15);
+  border-color: var(--medical-purple, #7e57c2);
+  color: var(--medical-purple, #7e57c2);
+}
+
+.legend-dot.answered {
+  background: var(--why-cyan, #00f2ff);
+}
+
+body.professional-mode .legend-dot.answered {
+  background: var(--medical-purple, #7e57c2);
+}
+
+/* ==================== EXAM CONFIG MODAL CLOSE BUTTON ==================== */
+.exam-config-card .modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: var(--text-mute, #8892b0);
+  width: 38px;
+  height: 38px;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 1.5rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.exam-config-card .modal-close:hover {
+  background: rgba(255, 107, 107, 0.15) !important;
+  border-color: #ff6b6b !important;
+  color: #ff6b6b !important;
+  transform: rotate(90deg) scale(1.08);
+}
+
+body.professional-mode .exam-config-card .modal-close {
+  background: rgba(126, 87, 194, 0.05) !important;
+  border: 1px solid rgba(126, 87, 194, 0.1) !important;
+  color: #64748b;
+}
+
+body.professional-mode .exam-config-card .modal-close:hover {
+  background: rgba(255, 112, 67, 0.15) !important;
+  border-color: var(--medical-coral, #ff7043) !important;
+  color: var(--medical-coral, #ff7043) !important;
+  transform: rotate(90deg) scale(1.08);
 }

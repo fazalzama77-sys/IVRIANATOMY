@@ -1,0 +1,5 @@
+
+# Backups created by tools/map-images-apply.bat
+*.bak
+tools/image-map-report.html
+__server_*.log

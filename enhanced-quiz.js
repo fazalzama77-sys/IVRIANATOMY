@@ -85,6 +85,134 @@ const quizApp = {
     quizApp.startTime = null;
     quizApp.endTime = null;
     quizApp.quizState = 'menu';
+    quizApp.isExamMode = false;
+    quizApp.examDuration = null;
+    quizApp.examQuestionCount = null;
+    quizApp.examFormat = null;
+    quizApp.examFeedback = null;
+  },
+
+  openExamConfig: () => {
+    const overlay = document.getElementById('exam-config-overlay');
+    if (overlay) overlay.style.display = 'flex';
+
+    const scopeEl = document.getElementById('exam-cfg-scope');
+    if (scopeEl) {
+      scopeEl.innerText = `${quizApp.selectedRegion ? quizApp.selectedRegion.toUpperCase() : ''} > ${quizApp.selectedSystem ? quizApp.selectedSystem.toUpperCase() : ''}`;
+    }
+
+    // Set up click handlers on chips dynamically
+    document.querySelectorAll('.exam-cfg-chips').forEach(container => {
+      container.querySelectorAll('.exam-chip').forEach(chip => {
+        chip.onclick = () => {
+          container.querySelectorAll('.exam-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          quizApp.updateExamPoolCount();
+        };
+      });
+    });
+
+    quizApp.updateExamPoolCount();
+  },
+
+  closeExamConfig: () => {
+    const overlay = document.getElementById('exam-config-overlay');
+    if (overlay) overlay.style.display = 'none';
+  },
+
+  updateExamPoolCount: () => {
+    const formatActive = document.querySelector('#exam-cfg-format .exam-chip.active');
+    const format = formatActive ? formatActive.dataset.value : 'mixed';
+    const totalAvailable = quizApp.getQuestionCount(quizApp.selectedRegion, quizApp.selectedSystem, format);
+    const poolCountEl = document.getElementById('exam-pool-count');
+    if (poolCountEl) {
+      poolCountEl.innerText = totalAvailable;
+    }
+  },
+
+  startExamMode: () => {
+    const durationChip = document.querySelector('#exam-cfg-duration .exam-chip.active');
+    const countChip = document.querySelector('#exam-cfg-count .exam-chip.active');
+    const formatChip = document.querySelector('#exam-cfg-format .exam-chip.active');
+    const feedbackChip = document.querySelector('#exam-cfg-feedback .exam-chip.active');
+
+    const duration = durationChip ? parseInt(durationChip.dataset.value) : 30;
+    const questionCount = countChip ? parseInt(countChip.dataset.value) : 45;
+    const format = formatChip ? formatChip.dataset.value : 'mixed';
+    const feedback = feedbackChip ? feedbackChip.dataset.value : 'end';
+
+    let pool = quizApp.buildQuestionPool(format);
+    if (pool.length === 0) {
+      alert('No questions available for this selection.');
+      return;
+    }
+
+    // Shuffle pool
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+
+    const actualCount = Math.min(questionCount, pool.length);
+    quizApp.questions = pool.slice(0, actualCount);
+
+    quizApp.isExamMode = true;
+    quizApp.examDuration = duration;
+    quizApp.examFormat = format;
+    quizApp.examFeedback = feedback;
+    quizApp.mode = 'exam';
+    quizApp.score = 0;
+    quizApp.wrong = 0;
+    quizApp.currentIndex = 0;
+    quizApp.userAnswers = new Array(quizApp.questions.length).fill(null);
+    quizApp.bookmarks.clear();
+    quizApp.flagged.clear();
+    quizApp.startTime = Date.now();
+    quizApp.quizState = 'active';
+
+    quizApp.closeExamConfig();
+    quizApp.hideAllViews();
+    
+    // Reset timer colors
+    const timerEl = document.getElementById('quiz-timer');
+    if (timerEl) {
+      timerEl.style.color = '';
+      timerEl.style.borderColor = '';
+    }
+
+    document.getElementById('quiz-active-view').style.display = 'flex';
+    quizApp.startTimer();
+    quizApp.renderQuestion();
+    quizApp.updateNavigationControls();
+    quizApp.updateLegend();
+  },
+
+  saveExamAnswer: (answer) => {
+    quizApp.userAnswers[quizApp.currentIndex] = answer;
+    quizApp.renderQuestion();
+    quizApp.updateNavigationControls();
+    quizApp.renderQuestionGrid();
+  },
+
+  updateLegend: () => {
+    const legendEl = document.querySelector('.question-grid-legend');
+    if (!legendEl) return;
+    if (quizApp.isExamMode && quizApp.examFeedback === 'end') {
+      legendEl.innerHTML = `
+        <span><span class="legend-dot current"></span> Current</span>
+        <span><span class="legend-dot answered" style="background:var(--why-cyan)"></span> Answered</span>
+        <span><span class="legend-dot unanswered"></span> Unanswered</span>
+        <span><span class="legend-dot bookmarked"></span> Bookmarked</span>
+      `;
+    } else {
+      legendEl.innerHTML = `
+        <span><span class="legend-dot current"></span> Current</span>
+        <span><span class="legend-dot correct"></span> Correct</span>
+        <span><span class="legend-dot incorrect"></span> Incorrect</span>
+        <span><span class="legend-dot unanswered"></span> Unanswered</span>
+        <span><span class="legend-dot bookmarked"></span> Bookmarked</span>
+      `;
+    }
   },
 
   // ==================== NAVIGATION VIEWS ====================
@@ -294,6 +422,7 @@ const quizApp = {
     overlay.style.display = 'flex';
     quizApp.hideAllViews();
     document.getElementById('quiz-active-view').style.display = 'flex';
+    quizApp.updateLegend();
 
     // Force a layout reflow so the @media (max-width: 900px) rules
     // apply to the freshly-displayed modal on mobile. Without this,
@@ -344,6 +473,7 @@ const quizApp = {
 
     quizApp.hideAllViews();
     document.getElementById('quiz-active-view').style.display = 'flex';
+    quizApp.updateLegend();
     quizApp.renderQuestion();
     quizApp.updateNavigationControls();
   },
@@ -360,18 +490,24 @@ const quizApp = {
         if (!quizBank[region][system]) return;
         const section = quizBank[region][system];
         let questions = [];
-        if (mode === 'mcq' && section.mcq) questions = [...section.mcq];
-        else if (mode === 'tf' && section.tf) questions = [...section.tf];
-        else if (mode === 'fib' && section.fib) questions = [...section.fib];
+        
+        if (mode === 'mixed') {
+          if (section.mcq) questions.push(...section.mcq.map((q, idx) => ({ ...q, _region: region, _system: system, _mode: 'mcq', _index: idx })));
+          if (section.tf) questions.push(...section.tf.map((q, idx) => ({ ...q, _region: region, _system: system, _mode: 'tf', _index: idx })));
+          if (section.fib) questions.push(...section.fib.map((q, idx) => ({ ...q, _region: region, _system: system, _mode: 'fib', _index: idx })));
+        } else {
+          if (mode === 'mcq' && section.mcq) questions = [...section.mcq];
+          else if (mode === 'tf' && section.tf) questions = [...section.tf];
+          else if (mode === 'fib' && section.fib) questions = [...section.fib];
 
-        // Add metadata to each question (incl. original index for SRS tracking)
-        questions = questions.map((q, idx) => ({
-          ...q,
-          _region: region,
-          _system: system,
-          _mode: mode,
-          _index: idx
-        }));
+          questions = questions.map((q, idx) => ({
+            ...q,
+            _region: region,
+            _system: system,
+            _mode: mode,
+            _index: idx
+          }));
+        }
 
         pool.push(...questions);
       });
@@ -395,12 +531,42 @@ const quizApp = {
   },
 
   updateTimerDisplay: () => {
-    const elapsed = Math.floor((Date.now() - quizApp.startTime) / 1000);
-    const minutes = Math.floor(elapsed / 60);
-    const seconds = elapsed % 60;
     const timerEl = document.getElementById('quiz-timer');
-    if (timerEl) {
-      timerEl.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    if (!timerEl) return;
+
+    const elapsed = Math.floor((Date.now() - quizApp.startTime) / 1000);
+    
+    if (quizApp.isExamMode) {
+      const totalSeconds = quizApp.examDuration * 60;
+      const remaining = totalSeconds - elapsed;
+      
+      if (remaining <= 0) {
+        quizApp.stopTimer();
+        timerEl.innerHTML = `<i class="fas fa-clock"></i> 00:00`;
+        timerEl.style.color = '#ff6b6b';
+        alert('Time is up! Submitting your exam.');
+        quizApp.showAnalysis();
+        return;
+      }
+      
+      const minutes = Math.floor(remaining / 60);
+      const seconds = remaining % 60;
+      timerEl.innerHTML = `<i class="fas fa-clock"></i> ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      // Polish micro-interaction: turn timer red when less than 1 minute remains
+      if (remaining < 60) {
+        timerEl.style.color = '#ff6b6b';
+        timerEl.style.borderColor = '#ff6b6b';
+      } else {
+        timerEl.style.color = '';
+        timerEl.style.borderColor = '';
+      }
+    } else {
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+      timerEl.innerHTML = `<i class="fas fa-clock"></i> ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      timerEl.style.color = '';
+      timerEl.style.borderColor = '';
     }
   },
 
@@ -445,19 +611,20 @@ const quizApp = {
     document.getElementById('quiz-feedback').style.display = 'none';
 
     // Render based on question type
-    if (quizApp.mode === 'mcq') {
+    const activeMode = quizApp.isExamMode ? q._mode : quizApp.mode;
+    if (activeMode === 'mcq') {
       quizApp.renderMCQ(q, userAnswer, interactionArea);
-    } else if (quizApp.mode === 'tf') {
+    } else if (activeMode === 'tf') {
       quizApp.renderTF(q, userAnswer, interactionArea);
-    } else if (quizApp.mode === 'fib') {
+    } else if (activeMode === 'fib') {
       quizApp.renderFIB(q, userAnswer, interactionArea);
     }
 
     // Update bookmark and flag buttons
     quizApp.updateActionButtons();
 
-    // If already answered, show feedback
-    if (userAnswer !== null) {
+    // If already answered, show feedback (unless in exam mode with end feedback)
+    if (userAnswer !== null && !(quizApp.isExamMode && quizApp.examFeedback === 'end')) {
       quizApp.showFeedbackForAnswer(userAnswer);
     }
   },
@@ -478,15 +645,28 @@ const quizApp = {
       btn.className = 'quiz-option';
       btn.innerText = opt.text;
 
-      if (userAnswer !== null) {
-        btn.disabled = true;
-        if (opt.isCorrect) {
-          btn.classList.add('correct');
-        } else if (userAnswer.selectedIdx === opt.idx && !opt.isCorrect) {
-          btn.classList.add('wrong');
+      if (quizApp.isExamMode && quizApp.examFeedback === 'end') {
+        if (userAnswer !== null && userAnswer.selectedIdx === opt.idx) {
+          btn.classList.add('selected');
         }
+        btn.onclick = () => {
+          quizApp.saveExamAnswer({
+            selectedIdx: opt.idx,
+            isCorrect: opt.isCorrect,
+            correctAnswer: q.o[q.a]
+          });
+        };
       } else {
-        btn.onclick = () => quizApp.checkMCQ(opt.isCorrect, btn, opt.idx, q);
+        if (userAnswer !== null) {
+          btn.disabled = true;
+          if (opt.isCorrect) {
+            btn.classList.add('correct');
+          } else if (userAnswer.selectedIdx === opt.idx && !opt.isCorrect) {
+            btn.classList.add('wrong');
+          }
+        } else {
+          btn.onclick = () => quizApp.checkMCQ(opt.isCorrect, btn, opt.idx, q);
+        }
       }
 
       container.appendChild(btn);
@@ -499,16 +679,29 @@ const quizApp = {
       btn.className = 'quiz-option';
       btn.innerHTML = `<i class="fas ${icon}"></i> ${text}`;
 
-      if (userAnswer !== null) {
-        btn.disabled = true;
-        const isCorrect = boolVal === q.a;
-        if (isCorrect) {
-          btn.classList.add('correct');
-        } else if (userAnswer.answer === boolVal && !isCorrect) {
-          btn.classList.add('wrong');
+      if (quizApp.isExamMode && quizApp.examFeedback === 'end') {
+        if (userAnswer !== null && userAnswer.answer === boolVal) {
+          btn.classList.add('selected');
         }
+        btn.onclick = () => {
+          quizApp.saveExamAnswer({
+            answer: boolVal,
+            isCorrect: boolVal === q.a,
+            correctAnswer: q.a
+          });
+        };
       } else {
-        btn.onclick = () => quizApp.checkTF(boolVal, btn, q);
+        if (userAnswer !== null) {
+          btn.disabled = true;
+          const isCorrect = boolVal === q.a;
+          if (isCorrect) {
+            btn.classList.add('correct');
+          } else if (userAnswer.answer === boolVal && !isCorrect) {
+            btn.classList.add('wrong');
+          }
+        } else {
+          btn.onclick = () => quizApp.checkTF(boolVal, btn, q);
+        }
       }
 
       return btn;
@@ -524,29 +717,48 @@ const quizApp = {
     input.className = 'fill-input';
     input.placeholder = 'Type answer here...';
 
-    if (userAnswer !== null) {
-      input.value = userAnswer.answer;
-      input.disabled = true;
-      const isCorrect = userAnswer.isCorrect;
-      input.style.borderColor = isCorrect ? '#00ff9d' : '#ff6b6b';
-      input.style.color = isCorrect ? '#00ff9d' : '#ff6b6b';
-    } else {
-      input.onkeydown = (e) => {
-        if (e.key === 'Enter') quizApp.checkFIB(input.value, input, q);
+    if (quizApp.isExamMode && quizApp.examFeedback === 'end') {
+      if (userAnswer !== null) {
+        input.value = userAnswer.answer;
+      }
+      input.oninput = (e) => {
+        const userText = e.target.value;
+        const cleanUser = userText.trim().toLowerCase();
+        const isMatch = q.a.some(ans => ans.toLowerCase() === cleanUser);
+        quizApp.userAnswers[quizApp.currentIndex] = {
+          answer: userText,
+          isCorrect: isMatch,
+          correctAnswer: q.a[0]
+        };
+        quizApp.renderQuestionGrid();
+        quizApp.updateNavigationControls();
       };
-    }
+      container.appendChild(input);
+    } else {
+      if (userAnswer !== null) {
+        input.value = userAnswer.answer;
+        input.disabled = true;
+        const isCorrect = userAnswer.isCorrect;
+        input.style.borderColor = isCorrect ? '#00ff9d' : '#ff6b6b';
+        input.style.color = isCorrect ? '#00ff9d' : '#ff6b6b';
+      } else {
+        input.onkeydown = (e) => {
+          if (e.key === 'Enter') quizApp.checkFIB(input.value, input, q);
+        };
+      }
 
-    container.appendChild(input);
+      container.appendChild(input);
 
-    if (userAnswer === null) {
-      const submitBtn = document.createElement('button');
-      submitBtn.className = 'nav-btn';
-      submitBtn.style.borderColor = 'var(--why-cyan)';
-      submitBtn.style.color = 'var(--why-cyan)';
-      submitBtn.innerText = 'SUBMIT ANSWER';
-      submitBtn.onclick = () => quizApp.checkFIB(input.value, input, q);
-      container.appendChild(submitBtn);
-      input.focus();
+      if (userAnswer === null) {
+        const submitBtn = document.createElement('button');
+        submitBtn.className = 'nav-btn';
+        submitBtn.style.borderColor = 'var(--why-cyan)';
+        submitBtn.style.color = 'var(--why-cyan)';
+        submitBtn.innerText = 'SUBMIT ANSWER';
+        submitBtn.onclick = () => quizApp.checkFIB(input.value, input, q);
+        container.appendChild(submitBtn);
+        input.focus();
+      }
     }
   },
 
@@ -767,7 +979,18 @@ const quizApp = {
       if (i === quizApp.currentIndex) {
         btn.classList.add('current');
       } else if (quizApp.userAnswers[i] !== null) {
-        btn.classList.add(quizApp.userAnswers[i].isCorrect ? 'correct' : 'incorrect');
+        const isFIB = (quizApp.isExamMode ? quizApp.questions[i]._mode : quizApp.mode) === 'fib';
+        const hasAnswered = isFIB ? (quizApp.userAnswers[i].answer && quizApp.userAnswers[i].answer.trim() !== '') : true;
+
+        if (hasAnswered) {
+          if (quizApp.isExamMode && quizApp.examFeedback === 'end') {
+            btn.classList.add('answered');
+          } else {
+            btn.classList.add(quizApp.userAnswers[i].isCorrect ? 'correct' : 'incorrect');
+          }
+        } else {
+          btn.classList.add('unanswered');
+        }
       } else {
         btn.classList.add('unanswered');
       }
@@ -845,6 +1068,18 @@ const quizApp = {
     quizApp.stopTimer();
     quizApp.endTime = Date.now();
     quizApp.quizState = 'completed';
+
+    // Grade exam if in exam mode (end feedback)
+    if (quizApp.isExamMode && quizApp.examFeedback === 'end') {
+      quizApp.score = 0;
+      quizApp.wrong = 0;
+      quizApp.userAnswers.forEach((ans) => {
+        if (ans !== null) {
+          if (ans.isCorrect) quizApp.score++;
+          else quizApp.wrong++;
+        }
+      });
+    }
 
     // Clear saved progress since quiz is complete
     localStorage.removeItem('ivri-quiz-progress');
@@ -1375,9 +1610,9 @@ const quizApp = {
       systems.forEach(s => {
         if (!quizBank[r][s]) return;
         const section = quizBank[r][s];
-        if (mode === 'mcq' || mode === null) count += (section.mcq?.length || 0);
-        if (mode === 'tf' || mode === null) count += (section.tf?.length || 0);
-        if (mode === 'fib' || mode === null) count += (section.fib?.length || 0);
+        if (mode === 'mcq' || mode === 'mixed' || mode === null) count += (section.mcq?.length || 0);
+        if (mode === 'tf' || mode === 'mixed' || mode === null) count += (section.tf?.length || 0);
+        if (mode === 'fib' || mode === 'mixed' || mode === null) count += (section.fib?.length || 0);
       });
     });
 

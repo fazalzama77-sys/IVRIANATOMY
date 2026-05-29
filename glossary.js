@@ -188,6 +188,48 @@ const glossary = {
         });
     },
 
+    // Smart viewport-anchored tooltip positioner.
+    //
+    // The CSS used to position the tooltip with `position: absolute; left: 0`
+    // relative to the term. That worked until the term lived inside a
+    // container with `overflow-y: auto` (like `.content-area`) — in that case
+    // the tooltip got clipped by the container's bounding box on the left or
+    // right edge (browsers force `overflow-x: hidden` whenever overflow-y is
+    // non-visible).
+    //
+    // The fix: switch the tooltip to `position: fixed` and place it via
+    // CSS custom properties that this JS sets on hover/focus, using
+    // getBoundingClientRect so it's pinned to the viewport (escapes every
+    // ancestor's overflow).
+    _positionTooltip(term) {
+        if (!term || !term.getBoundingClientRect) return;
+        const rect = term.getBoundingClientRect();
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const margin = 12;
+        const ttW = Math.min(320, vw - margin * 2);
+        const ttHEst = 200;  // worst-case estimate; CSS clamps with max-height
+
+        // Default: place tooltip below the term, aligned to its left edge.
+        let left = rect.left;
+        let top  = rect.bottom + 8;
+
+        // If it would overflow the right edge, slide it left.
+        if (left + ttW > vw - margin) left = vw - ttW - margin;
+        // If it would overflow the bottom of the viewport, flip above.
+        if (top + ttHEst > vh - margin) {
+            const above = rect.top - ttHEst - 8;
+            if (above >= margin) top = above;
+        }
+        // Clamp to the left margin so it never escapes the viewport.
+        left = Math.max(margin, left);
+        top  = Math.max(margin, top);
+
+        term.style.setProperty('--tt-left', left + 'px');
+        term.style.setProperty('--tt-top',  top  + 'px');
+        term.style.setProperty('--tt-width', ttW + 'px');
+    },
+
     // Walk text nodes inside `root` and wrap matches in <span class="gloss-term">.
     // SAFE: only operates on text nodes — never touches existing HTML.
     decorate(root) {
@@ -233,6 +275,19 @@ const glossary = {
                 span.dataset.def = glossary._lookup[m[0].toLowerCase()] || '';
                 span.setAttribute('tabindex', '0');
                 span.setAttribute('aria-label', `Definition: ${span.dataset.def}`);
+                // Position the tooltip via viewport-fixed coords so it can never
+                // be clipped by an ancestor's overflow (the old absolute-position
+                // tooltip was getting cut off inside .content-area on tablet/laptop).
+                const onShow = (e) => glossary._positionTooltip(e.currentTarget);
+                span.addEventListener('mouseenter', onShow);
+                span.addEventListener('focus', onShow);
+                span.addEventListener('touchstart', onShow, { passive: true });
+                // Double-click / long-press the glossary term => speak it aloud
+                // (uses browser SpeechSynthesis — no API key needed).
+                span.addEventListener('dblclick', (e) => {
+                    e.preventDefault();
+                    if (window.app && app.speak) app.speak(e.currentTarget.textContent);
+                });
                 frag.appendChild(span);
                 lastIdx = m.index + m[0].length;
             }
@@ -241,6 +296,18 @@ const glossary = {
             }
             textNode.parentNode.replaceChild(frag, textNode);
         });
+
+        // Re-position the visible tooltip when the page scrolls or resizes —
+        // otherwise the tooltip would float in mid-air after a scroll.
+        if (!glossary._scrollHooked) {
+            glossary._scrollHooked = true;
+            const reposition = () => {
+                const active = document.querySelector('.gloss-term:hover, .gloss-term:focus');
+                if (active) glossary._positionTooltip(active);
+            };
+            window.addEventListener('scroll', reposition, { passive: true, capture: true });
+            window.addEventListener('resize', reposition, { passive: true });
+        }
     },
 
     // Optional: lookup function for use elsewhere

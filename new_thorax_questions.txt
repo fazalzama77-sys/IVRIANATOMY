@@ -1,0 +1,36 @@
+// UNIT 4 - Thorax Extras
+// These arrays contain 20 new highly exam-relevant UG veterinary anatomy questions
+// for the Thorax section, covering comparative anatomy and clinical correlations.
+// They are formatted as valid JavaScript arrays.
+
+// --- MULTIPLE CHOICE QUESTIONS (10) ---
+const newThoraxMCQ = [
+  { q: "Which of the following species possesses a tracheal bronchus arising before the principal bifurcation, supplying the right cranial lung lobe?", o: ["Horse and Dog", "Ox and Pig", "Horse and Ox", "Dog and Cat"], a: 1, e: "Ruminants and pigs have a tracheal bronchus that branches off the right side of the trachea cranial to its main bifurcation to aerate the right cranial lung lobe." },
+  { q: "Which species is characterized by having lungs with virtually no external lobation, lacking a middle lobe on the right side?", o: ["Dog", "Ox", "Pig", "Horse"], a: 3, e: "The equine lung is indistinctly lobated externally. The right lung has only cranial, caudal, and accessory lobes, lacking a distinct middle lobe." },
+  { q: "In the ox and pig, the main venous drainage of the thoracic roof is handled by the:", o: ["Right azygos vein", "Left azygos vein", "Caudal vena cava", "Brachiocephalic vein"], a: 1, e: "The ox and pig have a well-developed left azygos vein that drains into the coronary sinus of the right atrium. Horses and dogs primarily have a right azygos vein." },
+  { q: "In the dog and horse, the punctum maximum (point of maximum intensity) for auscultating the mitral (bicuspid) valve is located in the:", o: ["Left 3rd intercostal space", "Left 4th intercostal space", "Left 5th intercostal space", "Right 4th intercostal space"], a: 2, e: "The mitral valve is best auscultated on the left side at the 5th intercostal space. Remember PAM: Pulmonary 3rd, Aortic 4th, Mitral 5th on the Left." },
+  { q: "Which species has an esophagus composed entirely of striated muscle along its entire length to facilitate regurgitation?", o: ["Horse", "Dog and Ruminants", "Cat", "Pig"], a: 1, e: "Ruminants and dogs have striated muscle throughout the entire length of the esophagus. In horses, pigs, and cats, the distal portion transitions to smooth muscle." },
+  { q: "The articulation between the head of a rib and the bodies of two adjacent thoracic vertebrae is known as the:", o: ["Costochondral joint", "Costotransverse joint", "Costocentral (head of rib) joint", "Sternocostal joint"], a: 2, e: "The costocentral joint is formed by the head of the rib articulating with the costal foveae of two adjacent vertebral bodies." },
+  { q: "The ligamentum arteriosum in the adult animal is a fibrous remnant of the fetal:", o: ["Ductus venosus", "Umbilical artery", "Foramen ovale", "Ductus arteriosus"], a: 3, e: "The ductus arteriosus shunts blood from the pulmonary trunk to the aorta in the fetus to bypass the non-functional lungs, becoming the ligamentum arteriosum after birth." },
+  { q: "The syrinx, the vocal organ of birds, is located:", o: ["At the cranial end of the larynx", "At the bifurcation of the trachea", "Within the nasal cavity", "Inside the cranial lung lobes"], a: 1, e: "The syrinx is situated at the junction of the trachea and the primary bronchi (tracheal bifurcation) and is responsible for sound production in birds." },
+  { q: "Unlike mammals which have incomplete C-shaped cartilaginous tracheal rings, which species has complete, closed tracheal rings?", o: ["Horse", "Pig", "Fowl", "Ox"], a: 2, e: "Birds (fowl) have complete, overlapping cartilaginous rings, meaning their trachea cannot be compressed as easily as in mammals." },
+  { q: "In a young calf, the thymus gland is exceptionally large and consists of:", o: ["Only a thoracic lobe", "Only two cervical lobes", "Two cervical lobes and one thoracic lobe", "Four thoracic lobes"], a: 2, e: "In young ruminants and pigs, the thymus has distinct, large paired cervical lobes reaching up the neck, and an unpaired thoracic lobe in the cranial mediastinum." }
+];
+
+// --- TRUE/FALSE QUESTIONS (5) ---
+const newThoraxTF = [
+  { q: "The right lung of the ox consists of four distinct lobes: cranial, middle, caudal, and accessory.", a: true, e: "True. The ox right lung has four lobes, and the cranial lobe is further divided into cranial and caudal parts." },
+  { q: "The tricuspid valve is best auscultated on the left side of the thorax.", a: false, e: "False. The tricuspid (right atrioventricular) valve is best auscultated on the RIGHT side, usually in the 3rd or 4th intercostal space." },
+  { q: "The fossa ovalis in the interatrial septum of the adult heart is a remnant of the fetal foramen ovale.", a: true, e: "True. The foramen ovale allows blood to flow from the right to the left atrium in the fetus, bypassing the non-functional lungs." },
+  { q: "In the dog, the costochondral junction is synovial, allowing extensive movement for respiration.", a: false, e: "False. The costochondral junction (between bony rib and its cartilage) is a symphysis (fibrocartilaginous joint) and lacks a synovial cavity." },
+  { q: "The basal border of the lung indicates the caudal limit of the lung for clinical percussion, and it moves cranially during expiration.", a: true, e: "True. The basal border is the line where the diaphragmatic surface of the lung meets the costal surface; its position changes with respiratory phases." }
+];
+
+// --- FILL-IN-THE-BLANK QUESTIONS (5) ---
+const newThoraxFIB = [
+  { q: "The heart valve best heard low down on the right side of the chest at the 3rd or 4th intercostal space is the ______ valve.", a: ["tricuspid"], e: "It is the only major heart valve best auscultated on the right side." },
+  { q: "In ruminants and pigs, the ______ bronchus arises from the trachea before the main bifurcation to supply the right cranial lung lobe.", a: ["tracheal"], e: "This unique branching provides early aeration to the right cranial lobe." },
+  { q: "The articulation between the tubercle of a rib and the transverse process of the corresponding vertebra is the ______ joint.", a: ["costotransverse"], e: "This synovial joint works with the joint of the rib head to allow respiratory movements." },
+  { q: "In the ox and pig, the dominant vein draining the intercostal spaces on the roof of the thorax is the ______ azygos vein.", a: ["left"], e: "While dogs and horses have a right azygos, ox and pig have a left azygos (and occasionally a small right one)." },
+  { q: "The vocal organ of birds, located at the bifurcation of the trachea, is called the ______.", a: ["syrinx"], e: "Birds lack vocal cords in the larynx; the syrinx is their sound-producing organ." }
+];

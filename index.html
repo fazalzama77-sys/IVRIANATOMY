@@ -330,35 +330,24 @@
     <div style="max-width: 1400px; margin: 0 auto;">
 
       <div class="nav-bar">
-        <button class="nav-btn" onclick="app.atlasBack()">
-          <i class="fas fa-arrow-left"></i> BACK
+        <button class="nav-btn" onclick="app.atlasBack()" aria-label="Back">
+          <i class="fas fa-arrow-left"></i> <span class="nb-label">BACK</span>
         </button>
         <div class="badge" id="atlas-crumb" style="border-color: var(--atlas-gold); color: var(--atlas-gold);">ATLAS
           DATABASE</div>
 
-        <!-- Right side: Elite Toggle + Bookmarks + Quiz -->
-        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <!-- Right side: contextual controls (Elite + Library/Quiz on desktop) -->
+        <div class="nav-actions">
           <!-- ELITE TOGGLE (Only visible when viewing content) -->
           <button class="nav-btn elite-toggle-btn" id="elite-toggle" onclick="app.toggleElite()" style="display:none;">
             <i class="fas fa-graduation-cap"></i> <span id="elite-text">Elite View</span>
           </button>
-          <button class="nav-btn nav-btn-keep-label" onclick="app.showBookmarks(); app.setHash('#/bookmarks');"
-            title="View bookmarked topics" aria-label="My Bookmarks">
-            <i class="fas fa-star"></i> BOOKMARKS
-          </button>
-          <button class="nav-btn nav-btn-icon-only-mobile" onclick="app.showHighlights(); app.setHash('#/highlights');"
-            title="View all your highlighted text" aria-label="My Highlights"
-            style="border-color: #ffd54f; color: #ffd54f;">
-            <i class="fas fa-highlighter"></i> <span>HIGHLIGHTS</span>
-          </button>
-          <button class="nav-btn nav-btn-icon-only-mobile" onclick="app.showNotes(); app.setHash('#/notes');"
-            title="View all your typed notes" aria-label="My Notes"
-            style="border-color: var(--why-cyan); color: var(--why-cyan);">
-            <i class="fas fa-sticky-note"></i> <span>NOTES</span>
-          </button>
-          <button class="nav-btn nav-btn-keep-label" style="border-color: var(--atlas-gold); color: var(--atlas-gold);"
-            onclick="quizApp.openMenu()">
-            <i class="fas fa-brain"></i> QUIZ MODE
+          <!-- Quiz Mode is the only desktop-only shortcut kept here. Library
+               is fully owned by the top dock (desktop) / bottom nav (mobile)
+               so we don't duplicate it. -->
+          <button class="nav-btn nav-btn-desktop-only" style="border-color: var(--atlas-gold); color: var(--atlas-gold);"
+            onclick="quizApp.openMenu()" aria-label="Quiz Mode">
+            <i class="fas fa-brain"></i> <span>QUIZ MODE</span>
           </button>
         </div>
       </div>
@@ -366,6 +355,26 @@
       <!-- SELECTOR GRID (Region/System) -->
       <div id="atlas-selector" class="portal-grid" style="gap: 30px;">
         <!-- Injected by JavaScript -->
+      </div>
+
+      <!-- LIBRARY TAB BAR (only visible when in Library mode — bookmarks/highlights/notes/flashcards/glossary) -->
+      <div id="library-tabs" class="library-tabs" style="display:none;">
+        <button class="lib-tab" data-tab="bookmarks" onclick="app.openLibrary('bookmarks')">
+          <i class="fas fa-star"></i> <span>Bookmarks</span>
+        </button>
+        <button class="lib-tab" data-tab="highlights" onclick="app.openLibrary('highlights')">
+          <i class="fas fa-highlighter"></i> <span>Highlights</span>
+        </button>
+        <button class="lib-tab" data-tab="notes" onclick="app.openLibrary('notes')">
+          <i class="fas fa-sticky-note"></i> <span>Notes</span>
+        </button>
+        <button class="lib-tab" data-tab="flashcards" onclick="app.openLibrary('flashcards')">
+          <i class="fas fa-clone"></i> <span>Flashcards</span>
+        </button>
+        <button class="lib-tab" data-tab="glossary" onclick="app.openLibrary('glossary')">
+          <i class="fas fa-book"></i> <span>Glossary</span>
+        </button>
+        <span class="lib-tab-indicator" aria-hidden="true"></span>
       </div>
 
       <!-- CONTENT WORKSPACE -->
@@ -447,6 +456,10 @@
           <button class="modal-close" onclick="closeModal()">&times;</button>
 
           <div class="modal-image-col">
+            <div class="visor-hud-overlay">
+              <span class="visor-hud-status"><span class="visor-hud-dot"></span> SCAN FEED: ACTIVE [SYS_VAL_OK]</span>
+              <span class="visor-hud-coords">COORD_X: 42.1 // COORD_Y: 52.0</span>
+            </div>
             <img src="" alt="Anatomy Diagram" id="modalImg" class="modal-img">
           </div>
 
@@ -868,53 +881,310 @@
         </button>
       </div>
 
-      <!-- Overview Stats -->
-      <div class="dash-stats-row" id="dash-overview-stats">
-        <!-- Injected by JS -->
+      <!-- DASHBOARD TABS -->
+      <div id="dashboard-tabs" class="dashboard-tabs">
+        <button class="dash-tab active" data-tab="analytics" onclick="dashboard.switchTab('analytics')">
+          <i class="fas fa-chart-pie"></i> <span>Performance Analytics</span>
+        </button>
+        <button class="dash-tab" data-tab="planner" onclick="dashboard.switchTab('planner')">
+          <i class="fas fa-calendar-check"></i> <span>VCI Syllabus &amp; Planner</span>
+        </button>
+        <span class="dash-tab-indicator" aria-hidden="true"></span>
       </div>
 
-      <!-- Smart Review (Spaced Repetition) Panel — Auto-rendered if quiz answered -->
-      <div class="dash-srs-panel" id="dash-srs-panel">
-        <!-- Injected by JS via dashboard.renderSrsPanel() -->
+      <!-- ANALYTICS TAB CONTENT -->
+      <div id="dash-analytics-content">
+        <!-- Overview Stats -->
+        <div class="dash-stats-row" id="dash-overview-stats">
+          <!-- Injected by JS -->
+        </div>
+
+        <!-- Smart Review (Spaced Repetition) Panel — Auto-rendered if quiz answered -->
+        <div class="dash-srs-panel" id="dash-srs-panel">
+          <!-- Injected by JS via dashboard.renderSrsPanel() -->
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dash-grid">
+          <!-- Accuracy Trend -->
+          <div class="dash-card dash-card-wide">
+            <div class="dash-card-header">
+              <h3><i class="fas fa-chart-line"></i> Accuracy Trend</h3>
+              <span class="dash-card-subtitle">Last 20 sessions</span>
+            </div>
+            <div id="dash-accuracy-chart" class="dash-chart">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+
+          <!-- Topic Strength Heatmap -->
+          <div class="dash-card dash-card-wide">
+            <div class="dash-card-header">
+              <h3><i class="fas fa-th"></i> Topic Strength Map</h3>
+              <span class="dash-card-subtitle">Accuracy by Syllabus Unit × Topic</span>
+            </div>
+            <div id="dash-heatmap" class="dash-heatmap">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+
+          <!-- Recent Quiz History -->
+          <div class="dash-card dash-card-full">
+            <div class="dash-card-header">
+              <h3><i class="fas fa-history"></i> Recent Quiz History</h3>
+              <span class="dash-card-subtitle">Your last sessions</span>
+            </div>
+            <div id="dash-history" class="dash-history">
+              <!-- Injected by JS -->
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Main Dashboard Grid -->
-      <div class="dash-grid">
-        <!-- Accuracy Trend -->
-        <div class="dash-card dash-card-wide">
-          <div class="dash-card-header">
-            <h3><i class="fas fa-chart-line"></i> Accuracy Trend</h3>
-            <span class="dash-card-subtitle">Last 20 sessions</span>
-          </div>
-          <div id="dash-accuracy-chart" class="dash-chart">
-            <!-- Injected by JS -->
-          </div>
-        </div>
-
-        <!-- Topic Strength Heatmap -->
-        <div class="dash-card dash-card-wide">
-          <div class="dash-card-header">
-            <h3><i class="fas fa-th"></i> Topic Strength Map</h3>
-            <span class="dash-card-subtitle">Accuracy by Syllabus Unit × Topic</span>
-          </div>
-          <div id="dash-heatmap" class="dash-heatmap">
-            <!-- Injected by JS -->
-          </div>
-        </div>
-
-        <!-- Recent Quiz History -->
-        <div class="dash-card dash-card-full">
-          <div class="dash-card-header">
-            <h3><i class="fas fa-history"></i> Recent Quiz History</h3>
-            <span class="dash-card-subtitle">Your last sessions</span>
-          </div>
-          <div id="dash-history" class="dash-history">
-            <!-- Injected by JS -->
-          </div>
-        </div>
+      <!-- SYLLABUS & PLANNER TAB CONTENT -->
+      <div id="dash-planner-content" style="display:none;">
+        <!-- Injected dynamically by dashboard.js -->
       </div>
     </div>
   </section>
+
+  <!-- ================= VIEW 5: ME / SETTINGS ================= -->
+  <section id="me-view" class="view-section">
+    <div class="me-wrap">
+      <header class="me-header">
+        <div class="me-avatar"><i class="fas fa-user-graduate"></i></div>
+        <div>
+          <div class="me-greet">Welcome back, student</div>
+          <div class="me-sub">Your study companion for B.V.Sc Anatomy</div>
+        </div>
+      </header>
+
+      <!-- Quick stats strip (auto-populated from progress data) -->
+      <div class="me-stats" id="me-stats">
+        <div class="me-stat"><span class="me-stat-num" id="me-stat-bookmarks">0</span><span class="me-stat-lbl">Bookmarks</span></div>
+        <div class="me-stat"><span class="me-stat-num" id="me-stat-highlights">0</span><span class="me-stat-lbl">Highlights</span></div>
+        <div class="me-stat"><span class="me-stat-num" id="me-stat-notes">0</span><span class="me-stat-lbl">Notes</span></div>
+        <div class="me-stat"><span class="me-stat-num" id="me-stat-read">0</span><span class="me-stat-lbl">Read</span></div>
+      </div>
+
+      <!-- Streak block: current streak, longest, total active days, + 12-week heatmap -->
+      <section class="streak-block" id="streak-block">
+        <div class="streak-head">
+          <div class="streak-flame"><i class="fas fa-fire"></i></div>
+          <div class="streak-main">
+            <div class="streak-num" id="streak-current">0</div>
+            <div class="streak-lbl">day streak</div>
+          </div>
+          <div class="streak-side">
+            <div class="streak-side-row"><span id="streak-longest">0</span><span>longest</span></div>
+            <div class="streak-side-row"><span id="streak-total">0</span><span>total days</span></div>
+          </div>
+        </div>
+        <div class="heatmap-wrap">
+          <div class="heatmap-title">Last 12 weeks</div>
+          <div class="heatmap-grid" id="heatmap-grid" aria-label="Activity heatmap"></div>
+          <div class="heatmap-legend">
+            <span>Less</span>
+            <span class="hm-cell-mini hm-empty"></span>
+            <span class="hm-cell-mini hm-on"></span>
+            <span>More</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Nav-position picker — desktop only. Lets the user park the bottom
+           nav wherever feels most comfortable (bottom / top / left / right). -->
+      <div class="nav-pos-picker" id="nav-pos-picker">
+        <div class="nav-pos-label">
+          <i class="fas fa-arrows-up-down-left-right"></i>
+          <span><b>Navigation position</b><br><small>Choose where the menu bar sits on desktop. Mobile always stays at the bottom.</small></span>
+        </div>
+        <div class="nav-pos-options">
+          <button class="nav-pos-option" data-pos="bottom" onclick="app.setNavPosition('bottom')" title="Bottom (default)" aria-label="Bottom">
+            <span class="np-frame"><span class="np-bar np-bottom"></span></span>
+            <span class="np-name">Bottom</span>
+          </button>
+          <button class="nav-pos-option" data-pos="top" onclick="app.setNavPosition('top')" title="Top" aria-label="Top">
+            <span class="np-frame"><span class="np-bar np-top"></span></span>
+            <span class="np-name">Top</span>
+          </button>
+          <button class="nav-pos-option" data-pos="left" onclick="app.setNavPosition('left')" title="Left side" aria-label="Left side">
+            <span class="np-frame"><span class="np-bar np-left"></span></span>
+            <span class="np-name">Left</span>
+          </button>
+          <button class="nav-pos-option" data-pos="right" onclick="app.setNavPosition('right')" title="Right side" aria-label="Right side">
+            <span class="np-frame"><span class="np-bar np-right"></span></span>
+            <span class="np-name">Right</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Settings toggles row (compact) -->
+      <div class="me-toggles">
+        <button class="me-toggle" id="me-notif-toggle" onclick="app.toggleSrsNotifications()">
+          <i class="fas fa-bell"></i>
+          <span class="me-toggle-text">
+            <span class="me-toggle-title">Daily Review Reminder</span>
+            <span class="me-toggle-state" id="me-notif-state">Off</span>
+          </span>
+          <span class="me-toggle-pill" id="me-notif-pill"></span>
+        </button>
+        <button class="me-toggle" onclick="app.replayOnboarding()">
+          <i class="fas fa-circle-play"></i>
+          <span class="me-toggle-text">
+            <span class="me-toggle-title">Replay Welcome Tour</span>
+            <span class="me-toggle-state">Re-watch the 5-slide intro</span>
+          </span>
+          <i class="fas fa-chevron-right me-toggle-chev"></i>
+        </button>
+      </div>
+
+      <!-- Action grid: cards instead of a list — more touch-friendly + visual -->
+      <div class="me-grid">
+        <button class="me-card" onclick="app.loadView('dashboard')">
+          <i class="fas fa-chart-line me-card-icon" style="color:#bd93f9;"></i>
+          <div class="me-card-title">Performance Dashboard</div>
+          <div class="me-card-desc">Accuracy trends, weak topics, smart review queue.</div>
+        </button>
+        <button class="me-card me-card-backup" onclick="app.exportBackup()">
+          <i class="fas fa-cloud-arrow-down me-card-icon" style="color:#7cf07c;"></i>
+          <div class="me-card-title">Backup My Data</div>
+          <div class="me-card-desc">Download all bookmarks, notes, highlights, quiz progress, streak. Save it somewhere safe.</div>
+        </button>
+        <button class="me-card me-card-backup" onclick="app.promptImportBackup()">
+          <i class="fas fa-cloud-arrow-up me-card-icon" style="color:#5dade2;"></i>
+          <div class="me-card-title">Restore from Backup</div>
+          <div class="me-card-desc">Bring back data from a backup file (e.g. after switching phones).</div>
+        </button>
+        <button class="me-card" onclick="app.openAbout()">
+          <i class="fas fa-circle-info me-card-icon" style="color:var(--why-cyan);"></i>
+          <div class="me-card-title">About this Platform</div>
+          <div class="me-card-desc">Vision, mission, and the team behind IVRI Anatomy.</div>
+        </button>
+        <button class="me-card" onclick="app.toggleTheme()">
+          <i class="fas fa-palette me-card-icon" style="color:var(--atlas-gold);"></i>
+          <div class="me-card-title">Theme</div>
+          <div class="me-card-desc" id="me-theme-desc">Student (neon) ↔ Professional (medical)</div>
+        </button>
+        <button class="me-card" onclick="searchEngine.toggle()">
+          <i class="fas fa-search me-card-icon" style="color:#7cf07c;"></i>
+          <div class="me-card-title">Search</div>
+          <div class="me-card-desc">Find any bone, muscle, or structure across the site.</div>
+        </button>
+        <button class="me-card me-card-danger" onclick="app.forceClearCacheAndReload()">
+          <i class="fas fa-broom me-card-icon"></i>
+          <div class="me-card-title">Reset App Cache</div>
+          <div class="me-card-desc">Refresh app files (your saved data stays safe).</div>
+        </button>
+      </div>
+
+      <!-- Hidden file picker used by the Restore card -->
+      <input type="file" id="restore-file" accept="application/json,.json"
+             style="display:none;"
+             onchange="app.importBackupFromFile(this)">
+
+      <!-- Helpful note explaining the backup model -->
+      <div class="backup-note">
+        <i class="fas fa-shield-halved"></i>
+        <div>
+          <b>Why this matters:</b> Your bookmarks, notes, highlights, and quiz progress live in your browser only.
+          If you clear browser data, switch phones, or use incognito by accident, they're gone forever.
+          <b>Download a backup at least once a month</b> and keep the JSON file in Google Drive / WhatsApp to yourself.
+        </div>
+      </div>
+
+      <footer class="me-footer">
+        <img src="images/ivri-logo.png" alt="IVRI"
+             onerror="this.style.display='none'"
+             style="height:42px; opacity:.7; margin-bottom:8px;">
+        <div>IVRI Anatomy &middot; B.V.Sc UG Companion</div>
+        <div style="opacity:.5; font-size:.8rem; margin-top:4px;">Built by Fazal Zama &middot; Roll B0-350-2025</div>
+      </footer>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT MODAL (lightweight) ================= -->
+  <div id="about-modal" class="about-modal" style="display:none;" onclick="if(event.target===this) app.closeAbout()">
+    <div class="about-card">
+      <button class="about-close" onclick="app.closeAbout()" aria-label="Close"><i class="fas fa-times"></i></button>
+      <div class="about-hero">
+        <i class="fas fa-graduation-cap about-hero-icon"></i>
+        <h2 class="about-hero-title">IVRI Anatomy</h2>
+        <div class="about-hero-tag">Exploring Anatomy Through Technology</div>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-head"><i class="fas fa-bullseye"></i> Vision</div>
+        <p>To make veterinary anatomy approachable, comparative, and clinically grounded — for every B.V.Sc student, on every device, even offline.</p>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-head"><i class="fas fa-compass"></i> Mission</div>
+        <ul class="about-list">
+          <li>Cover the complete VCI Unit 1–8 syllabus with high-resolution comparative content.</li>
+          <li>Pair every structure with its biomechanical "why" and clinical correlation.</li>
+          <li>Make active recall the default — MCQ, True/False, Fill-in, Smart Review, Exam Mode.</li>
+          <li>Stay free, ad-free, and lightweight enough to run on any phone.</li>
+        </ul>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-head"><i class="fas fa-people-group"></i> Anatomy Section, IVRI Bareilly</div>
+        <ul class="about-list">
+          <li><b>Dr. Abhinov Verma</b> &middot; Senior Scientist</li>
+          <li><b>Dr. Dangeti V.V.N. Durga Prasad</b> &middot; Scientist</li>
+          <li><b>Dr. Elizabeth V.L. Hmangaihzuali</b> &middot; Scientist</li>
+          <li><b>Dr. Samikshya Sarangi</b> &middot; Scientist</li>
+        </ul>
+      </div>
+
+      <div class="about-section">
+        <div class="about-section-head"><i class="fas fa-code"></i> Concept &amp; Build</div>
+        <p><b>Fazal Zama</b> &middot; B.V.Sc &amp; A.H. UG &middot; Roll No. B0-350-2025 &middot; IVRI Bareilly</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ONBOARDING TOUR (first-time visitors) ================= -->
+  <div id="onboard-modal" class="onboard-modal" style="display:none;" onclick="if(event.target===this) app.closeOnboarding(true)">
+    <div class="onboard-card" role="dialog" aria-modal="true" aria-label="Welcome tour">
+      <!-- contents injected by app._renderOnboardSlide() -->
+    </div>
+  </div>
+
+  <!-- ================= INSTALL-AS-APP BANNER ================= -->
+  <div id="install-banner" class="install-banner" style="display:none;" role="region" aria-label="Install IVRI as app">
+    <div class="install-icon"><i class="fas fa-download"></i></div>
+    <div class="install-msg">
+      Install IVRI Anatomy as an app — works offline, loads faster, lives on your home screen.
+    </div>
+    <button class="install-btn" onclick="app.triggerInstall()"><i class="fas fa-plus"></i> Install</button>
+    <button class="install-close" onclick="app.dismissInstall()" aria-label="Dismiss"><i class="fas fa-times"></i></button>
+  </div>
+
+  <!-- ================= BOTTOM NAVIGATION (mobile) + Top dock (desktop) ================= -->
+  <nav id="bottom-nav" class="bottom-nav" role="navigation" aria-label="Primary navigation">
+    <button class="bn-item" data-view="atlas" onclick="app.navigateTo('atlas')" aria-label="Atlas">
+      <i class="fas fa-book-open bn-icon"></i>
+      <span class="bn-label">Atlas</span>
+    </button>
+    <button class="bn-item" data-view="why" onclick="app.navigateTo('why')" aria-label="WHY — Biomechanics">
+      <i class="fas fa-lightbulb bn-icon"></i>
+      <span class="bn-label">WHY</span>
+    </button>
+    <button class="bn-item bn-item-primary" data-view="quiz" onclick="app.openQuiz()" aria-label="Quiz Mode">
+      <span class="bn-fab"><i class="fas fa-brain"></i></span>
+      <span class="bn-label">Quiz</span>
+    </button>
+    <button class="bn-item" data-view="library" onclick="app.openLibrary()" aria-label="My Library">
+      <i class="fas fa-bookmark bn-icon"></i>
+      <span class="bn-label">Library</span>
+    </button>
+    <button class="bn-item" data-view="me" onclick="app.openMe()" aria-label="Me — Settings &amp; Profile">
+      <i class="fas fa-circle-user bn-icon"></i>
+      <span class="bn-label">Me</span>
+    </button>
+  </nav>
 
   <!-- Load JavaScript files - data first, then app logic -->
   <!-- Regional Data -->

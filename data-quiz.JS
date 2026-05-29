@@ -566,7 +566,10 @@ const quizBank = {
         { q: "The caudal mesenteric artery supplies the descending colon and rectum.", a: true, e: "True. It supplies the distal portion of the large intestine." },
         { q: "The spleen in the pig is elongated and strap-like.", a: true, e: "True. It is long and uniform in width." },
         { q: "The base of the equine cecum is in the left paralumbar fossa.", a: false, e: "False. The cecum is on the RIGHT side." },
-        { q: "The omentum is highly active in walling off infections in the abdomen.", a: true, e: "True. It is often called the 'policeman of the abdomen'." }
+        { q: "The omentum is highly active in walling off infections in the abdomen.", a: true, e: "True. It is often called the 'policeman of the abdomen'." },
+        { q: "The mesenteric root is attached to the ventral body wall.", a: false, e: "False. The mesenteric root is attached to the DORSAL body wall." },
+        { q: "Abdominocentesis in the horse is performed at the lowest point of the abdomen.", a: true, e: "True. Gravity causes peritoneal fluid to collect ventrally near the xiphoid." },
+        { q: "Intussusception involves twisting of the intestine on its mesentery.", a: false, e: "False. That is volvulus. Intussusception is telescoping of one segment into another." }
       ],
       fib: [
         { q: "The largest compartment of the ruminant stomach, occupying most of the left abdomen, is the ______.", a: ["rumen"], e: "The primary fermentation vat." },
@@ -583,7 +586,10 @@ const quizBank = {
         { q: "Because of the massive rumen, the liver in cattle is displaced entirely to the ______ side of the abdomen.", a: ["right"], e: "Lies against the diaphragm and right ribs." },
         { q: "The animal species that lacks a gallbladder is the ______.", a: ["horse", "equine"], e: "Bile is secreted continuously." },
         { q: "The large artery that supplies the stomach, liver, and spleen is the ______ artery.", a: ["celiac"], e: "First major unpaired branch of abdominal aorta." },
-        { q: "The vein that carries nutrient-rich blood from the intestines to the liver is the ______ vein.", a: ["portal"], e: "Essential for liver processing." }
+        { q: "The vein that carries nutrient-rich blood from the intestines to the liver is the ______ vein.", a: ["portal"], e: "Essential for liver processing." },
+        { q: "The cord-like structure guiding the testis during its descent through the inguinal canal is the _____.", a: ["gubernaculum"], e: "It shortens to pull the testis into the scrotum." },
+        { q: "The telescoping of one intestinal segment into an adjacent segment is called _____.", a: ["intussusception"], e: "The intussusceptum telescopes into the intussuscipiens." },
+        { q: "The short root of attachment of the mesentery to the dorsal body wall is called the mesenteric _____.", a: ["root"], e: "A rich source of blood supply to the gut." }
       ]
     },
     "Splanchnology (Urogenital & Mammary)": {
@@ -714,7 +720,13 @@ const quizBank = {
         { q: "Umbilical hernias are common in calves and foals. What structures typically pass through the defect?", o: ["Heart and lungs", "Liver only", "Omentum or small intestines", "Kidneys"], a: 2, e: "Abdominal fat/omentum or loops of bowel herniate through the unclosed umbilical ring." },
         { q: "A 'Perineal Hernia' in an older intact male dog often involves the herniation of the:", o: ["Stomach", "Heart", "Urinary bladder or rectum", "Liver"], a: 2, e: "Weakening of the pelvic diaphragm muscles allows pelvic/abdominal contents to bulge beside the anus." },
         { q: "When performing a liver biopsy in a cow, the needle is typically inserted on the:", o: ["Left side, 10th intercostal space", "Right side, 10th-11th intercostal space", "Ventral midline", "Right paralumbar fossa"], a: 1, e: "The liver is entirely on the right side, mostly under the cover of the ribs." },
-        { q: "What is 'Traumatic Reticuloperitonitis' (TRP) in cattle commonly called?", o: ["Bloat", "Hardware Disease", "Milk Fever", "Ketosis"], a: 1, e: "Ingested metal objects settle in the reticulum and puncture the wall, causing peritonitis or pericarditis." }
+        { q: "What is 'Traumatic Reticuloperitonitis' (TRP) in cattle commonly called?", o: ["Bloat", "Hardware Disease", "Milk Fever", "Ketosis"], a: 1, e: "Ingested metal objects settle in the reticulum and puncture the wall, causing peritonitis or pericarditis." },
+        { q: "During rectal palpation in the cow, the first organ typically palpated on the left is the:", o: ["Left kidney", "Rumen", "Uterus", "Bladder"], a: 1, e: "The rumen fills the left side of the abdomen and its caudodorsal surface is palpable." },
+        { q: "In an open castration technique, which structure is incised that is NOT incised in a closed technique?", o: ["Skin", "Vaginal tunic (parietal layer)", "Scrotal fascia", "Cremaster muscle"], a: 1, e: "In open castration the parietal vaginal tunic is opened to expose the cord structures directly." },
+        { q: "A Right Displaced Abomasum with Volvulus (RDA-V) is more dangerous than LDA because:", o: ["It compresses the rumen", "It occludes blood supply causing ischemia and rapid deterioration", "It is more common", "It causes less pain"], a: 1, e: "Volvulus of the abomasum twists the omental attachments and vessels, causing rapid ischemic necrosis." },
+        { q: "Diaphragmatic hernia allows abdominal organs to herniate into the:", o: ["Pelvic cavity", "Thoracic cavity", "Inguinal canal", "Retroperitoneal space"], a: 1, e: "Traumatic diaphragmatic hernia is common after vehicular trauma in dogs." },
+        { q: "In a perineal hernia in dogs, the muscles that weaken are primarily the:", o: ["Abdominal wall muscles", "Pelvic diaphragm muscles (coccygeus, levator ani)", "Diaphragm", "Intercostal muscles"], a: 1, e: "Weakening of these muscles allows pelvic/abdominal organs to herniate beside the anus." },
+        { q: "The round ligament of the uterus in the female corresponds to the _____ in the male:", o: ["Broad ligament", "Gubernaculum testis", "Suspensory ligament", "Urachus"], a: 1, e: "Both develop from the gubernaculum; the round ligament passes through the inguinal canal." }
       ],
       tf: [
         { q: "A Left Displaced Abomasum (LDA) causes a high-pitched 'ping' on the left flank when percussed.", a: true, e: "True. The gas-filled abomasum trapped against the body wall pings like a basketball." },
@@ -725,7 +737,10 @@ const quizBank = {
         { q: "Cryptorchid testicles continue to produce normal sperm but no testosterone.", a: false, e: "False. They produce testosterone (maintaining male behavior) but the high body heat prevents normal sperm production (sterile)." },
         { q: "A ventral midline incision in a horse provides poor exposure to the large colon.", a: false, e: "False. Ventral midline is the standard approach for equine colic surgery, allowing massive organs to be exteriorized." },
         { q: "The urethral process of a sheep/goat is a common site for urinary stones.", a: true, e: "True. It is a very narrow, worm-like extension." },
-        { q: "Hardware disease occurs when a nail punctures the rumen.", a: false, e: "False. It punctures the RETICULUM, which is adjacent to the diaphragm and heart." }
+        { q: "Hardware disease occurs when a nail punctures the rumen.", a: false, e: "False. It punctures the RETICULUM, which is adjacent to the diaphragm and heart." },
+        { q: "In open castration, the vaginal tunic is incised to directly expose the spermatic cord structures.", a: true, e: "True. In closed castration, the tunic remains intact." },
+        { q: "Nephrosplenic entrapment in the horse involves the large colon migrating dorsal to the nephrosplenic ligament.", a: true, e: "True. The left dorsal colon becomes trapped between the spleen, ligament, and left kidney." },
+        { q: "A diaphragmatic hernia allows abdominal organs to move into the pelvic cavity.", a: false, e: "False. It allows organs to herniate into the THORACIC cavity through a defect in the diaphragm." }
       ],
       fib: [
         { q: "A life-threatening uterine infection in dogs, usually requiring emergency spay, is ______.", a: ["pyometra"], e: "Pus-filled uterus." },
@@ -736,7 +751,10 @@ const quizBank = {
         { q: "A Left Displaced ______ (LDA) is a common metabolic/anatomic condition in high-producing dairy cows.", a: ["abomasum"], e: "The stomach moves to the wrong side of the rumen." },
         { q: "The organ most commonly ruptured and bleeding profusely after a dog is hit by a car is the ______.", a: ["spleen"], e: "Large, fragile, and vascular." },
         { q: "A 'ping' heard upon auscultation and percussion of the right flank of a horse often indicates gas distention of the ______.", a: ["cecum"], e: "Base of the cecum is in the right upper flank." },
-        { q: "Gastric Dilation ______ (GDV) is an emergency where the dog's stomach fills with gas and twists.", a: ["volvulus"], e: "Common in deep-chested breeds like Great Danes." }
+        { q: "Gastric Dilation ______ (GDV) is an emergency where the dog's stomach fills with gas and twists.", a: ["volvulus"], e: "Common in deep-chested breeds like Great Danes." },
+        { q: "In open castration, the _____ tunic is incised to expose the cord directly.", a: ["vaginal", "parietal vaginal"], e: "In closed castration it remains intact." },
+        { q: "Nephrosplenic entrapment in the horse involves the left _____ colon becoming trapped.", a: ["dorsal"], e: "Trapped between the spleen and left kidney over the nephrosplenic ligament." },
+        { q: "A hernia through a defect in the diaphragm allowing abdominal organs into the chest is a _____ hernia.", a: ["diaphragmatic"], e: "Common after blunt trauma in dogs." }
       ]
     }
   },
@@ -759,7 +777,17 @@ const quizBank = {
         { q: "The site of auscultation (listening) for heart sounds in large animals is best performed on which side?", o: ["Right side only", "Left side (3rd-5th intercostal space)", "Dorsal midline", "Ventral midline"], a: 1, e: "The left side provides the best access because most of the heart lies left of the median plane." },
         { q: "Paralysis of the left recurrent laryngeal nerve in the horse causes a condition commonly known as:", o: ["Choke", "Roaring (laryngeal hemiplegia)", "Heaves", "Broken wind"], a: 1, e: "The left arytenoid cartilage collapses into the airway causing a roaring sound during exercise." },
         { q: "An esophageal obstruction causing food or a foreign body to lodge in the esophagus is called:", o: ["Roaring", "Choke", "Colic", "Bloat"], a: 1, e: "Commonly seen in cattle eating large pieces of root vegetables like turnips." },
-        { q: "The cupula pleurae is the dome of pleura that projects cranially beyond the first rib. Its clinical significance is that it can be damaged during:", o: ["Abdominal surgery", "Jugular venipuncture or cranial thoracic procedures", "Tail docking", "Dehorning"], a: 1, e: "Accidental puncture during neck surgery can cause pneumothorax." }
+        { q: "The cupula pleurae is the dome of pleura that projects cranially beyond the first rib. Its clinical significance is that it can be damaged during:", o: ["Abdominal surgery", "Jugular venipuncture or cranial thoracic procedures", "Tail docking", "Dehorning"], a: 1, e: "Accidental puncture during neck surgery can cause pneumothorax." },
+        { q: "Which of the following species possesses a tracheal bronchus arising before the principal bifurcation, supplying the right cranial lung lobe?", o: ["Horse and Dog", "Ox and Pig", "Horse and Ox", "Dog and Cat"], a: 1, e: "Ruminants and pigs have a tracheal bronchus that branches off the right side of the trachea cranial to its main bifurcation to aerate the right cranial lung lobe." },
+        { q: "Which species is characterized by having lungs with virtually no external lobation, lacking a middle lobe on the right side?", o: ["Dog", "Ox", "Pig", "Horse"], a: 3, e: "The equine lung is indistinctly lobated externally. The right lung has only cranial, caudal, and accessory lobes, lacking a distinct middle lobe." },
+        { q: "In the ox and pig, the main venous drainage of the thoracic roof is handled by the:", o: ["Right azygos vein", "Left azygos vein", "Caudal vena cava", "Brachiocephalic vein"], a: 1, e: "The ox and pig have a well-developed left azygos vein that drains into the coronary sinus of the right atrium. Horses and dogs primarily have a right azygos vein." },
+        { q: "In the dog and horse, the punctum maximum (point of maximum intensity) for auscultating the mitral (bicuspid) valve is located in the:", o: ["Left 3rd intercostal space", "Left 4th intercostal space", "Left 5th intercostal space", "Right 4th intercostal space"], a: 2, e: "The mitral valve is best auscultated on the left side at the 5th intercostal space. Remember PAM: Pulmonary 3rd, Aortic 4th, Mitral 5th on the Left." },
+        { q: "Which species has an esophagus composed entirely of striated muscle along its entire length to facilitate regurgitation?", o: ["Horse", "Dog and Ruminants", "Cat", "Pig"], a: 1, e: "Ruminants and dogs have striated muscle throughout the entire length of the esophagus. In horses, pigs, and cats, the distal portion transitions to smooth muscle." },
+        { q: "The articulation between the head of a rib and the bodies of two adjacent thoracic vertebrae is known as the:", o: ["Costochondral joint", "Costotransverse joint", "Costocentral (head of rib) joint", "Sternocostal joint"], a: 2, e: "The costocentral joint is formed by the head of the rib articulating with the costal foveae of two adjacent vertebral bodies." },
+        { q: "The ligamentum arteriosum in the adult animal is a fibrous remnant of the fetal:", o: ["Ductus venosus", "Umbilical artery", "Foramen ovale", "Ductus arteriosus"], a: 3, e: "The ductus arteriosus shunts blood from the pulmonary trunk to the aorta in the fetus to bypass the non-functional lungs, becoming the ligamentum arteriosum after birth." },
+        { q: "The syrinx, the vocal organ of birds, is located:", o: ["At the cranial end of the larynx", "At the bifurcation of the trachea", "Within the nasal cavity", "Inside the cranial lung lobes"], a: 1, e: "The syrinx is situated at the junction of the trachea and the primary bronchi (tracheal bifurcation) and is responsible for sound production in birds." },
+        { q: "Unlike mammals which have incomplete C-shaped cartilaginous tracheal rings, which species has complete, closed tracheal rings?", o: ["Horse", "Pig", "Fowl", "Ox"], a: 2, e: "Birds (fowl) have complete, overlapping cartilaginous rings, meaning their trachea cannot be compressed as easily as in mammals." },
+        { q: "In a young calf, the thymus gland is exceptionally large and consists of:", o: ["Only a thoracic lobe", "Only two cervical lobes", "Two cervical lobes and one thoracic lobe", "Four thoracic lobes"], a: 2, e: "In young ruminants and pigs, the thymus has distinct, large paired cervical lobes reaching up the neck, and an unpaired thoracic lobe in the cranial mediastinum." }
       ],
       tf: [
         { q: "The ox has 13 pairs of ribs.", a: true, e: "True. Corresponding to 13 thoracic vertebrae." },
@@ -768,7 +796,12 @@ const quizBank = {
         { q: "The mediastinum divides the thoracic cavity into left and right pleural cavities.", a: true, e: "True. It is the central partition containing the heart, trachea, and esophagus." },
         { q: "The left recurrent laryngeal nerve loops around the aortic arch.", a: true, e: "True. Its long course makes it vulnerable to stretching or damage, leading to roaring in horses." },
         { q: "The pericardium is the serous membrane lining the abdominal cavity.", a: false, e: "False. The pericardium encloses the heart. The peritoneum lines the abdominal cavity." },
-        { q: "The esophagus passes through the diaphragm via the esophageal hiatus.", a: true, e: "True. It pierces the diaphragm to enter the abdominal cavity." }
+        { q: "The esophagus passes through the diaphragm via the esophageal hiatus.", a: true, e: "True. It pierces the diaphragm to enter the abdominal cavity." },
+        { q: "The right lung of the ox consists of four distinct lobes: cranial, middle, caudal, and accessory.", a: true, e: "True. The ox right lung has four lobes, and the cranial lobe is further divided into cranial and caudal parts." },
+        { q: "The tricuspid valve is best auscultated on the left side of the thorax.", a: false, e: "False. The tricuspid (right atrioventricular) valve is best auscultated on the RIGHT side, usually in the 3rd or 4th intercostal space." },
+        { q: "The fossa ovalis in the interatrial septum of the adult heart is a remnant of the fetal foramen ovale.", a: true, e: "True. The foramen ovale allows blood to flow from the right to the left atrium in the fetus, bypassing the non-functional lungs." },
+        { q: "In the dog, the costochondral junction is synovial, allowing extensive movement for respiration.", a: false, e: "False. The costochondral junction (between bony rib and its cartilage) is a symphysis (fibrocartilaginous joint) and lacks a synovial cavity." },
+        { q: "The basal border of the lung indicates the caudal limit of the lung for clinical percussion, and it moves cranially during expiration.", a: true, e: "True. The basal border is the line where the diaphragmatic surface of the lung meets the costal surface; its position changes with respiratory phases." }
       ],
       fib: [
         { q: "The ox has _____ pairs of ribs.", a: ["13", "thirteen"], e: "Corresponding to 13 thoracic vertebrae." },
@@ -777,7 +810,12 @@ const quizBank = {
         { q: "The point where the trachea divides into the two main bronchi is called the _____.", a: ["carina", "tracheal bifurcation"], e: "A key landmark in thoracic anatomy." },
         { q: "The sac enclosing the heart is called the _____.", a: ["pericardium"], e: "Contains a small amount of serous fluid." },
         { q: "Paralysis of the left recurrent laryngeal nerve in horses causes _____.", a: ["roaring", "laryngeal hemiplegia"], e: "The arytenoid cartilage collapses into the airway." },
-        { q: "The most cranial segment of the sternum is called the _____.", a: ["manubrium"], e: "Forms the ventral boundary of the thoracic inlet." }
+        { q: "The most cranial segment of the sternum is called the _____.", a: ["manubrium"], e: "Forms the ventral boundary of the thoracic inlet." },
+        { q: "The heart valve best heard low down on the right side of the chest at the 3rd or 4th intercostal space is the ______ valve.", a: ["tricuspid"], e: "It is the only major heart valve best auscultated on the right side." },
+        { q: "In ruminants and pigs, the ______ bronchus arises from the trachea before the main bifurcation to supply the right cranial lung lobe.", a: ["tracheal"], e: "This unique branching provides early aeration to the right cranial lobe." },
+        { q: "The articulation between the tubercle of a rib and the transverse process of the corresponding vertebra is the ______ joint.", a: ["costotransverse"], e: "This synovial joint works with the joint of the rib head to allow respiratory movements." },
+        { q: "In the ox and pig, the dominant vein draining the intercostal spaces on the roof of the thorax is the ______ azygos vein.", a: ["left"], e: "While dogs and horses have a right azygos, ox and pig have a left azygos (and occasionally a small right one)." },
+        { q: "The vocal organ of birds, located at the bifurcation of the trachea, is called the ______.", a: ["syrinx"], e: "Birds lack vocal cords in the larynx; the syrinx is their sound-producing organ." }
       ]
     },
     "Osteology": {
@@ -1773,7 +1811,16 @@ const quizBank = {
         { q: "Cancellous (spongy/trabecular) bone is found:", o: ["Only in the diaphysis", "Inside the epiphyses and in flat bones", "Only in the skull", "In tendons"], a: 1, e: "It has a honeycomb structure with trabeculae." },
         { q: "Wormian (sutural) bones are small, irregular bones found within:", o: ["Tendons", "Skull sutures", "Joints", "The vertebral canal"], a: 1, e: "They are accessory ossicles within cranial sutures." },
         { q: "The mineral component of bone that provides hardness and rigidity is primarily:", o: ["Calcium phosphate (hydroxyapatite)", "Collagen", "Keratin", "Iron"], a: 0, e: "Hydroxyapatite crystals are deposited along collagen fibers." },
-        { q: "Mature bone cells embedded within lacunae of the bone matrix are called:", o: ["Osteoblasts", "Osteoclasts", "Osteocytes", "Chondroblasts"], a: 2, e: "Osteocytes maintain the bone matrix and communicate via canaliculi." }
+        { q: "Mature bone cells embedded within lacunae of the bone matrix are called:", o: ["Osteoblasts", "Osteoclasts", "Osteocytes", "Chondroblasts"], a: 2, e: "Osteocytes maintain the bone matrix and communicate via canaliculi." },
+        { q: "According to Wolff's law, bone remodels in response to:", o: ["Hormonal changes only", "Mechanical stress placed upon it", "Blood supply changes", "Nutritional factors only"], a: 1, e: "Bone is deposited where stress is applied and resorbed where it is absent." },
+        { q: "The vertebral formula for the pig is:", o: ["C7 T13 L6 S5 Cy18-20", "C7 T14-15 L6-7 S4 Cy20-23", "C7 T18 L6 S5 Cy15-21", "C7 T13 L7 S3 Cy20-23"], a: 1, e: "Pigs typically have 14-15 thoracic and 6-7 lumbar vertebrae." },
+        { q: "The Atlas (C1) differs from other cervical vertebrae because it:", o: ["Has a very long spinous process", "Lacks a body and spinous process, having two lateral masses", "Is the smallest cervical vertebra", "Has a dens (odontoid process)"], a: 1, e: "The atlas is ring-shaped with wings and no body or spine." },
+        { q: "The dens (odontoid process) is a characteristic feature of the:", o: ["Atlas (C1)", "Axis (C2)", "C3", "C7"], a: 1, e: "The dens projects cranially from the body of C2 and acts as a pivot for head rotation." },
+        { q: "The sacrum is formed by the fusion of:", o: ["Lumbar vertebrae", "Sacral vertebrae", "Coccygeal vertebrae", "Thoracic vertebrae"], a: 1, e: "Sacral vertebrae fuse to form a single bone that articulates with the pelvis." },
+        { q: "The Haversian canal in compact bone contains:", o: ["Fat cells only", "Blood vessels, nerves, and lymphatics", "Cartilage cells", "Osteoclasts only"], a: 1, e: "The central canal supplies the concentric lamellae of the osteon." },
+        { q: "The small canals connecting osteocyte lacunae in compact bone are called:", o: ["Haversian canals", "Volkmann's canals", "Canaliculi", "Nutrient foramina"], a: 2, e: "Canaliculi allow osteocytes to communicate and exchange nutrients." },
+        { q: "A bone that has equal dimensions in all three axes and functions as a shock absorber is classified as a:", o: ["Long bone", "Short bone", "Flat bone", "Irregular bone"], a: 1, e: "Carpal and tarsal bones are examples of short bones." },
+        { q: "Which prominent bony landmark on the bovine pelvis is commonly referred to as the 'hook bone'?", o: ["Tuber coxae", "Tuber ischii (pin bone)", "Greater trochanter", "Tuber sacrale"], a: 0, e: "The tuber coxae is the prominent lateral point of the ilium, easily palpable in the live animal." }
       ],
       tf: [
         { q: "Gross anatomy is the study of structures visible to the naked eye.", a: true, e: "True. Also called macroscopic anatomy." },
@@ -1790,7 +1837,11 @@ const quizBank = {
         { q: "Cancellous bone is found in the epiphyses and provides lightweight internal support.", a: true, e: "True. Its trabecular network resists compressive forces." },
         { q: "A foramen is a shallow depression on the surface of a bone.", a: false, e: "False. A foramen is an opening or hole; a fossa is a depression." },
         { q: "Compact bone forms the dense outer layer of all bones.", a: true, e: "True. Also called cortical bone." },
-        { q: "Birds are the only vertebrates with pneumatic bones.", a: false, e: "False. Some dinosaurs and pterosaurs also had pneumatic bones, but among living domestic animals, only birds have them." }
+        { q: "Birds are the only vertebrates with pneumatic bones.", a: false, e: "False. Some dinosaurs also had pneumatic bones, but among living domestic animals, only birds have them." },
+        { q: "Wolff's law states that bone is deposited in response to mechanical stress.", a: true, e: "True. Bone adapts to the loads under which it is placed." },
+        { q: "The Atlas (C1) has a prominent spinous process.", a: false, e: "False. The atlas has no body and no spinous process; it is ring-shaped." },
+        { q: "The dens (odontoid process) belongs to the Atlas (C1).", a: false, e: "False. The dens belongs to the Axis (C2). It represents the body of C1 that fused with C2." },
+        { q: "All domestic mammals have exactly 7 cervical vertebrae.", a: true, e: "True. This is a conserved feature across all mammals, regardless of neck length." }
       ],
       fib: [
         { q: "The study of the development of an organism from fertilization to birth is called _____ology.", a: ["embry"], e: "A key branch of anatomy." },
@@ -1808,7 +1859,10 @@ const quizBank = {
         { q: "The growth plate in young animals, made of hyaline cartilage, is called the _____.", a: ["physis", "epiphyseal plate", "growth plate"], e: "Located at the metaphysis." },
         { q: "The mineral giving bone its hardness is calcium _____ (hydroxyapatite).", a: ["phosphate"], e: "Deposited along collagen fibers." },
         { q: "Mature bone cells trapped in lacunae are called _____.", a: ["osteocytes"], e: "They maintain the bone matrix." },
-        { q: "The spongy, internal bone with a trabecular network is called _____ bone.", a: ["cancellous", "spongy", "trabecular"], e: "Found inside epiphyses." }
+        { q: "The spongy, internal bone with a trabecular network is called _____ bone.", a: ["cancellous", "spongy", "trabecular"], e: "Found inside epiphyses." },
+        { q: "The law stating that bone remodels according to the mechanical forces placed on it is _____ law.", a: ["Wolff's", "wolff"], e: "Julius Wolff described this principle in 1892." },
+        { q: "The second cervical vertebra (C2), which has a peg-like process for head rotation, is called the _____.", a: ["axis"], e: "Its dens (odontoid process) acts as a pivot." },
+        { q: "Tiny channels connecting lacunae of osteocytes in compact bone are called _____.", a: ["canaliculi"], e: "They allow nutrient exchange and communication." }
       ]
     },
     "Myology & Arthrology": {
@@ -1840,7 +1894,15 @@ const quizBank = {
         { q: "The connective tissue wrapping around an individual muscle fiber is called:", o: ["Epimysium", "Perimysium", "Endomysium", "Fascia"], a: 2, e: "Endo = within, around a single fiber." },
         { q: "The connective tissue sheath surrounding an entire muscle is the:", o: ["Endomysium", "Perimysium", "Epimysium", "Retinaculum"], a: 2, e: "Epi = upon, covering the whole muscle." },
         { q: "A muscle with two heads of origin is called a:", o: ["Triceps", "Biceps", "Quadriceps", "Digastricus"], a: 1, e: "Bi = two, ceps = heads." },
-        { q: "The point of muscle attachment that remains relatively fixed during contraction is the:", o: ["Insertion", "Origin", "Belly", "Tendon"], a: 1, e: "Usually the more proximal attachment point." }
+        { q: "The point of muscle attachment that remains relatively fixed during contraction is the:", o: ["Insertion", "Origin", "Belly", "Tendon"], a: 1, e: "Usually the more proximal attachment point." },
+        { q: "A saddle-shaped (sellar) joint allows movement in:", o: ["One axis only", "Two axes (biaxial)", "Three axes (multiaxial)", "No movement"], a: 1, e: "Saddle joints are biaxial, allowing flexion/extension and abduction/adduction." },
+        { q: "A gliding (plane/arthrodial) joint allows:", o: ["Only rotation", "Only flexion and extension", "Sliding or gliding movements between flat surfaces", "Circumduction"], a: 2, e: "Found between carpal bones and tarsal bones." },
+        { q: "A muscle fiber arrangement where fibers converge to a central tendon from one side is called:", o: ["Fusiform", "Unipennate", "Bipennate", "Multipennate"], a: 1, e: "Pennate muscles generate more force but less range of motion." },
+        { q: "A fusiform muscle has fibers that are:", o: ["Parallel and converge to tendons at each end (spindle-shaped)", "Fan-shaped", "Arranged around a central tendon", "Circular"], a: 0, e: "Examples include the biceps brachii." },
+        { q: "The motor unit consists of:", o: ["A single muscle fiber", "A motor neuron and all muscle fibers it innervates", "The neuromuscular junction only", "The muscle belly and its tendons"], a: 1, e: "Smaller motor units allow finer control." },
+        { q: "A first-class lever in the musculoskeletal system has the:", o: ["Fulcrum between the effort and load", "Load between the fulcrum and effort", "Effort between the fulcrum and load", "No fulcrum"], a: 0, e: "Example: the atlantooccipital joint with neck muscles as effort and skull weight as load." },
+        { q: "A ligament found inside a synovial joint cavity is called:", o: ["Extracapsular ligament", "Intracapsular (intra-articular) ligament", "Collateral ligament", "Accessory ligament"], a: 1, e: "Example: the cruciate ligaments of the stifle joint." },
+        { q: "A subcutaneous bursa is located:", o: ["Between a tendon and bone", "Between a muscle and bone", "Between skin and a bony prominence", "Within a joint capsule"], a: 2, e: "Subcutaneous bursae protect against friction over bony points." }
       ],
       tf: [
         { q: "Symphyses (like the pelvic symphysis) are freely movable synovial joints.", a: false, e: "False. They are slightly movable cartilaginous joints (amphiarthroses)." },
@@ -1856,7 +1918,11 @@ const quizBank = {
         { q: "The endomysium wraps around individual muscle fibers.", a: true, e: "True. Perimysium wraps fascicles; epimysium wraps the entire muscle." },
         { q: "The insertion of a muscle is its more fixed, proximal attachment.", a: false, e: "False. The ORIGIN is the fixed point; the insertion is the movable point." },
         { q: "A synovial sheath completely envelops a tendon like a tube.", a: true, e: "True. Unlike a bursa which is a flat cushion." },
-        { q: "Cardiac muscle is striated but involuntary.", a: true, e: "True. It has cross-striations but is not under conscious control." }
+        { q: "Cardiac muscle is striated but involuntary.", a: true, e: "True. It has cross-striations but is not under conscious control." },
+        { q: "Pennate muscles have greater range of motion than parallel-fibered muscles.", a: false, e: "False. Pennate muscles generate more FORCE but have LESS range of motion." },
+        { q: "A motor unit includes a single motor neuron and all the muscle fibers it innervates.", a: true, e: "True. All fibers in a motor unit contract simultaneously." },
+        { q: "Arthrodial (plane/gliding) joints allow flexion and extension only.", a: false, e: "False. They allow sliding or gliding movements, not true angular movements." },
+        { q: "Intracapsular ligaments are located outside the joint capsule.", a: false, e: "False. Intracapsular ligaments are INSIDE the joint cavity, e.g., cruciate ligaments." }
       ],
       fib: [
         { q: "A joint with no joint cavity and bones united by fibrous tissue is classified structurally as a _____ joint.", a: ["fibrous"], e: "E.g., skull sutures." },
@@ -1873,7 +1939,10 @@ const quizBank = {
         { q: "The connective tissue layer wrapping an entire muscle is the _____.", a: ["epimysium"], e: "The outermost muscle sheath." },
         { q: "A muscle that opposes the action of the agonist is called an _____.", a: ["antagonist"], e: "Works in opposition to the prime mover." },
         { q: "The relatively fixed attachment point of a muscle is its _____.", a: ["origin"], e: "Usually proximal." },
-        { q: "A double-layered tube of synovium wrapping around a tendon is a synovial _____.", a: ["sheath"], e: "Reduces friction where tendons pass through tight spaces." }
+        { q: "A double-layered tube of synovium wrapping around a tendon is a synovial _____.", a: ["sheath"], e: "Reduces friction where tendons pass through tight spaces." },
+        { q: "A muscle fiber arrangement resembling a feather, with fibers converging on a central tendon, is called _____.", a: ["pennate", "unipennate"], e: "Generates more force due to more fibers per unit area." },
+        { q: "A single motor neuron and all the muscle fibers it supplies is called a motor _____.", a: ["unit"], e: "The basic functional unit of motor control." },
+        { q: "A fluid-filled sac between skin and a bony prominence is called a _____ bursa.", a: ["subcutaneous"], e: "Protects against friction and pressure." }
       ]
     },
     "Angiology & Neurology": {
@@ -1905,7 +1974,14 @@ const quizBank = {
         { q: "The main artery of the body, receiving blood directly from the left ventricle, is the:", o: ["Pulmonary artery", "Aorta", "Vena cava", "Coronary artery"], a: 1, e: "The aorta distributes oxygenated blood to the entire body." },
         { q: "The vessel carrying deoxygenated blood from the body back to the right atrium is the:", o: ["Aorta", "Pulmonary vein", "Vena cava", "Hepatic artery"], a: 2, e: "The cranial and caudal vena cava drain into the right atrium." },
         { q: "The portal vein carries blood from the:", o: ["Heart to the lungs", "Gastrointestinal tract to the liver", "Kidneys to the heart", "Brain to the heart"], a: 1, e: "Nutrient-rich blood from the gut is processed by the liver before entering systemic circulation." },
-        { q: "The thoracic duct empties into the venous system at the junction of the:", o: ["Right atrium and vena cava", "Left external jugular and subclavian veins", "Hepatic veins", "Renal veins"], a: 1, e: "This is the main lymphovenous communication." }
+        { q: "The thoracic duct empties into the venous system at the junction of the:", o: ["Right atrium and vena cava", "Left external jugular and subclavian veins", "Hepatic veins", "Renal veins"], a: 1, e: "This is the main lymphovenous communication." },
+        { q: "There are how many pairs of cranial nerves in domestic mammals?", o: ["10", "12", "14", "31"], a: 1, e: "12 pairs (CN I to CN XII) emerge from the brain." },
+        { q: "The cranial nerve responsible for the sense of smell is:", o: ["CN I (Olfactory)", "CN II (Optic)", "CN V (Trigeminal)", "CN VIII (Vestibulocochlear)"], a: 0, e: "Olfactory nerve fibers pass through the cribriform plate of the ethmoid bone." },
+        { q: "A dermatome is the area of skin innervated by:", o: ["A single cranial nerve", "A single spinal nerve", "The sympathetic trunk", "The vagus nerve"], a: 1, e: "Mapping dermatomes helps localize spinal cord lesions." },
+        { q: "The three meninges of the CNS from outermost to innermost are:", o: ["Pia, arachnoid, dura", "Dura, pia, arachnoid", "Dura, arachnoid, pia", "Arachnoid, dura, pia"], a: 2, e: "DAP: Dura mater, Arachnoid mater, Pia mater." },
+        { q: "The blood-brain barrier (BBB) is formed primarily by:", o: ["Astrocyte foot processes and tight junctions of brain capillaries", "Arachnoid villi", "Dura mater", "Choroid plexus only"], a: 0, e: "Tight junctions between endothelial cells restrict passage of substances." },
+        { q: "The four chambers of the heart are:", o: ["Left and right atria + left and right ventricles", "Two atria only", "Two ventricles only", "Atrium, ventricle, sinus, and auricle"], a: 0, e: "Atria receive blood; ventricles pump blood out." },
+        { q: "The cardiac conduction system begins at the:", o: ["AV node", "Bundle of His", "SA (sinoatrial) node", "Purkinje fibers"], a: 2, e: "The SA node is the pacemaker of the heart, located in the right atrium." }
       ],
       tf: [
         { q: "Arteries always carry oxygenated blood.", a: false, e: "False. The pulmonary artery carries deoxygenated blood to the lungs." },
@@ -1921,7 +1997,11 @@ const quizBank = {
         { q: "A reflex arc requires conscious brain input to function.", a: false, e: "False. Reflexes are involuntary and are processed at the spinal cord level." },
         { q: "The aorta carries deoxygenated blood to the lungs.", a: false, e: "False. The aorta carries oxygenated blood to the body. The pulmonary artery carries deoxygenated blood to the lungs." },
         { q: "Acetylcholine is the neurotransmitter at the skeletal neuromuscular junction.", a: true, e: "True. It binds to nicotinic receptors on the motor end plate." },
-        { q: "The enteric nervous system is considered a third division of the autonomic nervous system.", a: true, e: "True. It controls the gastrointestinal tract independently." }
+        { q: "The enteric nervous system is considered a third division of the autonomic nervous system.", a: true, e: "True. It controls the gastrointestinal tract independently." },
+        { q: "There are 12 pairs of cranial nerves in domestic mammals.", a: true, e: "True. They are numbered CN I through CN XII." },
+        { q: "The blood-brain barrier allows free passage of all substances from blood to brain.", a: false, e: "False. The BBB is highly selective due to tight junctions; it restricts most large molecules and pathogens." },
+        { q: "The SA node (sinoatrial node) is the pacemaker of the heart.", a: true, e: "True. It initiates the electrical impulse that sets the heart rate." },
+        { q: "A dermatome is a region of skin supplied by a single cranial nerve.", a: false, e: "False. A dermatome is supplied by a single SPINAL nerve." }
       ],
       fib: [
         { q: "The study of the heart and blood vessels is called _____ology.", a: ["angi"], e: "From Greek angeion." },
@@ -1935,6 +2015,9 @@ const quizBank = {
         { q: "The main artery of the body arising from the left ventricle is the _____.", a: ["aorta"], e: "Distributes oxygenated blood." },
         { q: "The vein carrying nutrient-rich blood from the gut to the liver is the _____ vein.", a: ["portal", "hepatic portal"], e: "A portal system." },
         { q: "The largest lymphatic vessel draining most of the body is the _____ duct.", a: ["thoracic"], e: "Empties into the venous system." },
+        { q: "The three meninges from outermost to innermost are dura, arachnoid, and _____.", a: ["pia", "pia mater"], e: "The pia mater is intimately adherent to the brain surface." },
+        { q: "The pacemaker of the heart that initiates each heartbeat is the _____ node.", a: ["SA", "sinoatrial", "sino-atrial"], e: "Located in the wall of the right atrium." },
+        { q: "There are _____ pairs of cranial nerves in domestic mammals.", a: ["12", "twelve"], e: "CN I (Olfactory) through CN XII (Hypoglossal)." },
         { q: "The neurotransmitter at the skeletal neuromuscular junction is _____.", a: ["acetylcholine", "ACh"], e: "Acts on nicotinic receptors." },
         { q: "Sensory fibers enter the spinal cord via the _____ root.", a: ["dorsal"], e: "Afferent pathway." }
       ]
@@ -1972,7 +2055,14 @@ const quizBank = {
         { q: "The brisket is the ventral part of the:", o: ["Abdomen", "Pelvis", "Cranial thorax (sternal region)", "Head"], a: 2, e: "The brisket lies over the sternum in cattle." },
         { q: "The 'withers' in the horse is the region over the:", o: ["Lumbar vertebrae", "Spinous processes of T3-T8 (approximately)", "Sacrum", "Last cervical vertebra"], a: 1, e: "The tallest spinous processes of the thoracic vertebrae form this prominent ridge." },
         { q: "The poll of the horse is the:", o: ["Area between the ears (dorsal cranium)", "Ventral neck", "Point of the shoulder", "Muzzle"], a: 0, e: "The poll corresponds to the occipital region of the skull." },
-        { q: "The pastern region in the horse corresponds to:", o: ["The metacarpus", "The area of P1 and P2", "The hoof wall", "The carpus"], a: 1, e: "Between the fetlock and the coronet band." }
+        { q: "The pastern region in the horse corresponds to:", o: ["The metacarpus", "The area of P1 and P2", "The hoof wall", "The carpus"], a: 1, e: "Between the fetlock and the coronet band." },
+        { q: "The body cavity is divided into the thoracic and abdominal cavities by the:", o: ["Pericardium", "Peritoneum", "Diaphragm", "Mediastinum"], a: 2, e: "The diaphragm is a musculotendinous partition." },
+        { q: "The pericardium is the serous membrane that surrounds the:", o: ["Lungs", "Heart", "Abdominal organs", "Brain"], a: 1, e: "It has a fibrous outer layer and serous inner layer (parietal and visceral)." },
+        { q: "The mediastinum is the space between:", o: ["The two pleural sacs in the thorax", "The peritoneum and the body wall", "The diaphragm and the pelvis", "The brain and the skull"], a: 0, e: "It contains the heart, trachea, esophagus, and great vessels." },
+        { q: "The adrenal (suprarenal) glands are located:", o: ["In the thorax", "Near the cranial pole of each kidney", "In the pelvic cavity", "Adjacent to the thyroid"], a: 1, e: "They produce cortisol, aldosterone, and catecholamines." },
+        { q: "The thyroid gland is typically located:", o: ["In the thorax", "Adjacent to the first few tracheal rings", "In the abdomen", "At the base of the brain"], a: 1, e: "Composed of two lobes connected by an isthmus." },
+        { q: "The pituitary gland (hypophysis) is located in the:", o: ["Thorax", "Neck", "Sella turcica of the sphenoid bone (skull base)", "Abdomen"], a: 2, e: "The master endocrine gland controlled by the hypothalamus." },
+        { q: "The pleura is the serous membrane that lines the:", o: ["Abdominal cavity", "Pericardial cavity", "Thoracic cavity and covers the lungs", "Cranial cavity"], a: 2, e: "Parietal pleura lines the thorax; visceral pleura covers the lungs." }
       ],
       tf: [
         { q: "The serosa is the outermost layer of an organ situated within a body cavity.", a: true, e: "True. It provides a smooth, slippery surface to prevent adhesions." },
@@ -1990,7 +2080,11 @@ const quizBank = {
         { q: "The withers in a horse is the area over the lumbar vertebrae.", a: false, e: "False. It is over the thoracic spinous processes (approximately T3-T8)." },
         { q: "Fluoroscopy provides real-time moving X-ray images.", a: true, e: "True. Used for dynamic studies like barium swallows." },
         { q: "The brisket is the ventral thoracic region over the sternum.", a: true, e: "True. Prominent in cattle." },
-        { q: "Endoscopy uses magnetic fields to create images.", a: false, e: "False. Endoscopy uses a camera inserted into the body. MRI uses magnetic fields." }
+        { q: "Endoscopy uses magnetic fields to create images.", a: false, e: "False. Endoscopy uses a camera inserted into the body. MRI uses magnetic fields." },
+        { q: "The diaphragm separates the thoracic and abdominal cavities.", a: true, e: "True. It is the main muscle of respiration." },
+        { q: "The adrenal glands are located in the pelvic cavity.", a: false, e: "False. They are located near the cranial pole of each kidney in the abdomen." },
+        { q: "The pituitary gland is located in the sella turcica of the skull.", a: true, e: "True. It hangs from the hypothalamus by the infundibulum." },
+        { q: "The mediastinum is the space between the two lungs.", a: true, e: "True. More precisely, between the two pleural sacs." }
       ],
       fib: [
         { q: "The study of the visceral organs of the body is called _____ology.", a: ["splanchn"], e: "Includes gut, lungs, kidneys, etc." },
@@ -2009,7 +2103,10 @@ const quizBank = {
         { q: "The dorsal region of the head between the ears in the horse is called the _____.", a: ["poll"], e: "Overlies the occipital bone." },
         { q: "The region of P1 and P2 in the equine limb is called the _____.", a: ["pastern"], e: "Between the fetlock and the hoof." },
         { q: "The ventral sternal region in cattle is called the _____.", a: ["brisket"], e: "Overlies the sternum." },
-        { q: "The imaging technique using a camera inserted into the body is called _____.", a: ["endoscopy"], e: "Includes arthroscopy and laparoscopy." }
+        { q: "The imaging technique using a camera inserted into the body is called _____.", a: ["endoscopy"], e: "Includes arthroscopy and laparoscopy." },
+        { q: "The musculotendinous partition separating the thorax from the abdomen is the _____.", a: ["diaphragm"], e: "The main muscle of respiration." },
+        { q: "The serous membrane surrounding the lungs is the _____.", a: ["pleura"], e: "Has parietal (body wall) and visceral (lung surface) layers." },
+        { q: "The 'master' endocrine gland located at the base of the brain is the _____ gland.", a: ["pituitary", "hypophysis"], e: "Controlled by the hypothalamus." }
       ]
     }
   },
@@ -2057,7 +2154,19 @@ const quizBank = {
         { q: "Cardiac muscle cells are connected end-to-end by specialized junctions called:", o: ["Desmosomes", "Tight junctions", "Intercalated discs", "Gap junctions only"], a: 2, e: "Intercalated discs contain desmosomes and gap junctions for coordinated contraction." },
         { q: "Neurons have long cytoplasmic extensions called:", o: ["Cilia", "Microvilli", "Axons and dendrites", "Stereocilia"], a: 2, e: "Dendrites receive signals; axons transmit them away from the cell body." },
         { q: "The supporting cells of the nervous system are collectively called:", o: ["Schwann cells only", "Neuroglia (glial cells)", "Astrocytes only", "Neurons"], a: 1, e: "Includes astrocytes, oligodendrocytes, microglia, and Schwann cells." },
-        { q: "Goblet cells are unicellular glands that secrete:", o: ["Enzymes", "Mucus", "Hormones", "Keratin"], a: 1, e: "Found in the intestinal and respiratory epithelium." }
+        { q: "Goblet cells are unicellular glands that secrete:", o: ["Enzymes", "Mucus", "Hormones", "Keratin"], a: 1, e: "Found in the intestinal and respiratory epithelium." },
+        { q: "The limit of resolution for a standard light microscope is approximately:", o: ["0.2 nanometers","0.2 micrometers","2.0 micrometers","20 micrometers"], a: 1, e: "The maximum resolving power of a light microscope is around 0.2 µm, dictated by the wavelength of visible light." },
+        { q: "The Nissl bodies seen in the cytoplasm of neurons using light microscopy correspond to which organelle under electron microscopy?", o: ["Smooth endoplasmic reticulum","Rough endoplasmic reticulum","Golgi apparatus","Lysosomes"], a: 1, e: "Nissl substance represents stacks of rough ER, reflecting the high rate of protein synthesis in neurons." },
+        { q: "Stereocilia, which are exceptionally long and non-motile microvilli, are characteristically found lining the:", o: ["Trachea","Epididymis","Fallopian tube","Intestine"], a: 1, e: "Stereocilia increase surface area for absorption in the male reproductive tract and are also found in the inner ear." },
+        { q: "Which type of epithelium typically lines the larger excretory ducts of salivary glands and sweat glands?", o: ["Simple squamous","Stratified cuboidal","Transitional","Pseudostratified columnar"], a: 1, e: "Stratified cuboidal epithelium usually consists of two layers of cuboidal cells and provides robust lining for larger ducts." },
+        { q: "Reticular fibers, which form the delicate supporting stroma of lymphoid organs and the liver, are composed primarily of:", o: ["Type I collagen","Type II collagen","Type III collagen","Elastin"], a: 2, e: "Type III collagen forms a delicate, highly branched network." },
+        { q: "Which histological stain is specifically used to visualize reticular fibers, causing them to appear black?", o: ["Hematoxylin & Eosin","Periodic Acid-Schiff (PAS)","Silver stain (Argyrophilic stain)","Masson's trichrome"], a: 2, e: "Reticular fibers are argyrophilic, meaning they readily bind silver salts." },
+        { q: "Brown adipose tissue (multilocular fat) is specialized for thermogenesis and is most abundant in:", o: ["Adult carnivores","Neonatal animals and hibernating mammals","Avian species","Reptiles"], a: 1, e: "Brown fat contains many mitochondria and lipid droplets, producing heat instead of ATP via the uncoupling protein thermogenin." },
+        { q: "Osteoclasts are large, multinucleated bone-resorbing cells derived from:", o: ["Osteoprogenitor cells","Fibroblasts","The monocyte-macrophage lineage","Chondroblasts"], a: 2, e: "Unlike osteoblasts which are mesenchymal, osteoclasts come from hematopoietic stem cells." },
+        { q: "How do osteocytes within lacunae communicate with each other in compact bone?", o: ["Via neurotransmitters","Through cytoplasmic extensions inside canaliculi linked by gap junctions","By diffusion through the solid calcified matrix","Through Volkmann's canals directly"], a: 1, e: "The canalicular network allows nutrient exchange and signaling between osteocytes." },
+        { q: "The sarcolemma of skeletal muscle fibers invaginates deep into the cell to form the:", o: ["Sarcoplasmic reticulum","T-tubule system (Transverse tubules)","Terminal cisternae","Z-line"], a: 1, e: "T-tubules rapidly conduct action potentials to the interior of the muscle fiber to trigger calcium release." },
+        { q: "Which glial cell is responsible for producing the myelin sheath around axons in the central nervous system (CNS)?", o: ["Schwann cell","Astrocyte","Oligodendrocyte","Microglia"], a: 2, e: "One oligodendrocyte can myelinate segments of several different CNS axons." },
+        { q: "The peripheral nervous system (PNS) counterpart to the oligodendrocyte, which myelinates peripheral nerves, is the:", o: ["Schwann cell","Ependymal cell","Satellite cell","Astrocyte"], a: 0, e: "Schwann cells wrap around a single axon segment in the PNS." }
       ],
       tf: [
         { q: "Hematoxylin is a basic dye that stains acidic structures blue.", a: true, e: "True. It is basophilic staining." },
@@ -2077,7 +2186,18 @@ const quizBank = {
         { q: "Fibroblasts are the most common cell type in connective tissue.", a: true, e: "True. They produce the extracellular matrix." },
         { q: "Cardiac muscle is voluntary and non-striated.", a: false, e: "False. Cardiac muscle is involuntary and STRIATED." },
         { q: "Intercalated discs are found in skeletal muscle.", a: false, e: "False. They are unique to cardiac muscle." },
-        { q: "Goblet cells secrete mucus in the respiratory and intestinal epithelium.", a: true, e: "True. They are unicellular glands." }
+        { q: "Goblet cells secrete mucus in the respiratory and intestinal epithelium.", a: true, e: "True. They are unicellular glands." },
+        { q: "PAS stain is specific for detecting carbohydrates such as glycogen and glycoproteins.", a: true, e: "True. It stains them magenta/pink." },
+        { q: "Formalin preserves tissue by dissolving lipids.", a: false, e: "False. Formalin preserves tissue by cross-linking proteins. Lipid solvents are used during processing." },
+        { q: "Gap junctions allow direct passage of ions and small molecules between adjacent cells.", a: true, e: "True. They are essential for electrical coupling in cardiac muscle." },
+        { q: "In merocrine secretion, the gland cell is destroyed during the process.", a: false, e: "False. In merocrine secretion (exocytosis), the cell remains intact. In holocrine, the cell disintegrates." },
+        { q: "Hemidesmosomes connect two adjacent epithelial cells to each other.", a: false, e: "False. Hemidesmosomes connect a cell to the basement membrane. Desmosomes connect cells to each other." },
+        { q: "Scanning electron microscopy (SEM) is primarily used to view the internal ultrastructure of cells in ultra-thin sections.", a: false, e: "False. Transmission electron microscopy (TEM) is used for internal ultrastructure. SEM is used to view 3D surface topography." },
+        { q: "Microvilli contain a core of actin microfilaments, whereas cilia contain a core of microtubules arranged in a 9+2 pattern.", a: true, e: "True. This structural difference accounts for the motility of cilia and the absorptive function of microvilli." },
+        { q: "Mesenchyme is an embryonic connective tissue characterized by star-shaped cells and a jelly-like, fluid ground substance.", a: true, e: "True. It gives rise to all adult connective tissues, bone, and cartilage." },
+        { q: "Skeletal muscle fibers are highly branched cells that contain a single, centrally located nucleus.", a: false, e: "False. Skeletal muscle fibers are long, unbranched, and multinucleated with peripherally located nuclei. Cardiac cells are branched and centrally nucleated." },
+        { q: "Hyaline cartilage on the articular surfaces of synovial joints is covered by a dense perichondrium.", a: false, e: "False. Articular cartilage lacks a perichondrium, which is why it receives nutrients from synovial fluid and has poor repair capacity." },
+        { q: "Ependymal cells are ciliated glial cells that line the ventricles of the brain and the central canal of the spinal cord.", a: true, e: "True. Their cilia help circulate cerebrospinal fluid (CSF)." }
       ],
       fib: [
         { q: "The most common histological stain is _____ and eosin.", a: ["hematoxylin"], e: "Abbreviated H&E." },
@@ -2087,6 +2207,11 @@ const quizBank = {
         { q: "The hair-like projections on the apical surface of respiratory epithelium are called _____.", a: ["cilia"], e: "They beat to move mucus." },
         { q: "The specialized cell in the respiratory and intestinal tracts that secretes mucus is the _____ cell.", a: ["goblet"], e: "Shaped like a small drinking cup or flask." },
         { q: "The protein that makes the outer layer of the skin tough and waterproof is _____.", a: ["keratin"], e: "Forms the stratum corneum." },
+        { q: "The histological stain that specifically detects glycogen and carbohydrates is _____ stain.", a: ["PAS", "periodic acid-Schiff"], e: "Stains them magenta/pink." },
+        { q: "The most common tissue fixative in histology is 10% neutral buffered _____.", a: ["formalin"], e: "Preserves tissue by cross-linking proteins." },
+        { q: "The cell junctions that form a watertight seal between epithelial cells are _____ junctions.", a: ["tight", "zonula occludens"], e: "They prevent paracellular leakage." },
+        { q: "Junctions that provide strong mechanical bonds between cells using intermediate filaments are _____.", a: ["desmosomes", "macula adherens"], e: "Found in epidermis and cardiac muscle." },
+        { q: "In _____ secretion, the entire gland cell disintegrates to release its product.", a: ["holocrine"], e: "Sebaceous glands are the classic example." },
         { q: "The dominant cell type in adipose tissue is the _____.", a: ["adipocyte", "fat cell"], e: "Stores a large lipid droplet." },
         { q: "The most abundant protein in the animal body, forming strong fibers in connective tissue, is _____.", a: ["collagen"], e: "Gives tendons their strength." },
         { q: "The cell responsible for maintaining the cartilage matrix, found in a lacuna, is a _____.", a: ["chondrocyte"], e: "Trapped in the matrix it produced." },
@@ -2098,7 +2223,13 @@ const quizBank = {
         { q: "Cartilage-producing cells are called _____blasts.", a: ["chondro"], e: "Become chondrocytes in lacunae." },
         { q: "The toughest cartilage, found in intervertebral discs, is _____cartilage.", a: ["fibro"], e: "Combines dense CT and cartilage properties." },
         { q: "Unicellular glands in the intestinal epithelium that secrete mucus are _____ cells.", a: ["goblet"], e: "Named for their goblet-like shape." },
-        { q: "The supporting cells of the nervous system are collectively called _____.", a: ["neuroglia", "glial cells", "glia"], e: "Includes astrocytes, oligodendrocytes, etc." }
+        { q: "The supporting cells of the nervous system are collectively called _____.", a: ["neuroglia", "glial cells", "glia"], e: "Includes astrocytes, oligodendrocytes, etc." },
+        { q: "The specialized cell surface modifications that increase the absorptive surface area of intestinal enterocytes are called _____.", a: ["microvilli"], e: "They form the striated or brush border seen under light microscopy." },
+        { q: "The connective tissue cell that differentiates from a B-lymphocyte and is responsible for the synthesis of antibodies is the _____ cell.", a: ["plasma"], e: "It features a 'clock-face' nucleus and abundant rough ER." },
+        { q: "The principal organic component of the bone matrix, providing tensile strength, is Type _____ collagen.", a: ["I","1","one"], e: "Type I collagen is the most abundant collagen in bone, skin, and tendons." },
+        { q: "The shallow depression or cavity on the bone surface created by an active osteoclast is called a _____ lacuna.", a: ["Howship's","Howship"], e: "Also known as a resorption bay." },
+        { q: "The connective tissue sheath that surrounds an individual nerve fascicle (bundle of axons) is the _____.", a: ["perineurium"], e: "It forms the blood-nerve barrier." },
+        { q: "The unmyelinated gap between two adjacent Schwann cells on a peripheral axon is known as the node of _____.", a: ["Ranvier"], e: "Allows for rapid saltatory conduction of the action potential." }
       ]
     },
     "Blood & Bone Marrow": {
@@ -2125,7 +2256,28 @@ const quizBank = {
         { q: "Plasma cells are differentiated from:", o: ["Neutrophils", "B lymphocytes", "T lymphocytes", "Monocytes"], a: 1, e: "They produce and secrete antibodies." },
         { q: "The lifespan of a circulating neutrophil is approximately:", o: ["120 days", "6-8 hours in blood", "Several years", "1 minute"], a: 1, e: "Short-lived but rapidly produced in response to infection." },
         { q: "Which species has RBCs that commonly show crenation on blood smear?", o: ["Dog", "Cat", "Pig", "Horse"], a: 2, e: "Porcine RBCs commonly show crenation as an artifact." },
-        { q: "The process of blood cell formation is called:", o: ["Hemostasis", "Hematopoiesis", "Hemolysis", "Homeostasis"], a: 1, e: "Occurs primarily in the bone marrow of adults." }
+        { q: "The process of blood cell formation is called:", o: ["Hemostasis", "Hematopoiesis", "Hemolysis", "Homeostasis"], a: 1, e: "Occurs primarily in the bone marrow of adults." },
+        { q: "Wright's stain (or Giemsa) is commonly used to stain:", o: ["Tissue sections on slides", "Blood smears for differential WBC counts", "Cartilage", "Bone"], a: 1, e: "These Romanowsky-type stains differentiate WBC types by their granule colors." },
+        { q: "The bone marrow stem cell that gives rise to all blood cell lineages is the:", o: ["Myeloblast", "Hematopoietic stem cell (HSC)", "Reticulocyte", "Megakaryocyte"], a: 1, e: "HSCs are pluripotent progenitors in the bone marrow." },
+        { q: "Lymphoid tissue organized into distinct nodules with germinal centers is found in:", o: ["Bone marrow only", "Lymph nodes and spleen", "Red blood cells", "Cartilage"], a: 1, e: "Germinal centers are sites of B-cell proliferation and antibody production." },
+        { q: "The thymus has two distinct histological zones:", o: ["Red pulp and white pulp", "Cortex and medulla", "Germinal center and mantle zone", "Follicle and paracortex"], a: 1, e: "The cortex is densely packed with immature T cells; the medulla has Hassall's corpuscles." },
+        { q: "Hassall's (thymic) corpuscles are characteristic histological features of the:", o: ["Spleen", "Lymph node", "Thymus", "Tonsil"], a: 2, e: "They are concentric whorls of keratinized epithelial cells in the thymic medulla." },
+        { q: "The white pulp of the spleen is composed of:", o: ["Sinusoids and red blood cells", "Lymphoid tissue (periarteriolar lymphoid sheaths and follicles)", "Smooth muscle", "Cartilage"], a: 1, e: "White pulp surrounds central arteries and functions in immune surveillance." },
+        { q: "The red pulp of the spleen functions primarily in:", o: ["Antibody production", "T-cell maturation", "Filtration and destruction of old/damaged RBCs", "Bile production"], a: 2, e: "Macrophages in splenic cords phagocytose aged erythrocytes." },
+        { q: "MALT stands for:", o: ["Major Arterial Lymphatic Tissue", "Mucosa-Associated Lymphoid Tissue", "Medullary Activated Lymphoid Trunk", "Marrow-Associated Lymphoid Tissue"], a: 1, e: "Includes Peyer's patches, tonsils, and bronchus-associated lymphoid tissue." },
+        { q: "In a Wright-stained blood smear, eosinophil granules appear:", o: ["Dark purple/violet", "Pale blue", "Red/orange (eosinophilic)", "Colorless"], a: 2, e: "Eosinophilic granules stain bright red-orange with acidic dyes." },
+        { q: "Neutrophil granules are described as:", o: ["Large and blue", "Large and orange", "Fine and lilac/neutral", "Absent"], a: 2, e: "They do not stain strongly with either acidic or basic dyes, hence 'neutro'phil." },
+        { q: "In avian and reptilian blood, the functional equivalent of the mammalian neutrophil is the:", o: ["Eosinophil","Heterophil","Basophil","Macrophage"], a: 1, e: "Heterophils contain rod-shaped, eosinophilic granules but function similarly to neutrophils." },
+        { q: "Which domestic species normally has characteristic rod-shaped (bacilliform) granules in its eosinophils?", o: ["Dog","Cat","Horse","Pig"], a: 1, e: "Feline eosinophils have numerous small, rod-shaped granules." },
+        { q: "The eosinophils of which species are easily identified by their very large, tightly packed, raspberry-like granules?", o: ["Cow","Dog","Horse","Cat"], a: 2, e: "Equine eosinophils have distinctly large, striking orange/red granules." },
+        { q: "Kurloff cells, which contain a large, distinct proteoglycan inclusion body, are unique mononuclear leukocytes found in the blood of:", o: ["Rabbits","Guinea pigs","Ferrets","Mice"], a: 1, e: "They are considered a type of natural killer (NK) cell unique to the guinea pig and capybara." },
+        { q: "Hemal nodes, which structurally resemble lymph nodes but are interposed in blood vessels to filter blood instead of lymph, are normally found in:", o: ["Carnivores","Equines","Ruminants","Swine"], a: 2, e: "They appear as small dark red/black nodules along blood vessels in cattle and sheep." },
+        { q: "In a lymph node, the paracortical zone (paracortex) is the primary location for:", o: ["B lymphocytes","Plasma cells","T lymphocytes","Macrophages"], a: 2, e: "The paracortex is the thymus-dependent zone of the lymph node." },
+        { q: "Lymphocytes enter the lymph node from the blood stream primarily by crossing the specialized endothelium of:", o: ["Trabecular arteries","High endothelial venules (HEVs)","Lymphatic capillaries","Medullary sinuses"], a: 1, e: "HEVs have plump, cuboidal endothelial cells expressing specific adhesion molecules for lymphocytes." },
+        { q: "In the avian immune system, the primary lymphoid organ for B-lymphocyte maturation is the:", o: ["Thymus","Bone marrow","Bursa of Fabricius","Spleen"], a: 2, e: "Located dorsal to the cloaca, it is where B-cells (Bursa-derived) get their name." },
+        { q: "Avian thrombocytes differ from mammalian platelets because avian thrombocytes:", o: ["Are true nucleated cells","Are much smaller","Do not participate in clotting","Contain hemoglobin"], a: 0, e: "Avian thrombocytes are intact mononuclear cells, whereas mammalian platelets are anucleate fragments." },
+        { q: "The main structural framework (stroma) of the bone marrow consists of a network of:", o: ["Dense regular connective tissue","Reticular cells and reticular fibers","Hyaline cartilage","Elastic fibers"], a: 1, e: "This delicate meshwork supports the developing hematopoietic cells." },
+        { q: "Which cells form the continuous, though highly fenestrated, endothelial lining of bone marrow sinusoids?", o: ["Megakaryocytes","Reticular cells","Endothelial cells","Macrophages"], a: 2, e: "The sinusoidal endothelium allows mature blood cells to squeeze through into the circulation." }
       ],
       tf: [
         { q: "Avian and reptilian red blood cells contain a nucleus.", a: true, e: "True. Only mammalian RBCs are anucleated." },
@@ -2141,7 +2293,18 @@ const quizBank = {
         { q: "Plasma cells produce antibodies.", a: true, e: "True. They are differentiated B lymphocytes." },
         { q: "Heinz bodies are a sign of iron deficiency anemia.", a: false, e: "False. They indicate oxidative damage to hemoglobin." },
         { q: "Avian erythrocytes are oval and nucleated.", a: true, e: "True. Unlike mammalian RBCs." },
-        { q: "Cattle have neutrophil-dominant blood like dogs.", a: false, e: "False. Cattle are LYMPHOCYTE-dominant." }
+        { q: "Cattle have neutrophil-dominant blood like dogs.", a: false, e: "False. Cattle are LYMPHOCYTE-dominant." },
+        { q: "The thymus has both a cortex and a medulla.", a: true, e: "True. The cortex has densely packed thymocytes; the medulla contains Hassall's corpuscles." },
+        { q: "The white pulp of the spleen is primarily responsible for filtering old RBCs.", a: false, e: "False. The RED pulp filters blood and destroys old RBCs. The WHITE pulp is lymphoid for immune function." },
+        { q: "Hassall's corpuscles are found in the cortex of the thymus.", a: false, e: "False. They are found in the MEDULLA of the thymus." },
+        { q: "Wright's stain is used for differential white blood cell counts on blood smears.", a: true, e: "True. It is a Romanowsky-type stain that differentiates WBC types." },
+        { q: "The hematopoietic stem cell can give rise to all blood cell types.", a: true, e: "True. It is the common pluripotent progenitor in bone marrow." },
+        { q: "Porcine blood is unique among domestic mammals because its erythrocytes commonly display marked, physiologic rouleaux formation.", a: false, e: "False. Equine and feline blood normally show marked rouleaux. Porcine RBCs are known for displaying artifactual crenation (echinocytes) very easily." },
+        { q: "The spleen of the horse is characterized by a thick capsule and trabeculae with abundant smooth muscle, allowing it to contract and release stored RBCs during exercise.", a: true, e: "True. The equine spleen serves as a massive red blood cell reservoir." },
+        { q: "In the thymus, the blood-thymus barrier is located in the medulla to protect mature T cells from antigen exposure.", a: false, e: "False. The barrier is located in the CORTEX to protect developing, immature thymocytes from premature exposure to circulating antigens." },
+        { q: "The marginal zone of the spleen is located at the boundary between the red pulp and the white pulp, playing a key role in trapping blood-borne antigens.", a: true, e: "True. It is rich in specialized macrophages and B cells." },
+        { q: "Mammalian platelets contain a distinct, multi-lobed nucleus and replicate within the bloodstream.", a: false, e: "False. Platelets are anucleate cytoplasmic fragments of megakaryocytes; they do not have a nucleus and cannot replicate." },
+        { q: "Lymph flows through a lymph node sequentially from the subcapsular sinus, through trabecular sinuses, into medullary sinuses, and finally exits via the efferent lymphatic vessel.", a: true, e: "True. This slow percolation allows immune cells to survey the lymph." }
       ],
       fib: [
         { q: "The liquid extracellular matrix of blood is called _____.", a: ["plasma"], e: "Contains water, proteins, and electrolytes." },
@@ -2156,7 +2319,17 @@ const quizBank = {
         { q: "Monocytes that become phagocytic in tissues are called _____.", a: ["macrophages"], e: "Part of the mononuclear phagocyte system." },
         { q: "B lymphocytes differentiate into antibody-producing _____ cells.", a: ["plasma"], e: "Effector cells of humoral immunity." },
         { q: "The thin white layer of WBCs and platelets in centrifuged blood is the _____ coat.", a: ["buffy"], e: "Located between RBCs and plasma." },
-        { q: "The process of blood cell formation is called _____.", a: ["hematopoiesis", "haematopoiesis"], e: "Occurs in bone marrow." }
+        { q: "The process of blood cell formation is called _____.", a: ["hematopoiesis", "haematopoiesis"], e: "Occurs in bone marrow." },
+        { q: "The Romanowsky-type stain used for blood smear differential counts is _____ stain.", a: ["Wright's", "Giemsa", "Wright"], e: "Differentiates WBC types by granule staining." },
+        { q: "The concentric whorls of keratinized epithelial cells in the thymic medulla are called _____ corpuscles.", a: ["Hassall's", "thymic"], e: "A diagnostic feature of thymus histology." },
+        { q: "The lymphoid tissue of the spleen surrounding central arteries is called _____ pulp.", a: ["white"], e: "Contains periarteriolar lymphoid sheaths (PALS)." },
+        { q: "Mucosa-associated lymphoid tissue is abbreviated _____.", a: ["MALT"], e: "Includes Peyer's patches, tonsils, BALT." },
+        { q: "In a blood smear, the cell with large orange-red granules is the _____.", a: ["eosinophil"], e: "Elevated in parasitic infections and allergies." },
+        { q: "The white blood cell that is equivalent to the mammalian neutrophil in birds and reptiles is called the _____.", a: ["heterophil"], e: "It has rod-shaped eosinophilic granules." },
+        { q: "Unique to ruminants, _____ nodes are lymphoid organs that filter blood rather than lymph and appear dark red in gross anatomy.", a: ["hemal"], e: "They lack afferent and efferent lymphatic vessels." },
+        { q: "The specialized post-capillary vessels in the lymph node paracortex where lymphocytes exit the blood to enter the node are called _____ endothelial venules.", a: ["high","HEV"], e: "Lined by cuboidal rather than squamous endothelium." },
+        { q: "The primary lymphoid organ responsible for B-cell maturation in birds is the bursa of _____.", a: ["Fabricius"], e: "A cloacal lymphoid organ." },
+        { q: "The megakaryocyte is a giant, polyploid bone marrow cell that fragments its cytoplasm to form blood _____.", a: ["platelets","thrombocytes"], e: "Essential for hemostasis." }
       ]
     },
     "Digestive & Other Systems": {
@@ -2196,7 +2369,29 @@ const quizBank = {
         { q: "Hair follicles are derived embryologically from the:", o: ["Dermis (mesoderm)", "Epidermis (ectoderm)", "Hypodermis", "Bone marrow"], a: 1, e: "Epidermal invaginations into the dermis." },
         { q: "The thyroid gland is composed of follicles filled with:", o: ["Blood", "Colloid (containing thyroglobulin)", "Air", "Fat"], a: 1, e: "The colloid stores the precursor for thyroid hormones." },
         { q: "The cells of the adrenal cortex that produce cortisol are in the zona:", o: ["Glomerulosa", "Fasciculata", "Reticularis", "Medulla"], a: 1, e: "The zona fasciculata produces glucocorticoids." },
-        { q: "Sertoli cells in the testis are responsible for:", o: ["Producing testosterone", "Supporting and nourishing developing sperm", "Producing LH", "Producing estrogen only"], a: 1, e: "They form the blood-testis barrier and support spermatogenesis." }
+        { q: "Sertoli cells in the testis are responsible for:", o: ["Producing testosterone", "Supporting and nourishing developing sperm", "Producing LH", "Producing estrogen only"], a: 1, e: "They form the blood-testis barrier and support spermatogenesis." },
+        { q: "The esophagus in the dog is lined by skeletal muscle throughout its length, but in the horse it transitions to _____ muscle in its caudal portion:", o: ["Cardiac", "Smooth", "Skeletal only", "Mixed skeletal and smooth"], a: 1, e: "Species differences in esophageal muscle type are common exam topics." },
+        { q: "The growth plate (epiphyseal plate) is divided into zones. The zone of proliferation is characterized by:", o: ["Resting chondrocytes", "Rapidly dividing chondrocytes in stacked columns", "Hypertrophied dying chondrocytes", "Calcified cartilage"], a: 1, e: "Stacked coin-like columns of dividing chondrocytes drive longitudinal bone growth." },
+        { q: "Leydig (interstitial) cells of the testis produce:", o: ["Spermatozoa", "Inhibin", "Testosterone", "Estrogen"], a: 2, e: "Located between seminiferous tubules; stimulated by LH." },
+        { q: "The ovarian follicle that has ovulated and forms a temporary endocrine gland is the:", o: ["Primordial follicle", "Graafian follicle", "Corpus luteum", "Corpus albicans"], a: 2, e: "It produces progesterone to maintain pregnancy." },
+        { q: "The acidophils of the anterior pituitary include cells that produce:", o: ["ACTH and TSH", "Growth hormone (GH) and Prolactin (PRL)", "FSH and LH", "Oxytocin and ADH"], a: 1, e: "Somatotrophs (GH) and mammotrophs (PRL) are acidophilic." },
+        { q: "The exocrine part of the pancreas consists of:", o: ["Islets of Langerhans", "Serous acini with zymogen granules", "Mucous glands", "Follicles with colloid"], a: 1, e: "Acinar cells produce digestive enzymes; the islets are the endocrine component." },
+        { q: "The three layers of a blood vessel wall from innermost to outermost are:", o: ["Adventitia, media, intima", "Intima, media, adventitia", "Media, intima, adventitia", "Intima, adventitia, media"], a: 1, e: "Tunica intima (endothelium), tunica media (smooth muscle), tunica adventitia (connective tissue)." },
+        { q: "The connective tissue layer that surrounds individual nerve fibers within a peripheral nerve is the:", o: ["Perineurium", "Epineurium", "Endoneurium", "Myelin sheath"], a: 2, e: "Like muscle: endo = individual fiber, peri = bundle, epi = whole nerve." },
+        { q: "The hair growth cycle includes anagen (growth), catagen (regression), and:", o: ["Exogen", "Telogen (resting)", "Kenogen", "Neogen"], a: 1, e: "Telogen is the resting phase before the hair is shed." },
+        { q: "The zona glomerulosa of the adrenal cortex produces:", o: ["Cortisol", "Aldosterone (mineralocorticoids)", "Androgens", "Epinephrine"], a: 1, e: "Salt, sugar, sex: Glomerulosa-aldosterone, Fasciculata-cortisol, Reticularis-androgens." },
+        { q: "In the avian digestive system, the true glandular stomach that secretes HCl and pepsinogen is the:", o: ["Crop","Proventriculus","Ventriculus (Gizzard)","Cloaca"], a: 1, e: "It precedes the mechanical grinding stomach." },
+        { q: "Which domestic species lacks a gallbladder?", o: ["Cow","Dog","Pig","Horse"], a: 3, e: "Horses are continuous grazers and continuously secrete bile directly into the duodenum." },
+        { q: "The liver of which domestic animal has a highly distinct lobular appearance on the surface due to abundant interlobular connective tissue septa?", o: ["Dog","Pig","Horse","Sheep"], a: 1, e: "The porcine liver has very clear hexagonal lobules visible even to the naked eye." },
+        { q: "The mechanical stomach of birds, characterized by a thick muscular wall and a tough keratinoid lining (koilin) for grinding food, is the:", o: ["Proventriculus","Ventriculus (Gizzard)","Crop","Cecum"], a: 1, e: "Birds often ingest grit to aid the ventriculus in grinding seeds." },
+        { q: "Placentation in the dog and cat is histologically and morphologically classified as:", o: ["Endotheliochorial and zonary","Epitheliochorial and diffuse","Synepitheliochorial and cotyledonary","Hemochorial and discoid"], a: 0, e: "The placenta forms a band (zone) around the fetus and invades the maternal endothelium." },
+        { q: "Placentation in ruminants (cow, sheep) is classified as:", o: ["Epitheliochorial and diffuse","Endotheliochorial and zonary","Synepitheliochorial and cotyledonary","Hemochorial and discoid"], a: 2, e: "Fetal cotyledons interdigitate with maternal caruncles to form placentomes." },
+        { q: "The highly keratinized, backward-pointing papillae on the feline tongue that give it a rough, sandpaper-like texture for grooming and meat-stripping are the:", o: ["Fungiform papillae","Vallate papillae","Filiform papillae","Foliate papillae"], a: 2, e: "Filiform papillae lack taste buds and are purely mechanical." },
+        { q: "Which lingual papillae are large, dome-shaped, located at the base of the tongue, and surrounded by a deep moat containing taste buds and serous von Ebner's glands?", o: ["Filiform papillae","Vallate (Circumvallate) papillae","Fungiform papillae","Conical papillae"], a: 1, e: "The serous secretions wash tastants out of the moat." },
+        { q: "In the avian respiratory system, gas exchange does not occur in blind-ended alveoli, but rather in continuous tiny tubes called:", o: ["Bronchioles","Parabronchi (and air capillaries)","Air sacs","Tracheoles"], a: 1, e: "This allows for highly efficient unidirectional airflow." },
+        { q: "The mammalian kidney structure varies by species. Which species has a distinctly multipyramidal (multilobar) kidney that is lobulated externally?", o: ["Dog","Cat","Horse","Ox (Bovine)"], a: 3, e: "The bovine kidney retains its fetal lobulated appearance." },
+        { q: "Large arteries and veins have their own blood supply to nourish the outer layers of the tunica media and adventitia. These tiny blood vessels are collectively called:", o: ["Vasa vasorum","Coronary arteries","Portal veins","Arteriovenous anastomoses"], a: 0, e: "Literally means 'vessels of the vessels'." },
+        { q: "The retina contains photoreceptor cells. Which cells are responsible for color vision and high visual acuity in bright daylight?", o: ["Rods","Bipolar cells","Cones","Ganglion cells"], a: 2, e: "Cones are for color; rods are for dim light and peripheral vision." }
       ],
       tf: [
         { q: "The entire esophagus of a dog is composed of smooth muscle.", a: false, e: "False. It is composed of skeletal (voluntary) muscle throughout its entire length in the dog." },
@@ -2216,7 +2411,18 @@ const quizBank = {
         { q: "Melanocytes produce keratin.", a: false, e: "False. Melanocytes produce melanin. Keratinocytes produce keratin." },
         { q: "Sebaceous glands produce sweat.", a: false, e: "False. They produce sebum. Sweat glands produce sweat." },
         { q: "Hair follicles are derived from the epidermis (ectoderm).", a: true, e: "True. Downgrowths of the epidermis into the dermis." },
-        { q: "The zona glomerulosa of the adrenal cortex produces cortisol.", a: false, e: "False. The zona FASCICULATA produces cortisol. Glomerulosa produces aldosterone." }
+        { q: "The esophagus of the dog is composed of skeletal muscle throughout its entire length.", a: true, e: "True. Unlike the horse and ruminants where it transitions to smooth muscle." },
+        { q: "Leydig cells are located inside the seminiferous tubules.", a: false, e: "False. Leydig cells are located in the interstitial tissue BETWEEN seminiferous tubules." },
+        { q: "The corpus luteum produces progesterone.", a: true, e: "True. It maintains pregnancy by preventing further ovulation." },
+        { q: "The tunica intima is the outermost layer of a blood vessel.", a: false, e: "False. The intima is the INNERMOST layer. The adventitia is outermost." },
+        { q: "The endoneurium surrounds individual nerve fibers within a peripheral nerve.", a: true, e: "True. Like endomysium in muscle, it wraps the smallest unit." },
+        { q: "The zona glomerulosa of the adrenal cortex produces cortisol.", a: false, e: "False. The zona FASCICULATA produces cortisol. Glomerulosa produces aldosterone." },
+        { q: "The canine and feline kidney is unipyramidal, meaning all the collecting ducts empty into a single renal crest and pelvis.", a: true, e: "True. Their kidneys are completely fused into a single lobe structure." },
+        { q: "In the dog, the anal sacs (paranal sinuses) are lined by stratified squamous epithelium and contain apocrine and sebaceous glands in their walls.", a: true, e: "True. The foul-smelling secretion is used for territorial marking." },
+        { q: "The crop in birds is a highly glandular expansion of the esophagus that secretes potent digestive enzymes.", a: false, e: "False. The crop is a non-glandular dilation used merely for food storage and softening, lined by stratified squamous epithelium." },
+        { q: "Placentation in the mare and sow is classified as epitheliochorial and diffuse.", a: true, e: "True. The chorionic villi are distributed over the entire surface of the chorion and do not invade maternal tissue deeply." },
+        { q: "The tapetum lucidum, which reflects light to enhance night vision, is located within the sensory retina of domestic animals.", a: false, e: "False. The tapetum lucidum is located in the choroid (vascular tunic), behind the retina." },
+        { q: "Paneth cells, which secrete antimicrobial lysozyme, are abundant in the intestinal crypts of the dog and cat.", a: false, e: "False. Dogs and cats typically lack Paneth cells, whereas they are prominent in horses, ruminants, humans, and rodents." }
       ],
       fib: [
         { q: "The innermost histological layer of the gastrointestinal tract is the tunica _____.", a: ["mucosa"], e: "It lines the lumen." },
@@ -2236,7 +2442,18 @@ const quizBank = {
         { q: "Type II pneumocytes produce _____ to prevent alveolar collapse.", a: ["surfactant"], e: "Reduces surface tension." },
         { q: "The tuft of capillaries for blood filtration in the kidney is the _____.", a: ["glomerulus"], e: "Enclosed by Bowman's capsule." },
         { q: "The pigment-producing cells in the epidermis are _____.", a: ["melanocytes"], e: "Protect against UV damage." },
-        { q: "The oily substance secreted by sebaceous glands is _____.", a: ["sebum"], e: "Lubricates skin and hair." }
+        { q: "The oily substance secreted by sebaceous glands is _____.", a: ["sebum"], e: "Lubricates skin and hair." },
+        { q: "The testosterone-producing cells between seminiferous tubules are _____ cells.", a: ["Leydig", "interstitial"], e: "Stimulated by LH from the anterior pituitary." },
+        { q: "The temporary endocrine gland formed from an ovulated follicle is the corpus _____.", a: ["luteum"], e: "Produces progesterone." },
+        { q: "The innermost layer of a blood vessel wall is the tunica _____.", a: ["intima"], e: "Consists of endothelium and a thin layer of connective tissue." },
+        { q: "The connective tissue wrapping around the entire peripheral nerve is the _____.", a: ["epineurium"], e: "Like epimysium for muscle." },
+        { q: "The exocrine functional unit of the pancreas consists of serous _____ with zymogen granules.", a: ["acini", "acinar cells"], e: "They produce digestive enzymes like trypsinogen and lipase." },
+        { q: "In the bird, the muscular grinding organ of the digestive tract, often containing ingested grit, is the _____.", a: ["ventriculus","gizzard"], e: "It mechanically breaks down seeds." },
+        { q: "The tongue papillae that are heavily keratinized and direct food caudally (very prominent and sharp in cats) are the _____ papillae.", a: ["filiform"], e: "They are the most numerous papillae and lack taste buds." },
+        { q: "The network of tiny blood vessels that supply oxygen and nutrients to the thick walls of large arteries and veins is called the vasa _____.", a: ["vasorum"], e: "Located primarily in the tunica adventitia." },
+        { q: "The mammalian placenta type found in dogs and cats, which forms a belt-like band around the middle of the fetus, is called a _____ placenta.", a: ["zonary"], e: "It is histologically endotheliochorial." },
+        { q: "The highly light-sensitive photoreceptor cells in the retina that are responsible for black-and-white vision in dim light are the _____.", a: ["rods"], e: "They vastly outnumber cones in most domestic animals to aid night vision." },
+        { q: "The multilobar kidney of the _____ has a distinctly lobulated external appearance, unique among the common domestic mammals.", a: ["ox","bovine","cow"], e: "Unlike the smooth bean-shape of sheep, dogs, and cats." }
       ]
     }
   },
@@ -2293,7 +2510,22 @@ const quizBank = {
         { q: "Which signaling molecule is heavily involved in establishing the left-right axis of the embryo?", o: ["Sonic hedgehog (Shh)", "FGF8", "Nodal", "Wnt"], a: 2, e: "Nodal flow in the node determines left-sidedness." },
         { q: "The morphogen Sonic hedgehog (Shh) is critically secreted by the:", o: ["Epiblast", "Notochord and floor plate of neural tube", "Trophoblast", "Somites"], a: 1, e: "Patterns the ventral neural tube and somites." },
         { q: "Hox genes are primarily responsible for:", o: ["Left-right asymmetry", "Cranial-caudal axis patterning", "Dorsal-ventral patterning", "Placental development"], a: 1, e: "They determine segmental identity." },
-        { q: "Programmed cell death, essential for shaping structures like digits, is called:", o: ["Necrosis", "Apoptosis", "Autophagy", "Lysis"], a: 1, e: "Removes webbing between developing fingers/toes." }
+        { q: "Programmed cell death, essential for shaping structures like digits, is called:", o: ["Necrosis", "Apoptosis", "Autophagy", "Lysis"], a: 1, e: "Removes webbing between developing fingers/toes." },
+        { q: "The cells immediately surrounding the oocyte that must be penetrated first by sperm are the:", o: ["Theca cells", "Granulosa cells", "Corona radiata", "Cumulus oophorus"], a: 2, e: "The corona radiata is the innermost layer of follicular cells adherent to the zona pellucida." },
+        { q: "The large mass of follicular cells surrounding the oocyte during ovulation is the:", o: ["Corona radiata", "Cumulus oophorus", "Theca interna", "Granulosa lutein cells"], a: 1, e: "The cumulus oophorus is the mound of granulosa cells that accompanies the oocyte at ovulation." },
+        { q: "In most domestic mammals, fertilization occurs in which part of the oviduct?", o: ["Infundibulum", "Ampulla", "Isthmus", "Uterotubal junction"], a: 1, e: "The ampulla is the widest part of the uterine tube and the normal site of fertilization." },
+        { q: "The process by which cells of the morula flatten and form tight junctions is called:", o: ["Cavitation", "Compaction", "Capacitation", "Gastrulation"], a: 1, e: "Compaction occurs around the 8-16 cell stage and is the first differentiation event." },
+        { q: "Random inactivation of one X chromosome in female mammals is explained by the:", o: ["Hardy-Weinberg principle", "Lyon hypothesis", "Mendel's law", "Barr body theory"], a: 1, e: "Mary Lyon proposed that one X is randomly inactivated early in development, forming a Barr body." },
+        { q: "The gestation period of the cow is approximately:", o: ["114 days", "150 days", "283 days", "340 days"], a: 2, e: "Bovine gestation averages 283 days (approximately 9 months)." },
+        { q: "The gestation period of the mare is approximately:", o: ["150 days", "283 days", "340 days", "365 days"], a: 2, e: "Equine gestation averages 340 days (approximately 11 months)." },
+        { q: "The gestation period of the bitch is approximately:", o: ["21 days", "30 days", "63 days", "114 days"], a: 2, e: "Canine gestation averages 63 days." },
+        { q: "The gestation period of the sow is approximately:", o: ["63 days", "114 days", "150 days", "283 days"], a: 1, e: "Porcine gestation is 3 months, 3 weeks, 3 days = approximately 114 days." },
+        { q: "The ovarian follicle at its earliest dormant stage consisting of an oocyte surrounded by flat cells is a:", o: ["Primary follicle", "Secondary follicle", "Primordial follicle", "Graafian follicle"], a: 2, e: "Primordial follicles form a reserve pool that is gradually activated throughout reproductive life." },
+        { q: "A preovulatory (Graafian) follicle is characterized by:", o: ["A solid mass of cells without a cavity", "A large fluid-filled antrum", "Absence of a zona pellucida", "Multiple oocytes"], a: 1, e: "The antrum is filled with follicular fluid and the oocyte sits on the cumulus oophorus." },
+        { q: "Which gonadotropin is primarily responsible for follicular growth and maturation?", o: ["LH", "FSH", "GnRH", "Prolactin"], a: 1, e: "FSH (Follicle Stimulating Hormone) drives the growth of antral follicles." },
+        { q: "The LH surge before ovulation triggers all of the following EXCEPT:", o: ["Resumption of meiosis I in the oocyte", "Luteinization of granulosa cells", "Follicular rupture", "Compaction of the morula"], a: 3, e: "Compaction is a post-fertilization event. LH triggers ovulation, meiosis resumption, and luteinization." },
+        { q: "In the bitch, primary oocytes are ovulated at which unique stage?", o: ["Metaphase II (like most mammals)", "Prophase I (unique to the bitch)", "Telophase I", "Anaphase II"], a: 1, e: "The bitch is unique: oocytes are ovulated as primary oocytes still in prophase I." },
+        { q: "The enzyme hyaluronidase released from multiple sperm serves to:", o: ["Harden the zona pellucida", "Disperse the corona radiata cells", "Block polyspermy", "Trigger the cortical reaction"], a: 1, e: "Hyaluronidase breaks down the hyaluronic acid matrix holding corona radiata cells together." }
       ],
       tf: [
         { q: "Spermatogenesis begins during fetal life and arrests until puberty.", a: false, e: "False. Oogenesis does this; spermatogenesis begins at puberty and is continuous." },
@@ -2319,7 +2551,15 @@ const quizBank = {
         { q: "Vasculogenesis is the formation of new blood vessels from existing ones.", a: false, e: "False. That is angiogenesis. Vasculogenesis is de novo formation from angioblasts." },
         { q: "Apoptosis is essential for the separation of developing digits.", a: true, e: "True. Failure results in syndactyly (webbing)." },
         { q: "Hox genes control the anterior-posterior patterning of the embryo.", a: true, e: "True. They dictate what structures form at which level." },
-        { q: "The mammalian egg is macrolecithal (large yolk).", a: false, e: "False. It is microlecithal (little yolk) because the placenta will provide nutrition." }
+        { q: "The mammalian egg is macrolecithal (large yolk).", a: false, e: "False. It is microlecithal (little yolk) because the placenta will provide nutrition." },
+        { q: "Spermatogenesis is a continuous process from puberty throughout the life of the male.", a: true, e: "True. Unlike oogenesis, spermatogenesis begins at puberty and continues without interruption." },
+        { q: "Oogonia are actively dividing in the ovary of the adult female.", a: false, e: "False. Oogonia finish dividing during fetal life; the female is born with her lifetime supply of primary oocytes." },
+        { q: "The corona radiata is a glycoprotein shell surrounding the oocyte.", a: false, e: "False. The corona radiata is a layer of follicular cells. The glycoprotein shell is the zona pellucida." },
+        { q: "Capacitation of sperm occurs in the male epididymis.", a: false, e: "False. Capacitation occurs in the female reproductive tract (uterus and oviduct)." },
+        { q: "Compaction of blastomeres involves the formation of tight junctions and gap junctions.", a: true, e: "True. Tight junctions create a seal while gap junctions allow cell communication." },
+        { q: "The bitch ovulates secondary oocytes arrested at Metaphase II, like most other domestic species.", a: false, e: "False. The bitch uniquely ovulates primary oocytes still arrested in Prophase I." },
+        { q: "The Barr body represents the inactivated X chromosome in female somatic cells.", a: true, e: "True. Named after Murray Barr, it appears as a condensed mass of chromatin." },
+        { q: "The gestation period of the sow is longer than that of the bitch.", a: true, e: "True. Sow approximately 114 days vs. bitch approximately 63 days." }
       ],
       fib: [
         { q: "The process by which spermatids transform into mature spermatozoa is called _____.", a: ["spermiogenesis"], e: "A morphological change, no cell division." },
@@ -2347,7 +2587,14 @@ const quizBank = {
         { q: "De novo formation of blood vessels from angioblasts is called _____.", a: ["vasculogenesis"], e: "Distinct from angiogenesis." },
         { q: "Primordial germ cells originate in the wall of the _____ sac.", a: ["yolk"], e: "Before migrating to the genital ridges." },
         { q: "Programmed cell death that shapes tissues (e.g., digits) is called _____.", a: ["apoptosis"], e: "A clean, non-inflammatory process." },
-        { q: "Genes that specify the cranial-caudal axis identity are the _____ genes.", a: ["hox", "homeobox"], e: "Highly conserved across species." }
+        { q: "Genes that specify the cranial-caudal axis identity are the _____ genes.", a: ["hox", "homeobox"], e: "Highly conserved across species." },
+        { q: "The layer of follicular cells immediately surrounding the zona pellucida is the corona _____.", a: ["radiata"], e: "Named for its radiating arrangement of cells." },
+        { q: "The gonadotropin that stimulates follicular growth and estrogen production is _____.", a: ["FSH", "follicle stimulating hormone"], e: "Released from the anterior pituitary." },
+        { q: "In most domestic mammals, fertilization occurs in the _____ of the oviduct.", a: ["ampulla"], e: "The widest part of the uterine tube." },
+        { q: "The process by which morula cells flatten and form tight junctions is called _____.", a: ["compaction"], e: "Leads to the distinction between outer and inner cells." },
+        { q: "The inactive X chromosome seen as a condensed body in female cells is called a _____ body.", a: ["Barr"], e: "Named after Murray Barr." },
+        { q: "The gestation period of the cow is approximately _____ days.", a: ["283", "280"], e: "About 9 months." },
+        { q: "The gestation period of the bitch is approximately _____ days.", a: ["63"], e: "About 2 months." }
       ]
     },
     "Systemic Embryology & Placentation": {
@@ -2401,7 +2648,22 @@ const quizBank = {
         { q: "The thyroid gland originates as a downgrowth from the:", o: ["Floor of the pharynx (foramen cecum)", "Roof of the mouth", "Third pharyngeal pouch", "Neural crest"], a: 0, e: "It migrates down the neck; remnants can form thyroglossal duct cysts." },
         { q: "The thymus develops from the endoderm of the:", o: ["First pharyngeal pouch", "Second pharyngeal pouch", "Third pharyngeal pouch", "Fourth pharyngeal pouch"], a: 2, e: "Along with the inferior parathyroid glands." },
         { q: "Amelia refers to the congenital:", o: ["Absence of a limb", "Shortening of a limb", "Extra digits", "Fused digits"], a: 0, e: "A = without, melia = limb." },
-        { q: "Polydactyly is the presence of:", o: ["Fused digits", "Missing digits", "Extra digits", "Webbed digits"], a: 2, e: "Common in certain cat breeds (Hemingway cats)." }
+        { q: "Polydactyly is the presence of:", o: ["Fused digits", "Missing digits", "Extra digits", "Webbed digits"], a: 2, e: "Common in certain cat breeds (Hemingway cats)." },
+        { q: "The first pharyngeal arch gives rise to which skeletal structure?", o: ["Hyoid bone", "Mandible and maxilla", "Styloid process", "Greater horn of hyoid"], a: 1, e: "Pharyngeal arch 1 (Mandibular arch) forms the jaw bones." },
+        { q: "The nerve of the first pharyngeal arch is the:", o: ["Facial nerve (CN VII)", "Trigeminal nerve (CN V)", "Glossopharyngeal nerve (CN IX)", "Vagus nerve (CN X)"], a: 1, e: "CN V innervates muscles of mastication derived from the first arch." },
+        { q: "The second pharyngeal arch (Hyoid arch) is innervated by:", o: ["Trigeminal nerve (CN V)", "Facial nerve (CN VII)", "Glossopharyngeal nerve (CN IX)", "Vagus nerve (CN X)"], a: 1, e: "CN VII supplies muscles of facial expression from the second arch." },
+        { q: "The middle ear cavity and auditory tube develop from the:", o: ["First pharyngeal cleft", "First pharyngeal pouch", "Second pharyngeal pouch", "Third pharyngeal pouch"], a: 1, e: "The first pharyngeal pouch expands to form the tubotympanic recess." },
+        { q: "The inferior parathyroid glands and the thymus both develop from the endoderm of the:", o: ["First pharyngeal pouch", "Second pharyngeal pouch", "Third pharyngeal pouch", "Fourth pharyngeal pouch"], a: 2, e: "The third pouch gives rise to both the thymus and inferior parathyroids." },
+        { q: "The signal center at the tip of the limb bud essential for its outgrowth is the:", o: ["Zone of Polarizing Activity (ZPA)", "Apical Ectodermal Ridge (AER)", "Progress Zone", "Somite"], a: 1, e: "The AER maintains the underlying mesenchyme in a proliferative state via FGFs." },
+        { q: "The Zone of Polarizing Activity (ZPA) at the posterior margin of the limb bud secretes:", o: ["FGF8", "BMP4", "Sonic Hedgehog (Shh)", "Retinoic acid"], a: 2, e: "Shh patterns the anterior-posterior axis, determining digit identity." },
+        { q: "The diaphragm develops primarily from which embryonic structure?", o: ["Lateral plate mesoderm only", "Septum transversum", "Neural crest", "Somites only"], a: 1, e: "The septum transversum forms the central tendon; other parts come from pleuroperitoneal membranes, body wall, and esophageal mesenchyme." },
+        { q: "Congenital diaphragmatic hernia most commonly results from failure of closure of the:", o: ["Esophageal hiatus", "Pleuroperitoneal canal", "Foramen of Morgagni", "Central tendon"], a: 1, e: "Failure of the pleuroperitoneal membrane allows abdominal organs to herniate into the thorax." },
+        { q: "The amorphous rubbery masses found floating in equine allantoic fluid are called:", o: ["Endometrial cups", "Hippomanes", "Placentomes", "Amniotic plaques"], a: 1, e: "Hippomanes are accumulations of cellular debris and minerals with no known function." },
+        { q: "The chorionic girdle in the mare is a band of invasive trophoblast cells that forms:", o: ["Placentomes", "Endometrial cups", "Chorioallantois", "Amnion"], a: 1, e: "Around day 35, chorionic girdle cells invade the endometrium to form cups secreting eCG." },
+        { q: "The critical period when the embryo is most susceptible to teratogenic agents is during:", o: ["Pre-implantation", "Organogenesis", "Fetal period", "Neonatal period"], a: 1, e: "Organs being actively shaped are highly vulnerable to disruption." },
+        { q: "Veratrum californicum ingested by pregnant ewes causes:", o: ["Spina bifida", "Cyclopia", "Polydactyly", "Arthrogryposis"], a: 1, e: "It inhibits the Sonic Hedgehog pathway, causing holoprosencephaly and cyclopia in lambs." },
+        { q: "Monozygotic twins sharing a single chorion but having separate amnions are classified as:", o: ["Dichorionic-Diamniotic", "Monochorionic-Diamniotic", "Monochorionic-Monoamniotic", "Dichorionic-Monoamniotic"], a: 1, e: "Splitting at the blastocyst stage (days 4-8) produces shared chorion with separate amnions." },
+        { q: "The tongue musculature is derived from which embryonic tissue?", o: ["First pharyngeal arch mesenchyme", "Occipital somites (myoblasts)", "Neural crest cells", "Lateral plate mesoderm"], a: 1, e: "Myoblasts from occipital somites migrate into the pharyngeal arches, innervated by CN XII." }
       ],
       tf: [
         { q: "The yolk sac provides all the nutrition for the mammalian embryo throughout its entire gestation.", a: false, e: "False. The yolk sac regresses early; the placenta takes over nutrition." },
@@ -2429,7 +2691,14 @@ const quizBank = {
         { q: "Anti-Mullerian Hormone is produced by Leydig cells.", a: false, e: "False. It is produced by Sertoli cells. Leydig cells produce testosterone." },
         { q: "The foramen ovale is an opening between the left and right ventricles.", a: false, e: "False. It is an opening between the left and right ATRIA." },
         { q: "The thyroid gland originates from the floor of the embryonic pharynx.", a: true, e: "True. At a point called the foramen cecum." },
-        { q: "Syndactyly refers to the presence of extra digits.", a: false, e: "False. Syndactyly is fused digits. Polydactyly is extra digits." }
+        { q: "Syndactyly refers to the presence of extra digits.", a: false, e: "False. Syndactyly is fused digits. Polydactyly is extra digits." },
+        { q: "The muscles of mastication are derived from the first pharyngeal arch.", a: true, e: "True. They are innervated by CN V, the nerve of the first arch." },
+        { q: "The thymus develops from the endoderm of the second pharyngeal pouch.", a: false, e: "False. The thymus develops from the THIRD pharyngeal pouch." },
+        { q: "The Apical Ectodermal Ridge (AER) is essential for proximal-distal outgrowth of the limb bud.", a: true, e: "True. Removal of the AER causes truncation of the limb." },
+        { q: "The septum transversum alone forms the entire diaphragm.", a: false, e: "False. The diaphragm develops from four sources: septum transversum, pleuroperitoneal membranes, dorsal mesentery of esophagus, and body wall mesoderm." },
+        { q: "Hippomanes are pathological structures indicating disease of the equine placenta.", a: false, e: "False. Hippomanes are normal, non-pathological debris found in allantoic fluid of healthy mares." },
+        { q: "Veratrum californicum causes cyclopia by inhibiting the Sonic Hedgehog pathway.", a: true, e: "True. The active compound cyclopamine blocks the Shh receptor." },
+        { q: "The external ear canal develops from the first pharyngeal pouch.", a: false, e: "False. The external ear canal develops from the first pharyngeal CLEFT. The first POUCH forms the middle ear." }
       ],
       fib: [
         { q: "The fetal membrane that stores waste in birds and expands to form the placenta in mammals is the _____.", a: ["allantois"], e: "Forms the chorioallantois." },
@@ -2455,7 +2724,15 @@ const quizBank = {
         { q: "In males, the _____ (Wolffian) duct becomes the epididymis and ductus deferens.", a: ["mesonephric"], e: "Rescued by testosterone." },
         { q: "In females, the _____ (Mullerian) ducts form the uterus and uterine tubes.", a: ["paramesonephric"], e: "Develops in the absence of AMH." },
         { q: "The opening between the right and left atria in the fetal heart is the foramen _____.", a: ["ovale"], e: "Closes at birth." },
-        { q: "The condition of having extra digits is called _____.", a: ["polydactyly"], e: "Common anomaly." }
+        { q: "The condition of having extra digits is called _____.", a: ["polydactyly"], e: "Common anomaly." },
+        { q: "The mandible and maxilla develop from the _____ pharyngeal arch.", a: ["first", "1st"], e: "Also called the mandibular arch." },
+        { q: "The middle ear cavity and auditory tube develop from the first pharyngeal _____.", a: ["pouch"], e: "Endodermal outpouching between the arches." },
+        { q: "The thickened ectodermal ridge at the tip of the developing limb bud is the _____ ectodermal ridge.", a: ["apical"], e: "Abbreviated AER; it drives limb outgrowth." },
+        { q: "The main embryonic precursor of the central tendon of the diaphragm is the septum _____.", a: ["transversum"], e: "A mass of mesoderm between the heart and liver." },
+        { q: "The rubbery masses found in equine allantoic fluid are called _____.", a: ["hippomanes"], e: "Normal debris with no known pathological significance." },
+        { q: "The invasive trophoblast cells that form endometrial cups in the mare originate from the chorionic _____.", a: ["girdle"], e: "Forms around day 35 of equine pregnancy." },
+        { q: "The gestation period of the mare is approximately _____ days.", a: ["340", "335-345"], e: "About 11 months." },
+        { q: "The gestation period of the sow is approximately _____ days.", a: ["114", "112-115"], e: "Three months, three weeks, three days." }
       ]
     }
   },

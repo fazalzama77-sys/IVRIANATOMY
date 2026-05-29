@@ -24,6 +24,9 @@ const app = {
             app.state.eliteMode = true;
         }
 
+        // Apply saved nav-bar position class to <body> before first paint
+        app._applyNavPosition();
+
         // ---- Service worker registration (offline / PWA, silent auto-update) ----
         // The SW now self-activates on install (calls skipWaiting() itself) and
         // claims existing clients on activate. So a new version takes over
@@ -46,7 +49,838 @@ const app = {
         // ---- Hash routing ----
         window.addEventListener('hashchange', () => app.routeFromHash());
         // Defer first route until DOM ready (data files loaded via script tags)
-        setTimeout(() => app.routeFromHash(), 0);
+        setTimeout(() => {
+            app.routeFromHash();
+            app._initBottomNav();
+            app._initEngagement();   // visit counter, install prompt, streak, onboarding
+        }, 0);
+    },
+
+    // ============== ENGAGEMENT LAYER ==============
+    // Boots streak/visit/install/onboarding/notification logic. Each helper
+    // is fully self-contained so any single piece can be disabled without
+    // affecting others.
+    _initEngagement: () => {
+        try { app._bumpVisit(); } catch (e) { console.warn('visit', e); }
+        try { app._recordActivityToday(); } catch (e) { console.warn('activity', e); }
+        try { app._showOnboardingIfFirstTime(); } catch (e) { console.warn('onboard', e); }
+        try { app._setupInstallPrompt(); } catch (e) { console.warn('install', e); }
+        try { app._maybeShowSrsNotification(); } catch (e) { console.warn('notify', e); }
+    },
+
+    // ---------- Nav-bar position (desktop only — mobile is always bottom) ----------
+    NAV_POS_KEY: 'ivri-nav-pos',
+    NAV_POSITIONS: ['bottom', 'top', 'left', 'right'],
+
+    _applyNavPosition: () => {
+        const saved = localStorage.getItem(app.NAV_POS_KEY) || 'bottom';
+        const cls = app.NAV_POSITIONS.includes(saved) ? saved : 'bottom';
+        // Strip any previous nav-pos-* class and apply the new one
+        document.body.classList.remove('nav-pos-bottom', 'nav-pos-top', 'nav-pos-left', 'nav-pos-right');
+        document.body.classList.add('nav-pos-' + cls);
+    },
+
+    setNavPosition: (pos) => {
+        if (!app.NAV_POSITIONS.includes(pos)) return;
+        localStorage.setItem(app.NAV_POS_KEY, pos);
+        app._applyNavPosition();
+        // Refresh the picker UI so the new selection is reflected
+        document.querySelectorAll('.nav-pos-option').forEach(b => {
+            b.classList.toggle('is-active', b.dataset.pos === pos);
+        });
+        if (typeof showToast === 'function') {
+            const labels = { bottom: 'bottom', top: 'top', left: 'left side', right: 'right side' };
+            showToast(`Navigation moved to ${labels[pos]}`, 'success', 'fa-arrows-to-circle');
+        }
+    },
+
+    // ---------- Visit counter (drives install-prompt timing) ----------
+    VISITS_KEY: 'ivri-visits',
+    _bumpVisit: () => {
+        const cur = parseInt(localStorage.getItem(app.VISITS_KEY) || '0', 10);
+        localStorage.setItem(app.VISITS_KEY, String(cur + 1));
+    },
+    _visitCount: () => parseInt(localStorage.getItem(app.VISITS_KEY) || '0', 10),
+
+    // ---------- Daily activity / streak ----------
+    // Stores a map of YYYY-MM-DD -> true for every day the user did ANYTHING
+    // (opened the app, read a topic, answered a quiz, saved a highlight, etc.)
+    // The streak counter looks at consecutive days ending today/yesterday.
+    ACTIVITY_KEY: 'ivri-activity',
+    _today: () => {
+        const d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    },
+    _loadActivity: () => {
+        try { return JSON.parse(localStorage.getItem(app.ACTIVITY_KEY)) || {}; }
+        catch { return {}; }
+    },
+    _saveActivity: (obj) => localStorage.setItem(app.ACTIVITY_KEY, JSON.stringify(obj)),
+    _recordActivityToday: () => {
+        const all = app._loadActivity();
+        const t = app._today();
+        if (!all[t]) {
+            all[t] = true;
+            app._saveActivity(all);
+        }
+    },
+    // Returns {current, longest, totalDays}
+    _computeStreak: () => {
+        const all = app._loadActivity();
+        const dates = Object.keys(all).sort();   // ISO sorts chronologically
+        if (!dates.length) return { current: 0, longest: 0, totalDays: 0 };
+
+        const fmt = (d) => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        const has = (d) => !!all[fmt(d)];
+
+        // Current streak — count backwards from today (or yesterday if today not logged yet)
+        let current = 0;
+        const d = new Date();
+        if (!has(d)) d.setDate(d.getDate() - 1);  // grace: missed today, count from yesterday
+        while (has(d)) {
+            current++;
+            d.setDate(d.getDate() - 1);
+        }
+
+        // Longest streak — scan through the date set
+        let longest = 0, run = 0, prevTs = null;
+        const DAY = 86400000;
+        dates.forEach(ds => {
+            const ts = new Date(ds).getTime();
+            if (prevTs !== null && (ts - prevTs) === DAY) run++;
+            else run = 1;
+            if (run > longest) longest = run;
+            prevTs = ts;
+        });
+        return { current, longest, totalDays: dates.length };
+    },
+
+    // 12-week (84-day) heatmap, oldest -> newest, grouped by week
+    _buildHeatmapData: () => {
+        const all = app._loadActivity();
+        const DAYS = 84;
+        const cells = [];
+        const d = new Date();
+        d.setHours(0,0,0,0);
+        for (let i = DAYS - 1; i >= 0; i--) {
+            const dd = new Date(d);
+            dd.setDate(dd.getDate() - i);
+            const key = dd.getFullYear() + '-' + String(dd.getMonth()+1).padStart(2,'0') + '-' + String(dd.getDate()).padStart(2,'0');
+            cells.push({ date: key, label: dd.toDateString(), active: !!all[key], dow: dd.getDay() });
+        }
+        return cells;
+    },
+
+    // ---------- Onboarding (3-slide first-visit tour) ----------
+    ONBOARD_KEY: 'ivri-onboarded',
+    _showOnboardingIfFirstTime: () => {
+        if (localStorage.getItem(app.ONBOARD_KEY) === '1') return;
+        // Defer a moment so splash has cleared
+        setTimeout(() => app.startOnboarding(), 800);
+    },
+    startOnboarding: () => {
+        const modal = document.getElementById('onboard-modal');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        modal._slide = 0;
+        app._renderOnboardSlide();
+    },
+    closeOnboarding: (markDone) => {
+        const modal = document.getElementById('onboard-modal');
+        if (!modal) return;
+        modal.style.display = 'none';
+        if (markDone !== false) localStorage.setItem(app.ONBOARD_KEY, '1');
+    },
+    _onboardSlides: [
+        {
+            icon: 'fa-book-open', accent: '#ffd54f',
+            title: 'Welcome to IVRI Anatomy',
+            body: 'Your B.V.Sc study companion — built for first-year students. Atlas, quizzes, and your own notes. Works even offline.'
+        },
+        {
+            icon: 'fa-graduation-cap', accent: '#ffd54f',
+            title: 'Two depths of detail',
+            body: 'Every Atlas topic has a <b>Standard</b> view for quick revision and an <b>Elite</b> view with full UG-level academic depth. Toggle the Elite View button anytime.'
+        },
+        {
+            icon: 'fa-brain', accent: '#ffd54f',
+            title: 'Test yourself constantly',
+            body: 'The center <b>Quiz</b> button takes you to MCQ, True/False, Fill-in-Blanks, Exam Mode and Smart Review (spaced repetition). Wrong answers come back automatically.'
+        },
+        {
+            icon: 'fa-bookmark', accent: '#00f2ff',
+            title: 'Mark your favourites',
+            body: 'Bookmark topics, highlight key sentences in 4 colours, type notes on selected text. Everything lives in your <b>Library</b>.'
+        },
+        {
+            icon: 'fa-circle-user', accent: '#bd93f9',
+            title: 'Track your progress',
+            body: 'Open the <b>Me</b> tab to see your daily study streak, performance dashboard, backup your data, and change theme.'
+        }
+    ],
+    _renderOnboardSlide: () => {
+        const modal = document.getElementById('onboard-modal');
+        if (!modal) return;
+        const slides = app._onboardSlides;
+        const i = modal._slide || 0;
+        const s = slides[i];
+        const card = modal.querySelector('.onboard-card');
+        card.innerHTML = `
+            <button class="onboard-skip" onclick="app.closeOnboarding(true)">Skip</button>
+            <div class="onboard-icon" style="color:${s.accent};"><i class="fas ${s.icon}"></i></div>
+            <h2 class="onboard-title">${s.title}</h2>
+            <p class="onboard-body">${s.body}</p>
+            <div class="onboard-dots">
+                ${slides.map((_, k) => `<span class="onboard-dot ${k === i ? 'on' : ''}"></span>`).join('')}
+            </div>
+            <div class="onboard-actions">
+                ${i > 0 ? '<button class="onboard-btn ghost" onclick="app._onboardPrev()"><i class="fas fa-arrow-left"></i> Back</button>' : '<span></span>'}
+                ${i < slides.length - 1
+                    ? '<button class="onboard-btn primary" onclick="app._onboardNext()">Next <i class="fas fa-arrow-right"></i></button>'
+                    : '<button class="onboard-btn primary" onclick="app.closeOnboarding(true)"><i class="fas fa-rocket"></i> Get started</button>'}
+            </div>`;
+    },
+    _onboardNext: () => {
+        const modal = document.getElementById('onboard-modal');
+        modal._slide = Math.min((modal._slide || 0) + 1, app._onboardSlides.length - 1);
+        app._renderOnboardSlide();
+    },
+    _onboardPrev: () => {
+        const modal = document.getElementById('onboard-modal');
+        modal._slide = Math.max((modal._slide || 0) - 1, 0);
+        app._renderOnboardSlide();
+    },
+    // Triggered from Me page card so users can re-watch the tour
+    replayOnboarding: () => {
+        localStorage.removeItem(app.ONBOARD_KEY);
+        app.startOnboarding();
+    },
+
+    // ---------- Install-as-app prompt ----------
+    INSTALL_DISMISS_KEY: 'ivri-install-dismissed',
+    _deferredInstallPrompt: null,
+    _setupInstallPrompt: () => {
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            app._deferredInstallPrompt = e;
+            if (localStorage.getItem(app.INSTALL_DISMISS_KEY) === '1') return;
+            if (app._visitCount() < 2) return;
+            setTimeout(() => app._showInstallBanner(), 1500);
+        });
+        window.addEventListener('appinstalled', () => {
+            app._hideInstallBanner();
+            if (typeof showToast === 'function') showToast('IVRI Anatomy installed!', 'success', 'fa-check-circle');
+        });
+        // iOS Safari never fires beforeinstallprompt — show a friendly fallback
+        // banner with "Add to Home Screen" instructions after 2 visits.
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (isIOS && !isStandalone
+            && localStorage.getItem(app.INSTALL_DISMISS_KEY) !== '1'
+            && app._visitCount() >= 2) {
+            setTimeout(() => app._showInstallBanner(), 1800);
+        }
+    },
+    _showInstallBanner: () => {
+        const b = document.getElementById('install-banner');
+        if (!b) return;
+        // iOS doesn't fire beforeinstallprompt — detect it for a friendly fallback
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+            b.querySelector('.install-msg').innerHTML =
+                'Install IVRI Anatomy: tap <i class="fas fa-arrow-up-from-bracket"></i> Share, then <b>Add to Home Screen</b>.';
+            b.querySelector('.install-btn').style.display = 'none';
+        }
+        b.style.display = 'flex';
+        requestAnimationFrame(() => b.classList.add('install-shown'));
+    },
+    _hideInstallBanner: () => {
+        const b = document.getElementById('install-banner');
+        if (!b) return;
+        b.classList.remove('install-shown');
+        setTimeout(() => { b.style.display = 'none'; }, 300);
+    },
+    triggerInstall: async () => {
+        if (!app._deferredInstallPrompt) {
+            // No native prompt available — guide manually
+            if (typeof showToast === 'function')
+                showToast('Open your browser menu → "Install app" / "Add to Home Screen"', 'info', 'fa-mobile-screen');
+            return;
+        }
+        try {
+            app._deferredInstallPrompt.prompt();
+            const choice = await app._deferredInstallPrompt.userChoice;
+            if (choice && choice.outcome === 'accepted') {
+                if (typeof showToast === 'function') showToast('Installing…', 'success', 'fa-download');
+            }
+        } catch (e) { console.warn(e); }
+        app._deferredInstallPrompt = null;
+        app._hideInstallBanner();
+    },
+    dismissInstall: () => {
+        localStorage.setItem(app.INSTALL_DISMISS_KEY, '1');
+        app._hideInstallBanner();
+    },
+
+    // ---------- SRS daily notification ----------
+    NOTIF_PREF_KEY: 'ivri-notify-srs',     // '1' | '0'
+    NOTIF_LAST_KEY: 'ivri-notify-last',    // YYYY-MM-DD
+    requestNotificationPermission: async () => {
+        if (!('Notification' in window)) {
+            if (typeof showToast === 'function') showToast('This browser does not support notifications', 'warning');
+            return;
+        }
+        if (Notification.permission === 'granted') {
+            localStorage.setItem(app.NOTIF_PREF_KEY, '1');
+            if (typeof showToast === 'function') showToast('Daily review reminders are on', 'success', 'fa-bell');
+            app._refreshMeStatsLite();
+            return;
+        }
+        const perm = await Notification.requestPermission();
+        if (perm === 'granted') {
+            localStorage.setItem(app.NOTIF_PREF_KEY, '1');
+            if (typeof showToast === 'function') showToast('Daily review reminders are on', 'success', 'fa-bell');
+        } else {
+            if (typeof showToast === 'function') showToast('Notifications blocked. Enable in browser settings.', 'warning');
+        }
+        app._refreshMeStatsLite();
+    },
+    toggleSrsNotifications: () => {
+        const cur = localStorage.getItem(app.NOTIF_PREF_KEY) === '1';
+        if (cur) {
+            localStorage.setItem(app.NOTIF_PREF_KEY, '0');
+            if (typeof showToast === 'function') showToast('Review reminders turned off', 'info', 'fa-bell-slash');
+            app._refreshMeStatsLite();
+        } else {
+            app.requestNotificationPermission();
+        }
+    },
+    _maybeShowSrsNotification: () => {
+        if (!('Notification' in window)) return;
+        if (Notification.permission !== 'granted') return;
+        if (localStorage.getItem(app.NOTIF_PREF_KEY) !== '1') return;
+        // Only once per day
+        if (localStorage.getItem(app.NOTIF_LAST_KEY) === app._today()) return;
+        // Count due SRS items
+        if (typeof srs === 'undefined' || !srs._loadState) return;
+        try {
+            const state = srs._loadState();
+            const now = Date.now();
+            const due = Object.values(state || {}).filter(item => (item.nextDue || 0) <= now).length;
+            if (due > 0) {
+                new Notification('IVRI Anatomy', {
+                    body: `You have ${due} topic${due === 1 ? '' : 's'} due for Smart Review today.`,
+                    icon: 'images/icon-192.png',
+                    badge: 'images/icon-192.png',
+                    tag: 'srs-daily'
+                });
+                localStorage.setItem(app.NOTIF_LAST_KEY, app._today());
+            }
+        } catch (e) { console.warn('srs notif', e); }
+    },
+
+    // ---------- Audio pronunciation + read-aloud (browser SpeechSynthesis API, no API key) ----------
+    _ttsActive: false,
+
+    // One-shot pronunciation (used by glossary double-click) — just speaks the word.
+    speak: (text) => {
+        if (!('speechSynthesis' in window)) {
+            if (typeof showToast === 'function') showToast('Speech not supported in this browser', 'warning');
+            return;
+        }
+        try {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(String(text));
+            u.lang = 'en-US';
+            u.rate = 0.92;
+            u.pitch = 1.0;
+            window.speechSynthesis.speak(u);
+        } catch (e) { console.warn('speak', e); }
+    },
+
+    // Strip HTML to plain text for cleaner speech (turns <b>X</b><br>Y into "X. Y").
+    _htmlToSpeech: (html) => {
+        if (!html) return '';
+        const tmp = document.createElement('div');
+        tmp.innerHTML = String(html)
+            .replace(/<br\s*\/?>/gi, '. ')
+            .replace(/<\/(p|li|tr|h[1-6]|div)>/gi, '. ')
+            .replace(/<li[^>]*>/gi, ' • ');
+        // Collapse whitespace + multiple full stops
+        return tmp.textContent
+            .replace(/\s+/g, ' ')
+            .replace(/\.\s*\./g, '.')
+            .replace(/\s+([.,;:])/g, '$1')
+            .trim();
+    },
+
+    // Read the FULL content of the active Atlas topic: title, description,
+    // comparative species notes, clinical correlation. Tap again to stop.
+    speakCurrentTopic: (btn) => {
+        if (!('speechSynthesis' in window)) {
+            if (typeof showToast === 'function') showToast('Speech not supported in this browser', 'warning');
+            return;
+        }
+        // Toggle: if already speaking, stop.
+        if (app._ttsActive) {
+            window.speechSynthesis.cancel();
+            app._ttsActive = false;
+            app._setSpeakBtnPlaying(false);
+            return;
+        }
+        if (!app.state.region || !app.state.system) return;
+        const activeBtn = document.querySelector('.topic-btn.active');
+        if (!activeBtn) return;
+        const idx = parseInt(activeBtn.dataset.index, 10);
+        if (isNaN(idx)) return;
+        const item = atlasData[app.state.region][app.state.system][idx];
+        if (!item) return;
+
+        // Assemble what to read: title + description (elite OR standard, per current mode)
+        // + comparative species rows + clinical correlation.
+        const useElite = app.state.eliteMode && item.eliteDesc;
+        const body = useElite ? item.eliteDesc : item.desc;
+        const chunks = [];
+        chunks.push(item.title);
+        if (body) chunks.push(app._htmlToSpeech(body));
+        if (item.comparative && item.comparative.length) {
+            chunks.push('Comparative analysis.');
+            item.comparative.forEach(c => {
+                chunks.push(`${c.species}: ${app._htmlToSpeech(c.note)}`);
+            });
+        }
+        if (item.clinical) {
+            chunks.push('Clinical correlation.');
+            chunks.push(app._htmlToSpeech(item.clinical));
+        }
+        // Browsers truncate utterances over ~32k chars and pause oddly on very long
+        // ones. Split into sentence groups of ~250 chars and queue them.
+        const sentences = chunks.join('. ').split(/(?<=[.!?])\s+/);
+        const groups = [];
+        let buf = '';
+        for (const s of sentences) {
+            if ((buf + ' ' + s).length > 250 && buf) {
+                groups.push(buf.trim());
+                buf = s;
+            } else {
+                buf = buf ? buf + ' ' + s : s;
+            }
+        }
+        if (buf) groups.push(buf.trim());
+
+        window.speechSynthesis.cancel();
+        app._ttsActive = true;
+        app._setSpeakBtnPlaying(true);
+
+        let i = 0;
+        const speakNext = () => {
+            if (!app._ttsActive || i >= groups.length) {
+                app._ttsActive = false;
+                app._setSpeakBtnPlaying(false);
+                return;
+            }
+            const u = new SpeechSynthesisUtterance(groups[i++]);
+            u.lang = 'en-US';
+            u.rate = 0.95;
+            u.pitch = 1.0;
+            u.onend = speakNext;
+            u.onerror = () => {
+                app._ttsActive = false;
+                app._setSpeakBtnPlaying(false);
+            };
+            window.speechSynthesis.speak(u);
+        };
+        speakNext();
+
+        // Stop reading if the user navigates away from the topic
+        if (!app._ttsCleanupHooked) {
+            app._ttsCleanupHooked = true;
+            window.addEventListener('hashchange', () => {
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+                if (app._ttsActive) {
+                    app._ttsActive = false;
+                    app._setSpeakBtnPlaying(false);
+                }
+            });
+        }
+    },
+
+    _setSpeakBtnPlaying: (playing) => {
+        const btn = document.querySelector('.speak-btn');
+        if (!btn) return;
+        btn.classList.toggle('is-playing', playing);
+        const icon = btn.querySelector('i');
+        if (icon) icon.className = playing ? 'fas fa-stop' : 'fas fa-volume-high';
+        btn.setAttribute('title', playing ? 'Stop reading' : 'Read this topic aloud');
+        btn.setAttribute('aria-label', playing ? 'Stop reading' : 'Read this topic aloud');
+    },
+
+    // Refresh Me page stats inline (used by toggles that change settings)
+    _refreshMeStatsLite: () => {
+        if (app.state.view === 'me') app._renderMeStats();
+    },
+
+    // ============== BACKUP & RESTORE ==============
+    // Every per-user key the app writes to localStorage. Anything new added in
+    // future should be appended here so backups capture it.
+    _backupKeys: () => ([
+        'ivri-theme',
+        'ivri-elite',
+        'ivri-bookmarks',
+        'ivri-read',
+        'ivri-srs-state',
+        'ivri-quiz-progress',
+        'ivri-highlights',
+        'ivri-notes',
+        'ivri-visits',
+        'ivri-onboarded',
+        'ivri-install-dismissed',
+        'ivri-activity',
+        'ivri-notify-srs',
+        'ivri-notify-last',
+    ]),
+
+    // Export every IVRI localStorage key into a single JSON file the user
+    // downloads. The file is small (~10-200 KB depending on highlights/notes)
+    // and human-readable — a safe long-term archive.
+    exportBackup: () => {
+        const payload = {
+            app: 'IVRI Anatomy',
+            version: 1,
+            exported_at: new Date().toISOString(),
+            user_agent: navigator.userAgent,
+            data: {},
+            stats: {},
+        };
+        const keys = app._backupKeys();
+        keys.forEach(k => {
+            const v = localStorage.getItem(k);
+            if (v !== null) payload.data[k] = v;
+        });
+        // Friendly summary inside the file so the user sees what's in it
+        try {
+            payload.stats = {
+                bookmarks: (JSON.parse(payload.data['ivri-bookmarks'] || '[]') || []).length,
+                read_topics: (JSON.parse(payload.data['ivri-read'] || '[]') || []).length,
+                highlight_groups: Object.keys(JSON.parse(payload.data['ivri-highlights'] || '{}') || {}).length,
+                note_groups: Object.keys(JSON.parse(payload.data['ivri-notes'] || '{}') || {}).length,
+                active_days: Object.keys(JSON.parse(payload.data['ivri-activity'] || '{}') || {}).length,
+            };
+        } catch (e) { /* tolerate corrupted entries */ }
+
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const today = app._today();
+        a.href = url;
+        a.download = `ivri-anatomy-backup-${today}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        // Revoke the blob URL after a beat so the browser can finish downloading
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        if (typeof showToast === 'function') showToast('Backup downloaded', 'success', 'fa-download');
+    },
+
+    // Open the file picker; the chosen file is parsed and restored via
+    // importBackupFromFile(). Wired to the hidden <input id="restore-file">.
+    promptImportBackup: () => {
+        const input = document.getElementById('restore-file');
+        if (input) input.click();
+    },
+
+    // Called when the user picks a backup JSON. Validates shape, asks for
+    // confirmation if the device already has data, then restores every key
+    // and reloads so views re-render from the new state.
+    importBackupFromFile: (fileInput) => {
+        const file = fileInput && fileInput.files && fileInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onerror = () => {
+            if (typeof showToast === 'function') showToast('Could not read file', 'warning', 'fa-exclamation-circle');
+        };
+        reader.onload = () => {
+            let payload;
+            try {
+                payload = JSON.parse(String(reader.result || ''));
+            } catch (e) {
+                if (typeof showToast === 'function') showToast('Invalid backup file', 'warning', 'fa-exclamation-circle');
+                fileInput.value = '';
+                return;
+            }
+            if (!payload || payload.app !== 'IVRI Anatomy' || !payload.data) {
+                if (typeof showToast === 'function') showToast('Not a valid IVRI Anatomy backup', 'warning', 'fa-exclamation-circle');
+                fileInput.value = '';
+                return;
+            }
+
+            // Warn if the device already has meaningful data — give the user
+            // a chance to back it up before overwriting.
+            const localKeys = app._backupKeys();
+            const hasLocalData = localKeys.some(k => {
+                const v = localStorage.getItem(k);
+                return v !== null && v !== '' && v !== '[]' && v !== '{}';
+            });
+            const summary = payload.stats || {};
+            const summaryLines = [
+                `Backup created: ${payload.exported_at ? new Date(payload.exported_at).toLocaleString() : 'unknown'}`,
+                `Bookmarks: ${summary.bookmarks || 0}`,
+                `Read topics: ${summary.read_topics || 0}`,
+                `Highlight groups: ${summary.highlight_groups || 0}`,
+                `Notes groups: ${summary.note_groups || 0}`,
+                `Active days: ${summary.active_days || 0}`,
+            ].join('\n');
+
+            const proceed = confirm(
+                'Restore this backup?\n\n' + summaryLines +
+                (hasLocalData ? '\n\n⚠ This will REPLACE your current data on this device. Consider downloading a backup first.' : '')
+            );
+            if (!proceed) { fileInput.value = ''; return; }
+
+            // Clear existing IVRI keys, then write the backup values
+            localKeys.forEach(k => localStorage.removeItem(k));
+            const restored = payload.data || {};
+            Object.keys(restored).forEach(k => {
+                // Only restore keys we recognise (defence against tampered files)
+                if (localKeys.includes(k)) localStorage.setItem(k, restored[k]);
+            });
+            if (typeof showToast === 'function') showToast('Backup restored — reloading…', 'success', 'fa-check-circle');
+            fileInput.value = '';
+            setTimeout(() => window.location.reload(), 900);
+        };
+        reader.readAsText(file);
+    },
+
+    // ============== BOTTOM NAV / TOP DOCK glue ==============
+    // The bottom nav is the persistent spine of navigation on mobile;
+    // on desktop the same component reconfigures into a top-centered dock
+    // via CSS (no JS branching needed). This function wires:
+    //   - "active slot" highlight that follows the current view
+    //   - hide-on-scroll behaviour (the bar slides away on deep scroll
+    //     into reading content and re-appears on scroll-up)
+    _initBottomNav: () => {
+        const nav = document.getElementById('bottom-nav');
+        if (!nav) return;
+        // Hide-on-scroll: only on small screens; uses passive listener so it
+        // never blocks scrolling. Threshold tuned to feel natural (90px).
+        let lastY = window.scrollY;
+        let ticking = false;
+        const onScroll = () => {
+            const y = window.scrollY;
+            if (Math.abs(y - lastY) < 6) { ticking = false; return; }
+            // Auto-hide rules:
+            //   - Mobile (≤900px): always allowed (saves space when reading)
+            //   - Desktop with horizontal nav (top/bottom): allowed
+            //   - Desktop with vertical nav (left/right): NEVER — feels weird
+            const isMobile = window.innerWidth < 901;
+            const isVertical = document.body.classList.contains('nav-pos-left')
+                            || document.body.classList.contains('nav-pos-right');
+            if (isMobile || !isVertical) {
+                if (y > lastY && y > 90) nav.classList.add('bn-hidden');
+                else nav.classList.remove('bn-hidden');
+            } else {
+                nav.classList.remove('bn-hidden');
+            }
+            lastY = y;
+            ticking = false;
+        };
+        window.addEventListener('scroll', () => {
+            if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+        }, { passive: true });
+        app._refreshBottomNavActive();
+    },
+
+    // Mark the bottom-nav slot that matches the current logical view.
+    // Logical view is broader than the view-section: e.g. #/library and
+    // #/highlights both light up the Library slot.
+    _refreshBottomNavActive: () => {
+        const nav = document.getElementById('bottom-nav');
+        if (!nav) return;
+        const hash = (location.hash || '').replace(/^#\/?/, '').split('/')[0];
+        let active = '';
+        if (hash === 'atlas' || hash === '' || app.state.view === 'atlas') active = 'atlas';
+        if (hash === 'why' || app.state.view === 'why') active = 'why';
+        if (hash === 'library' || hash === 'bookmarks' || hash === 'highlights' || hash === 'notes') active = 'library';
+        if (hash === 'me' || hash === 'dashboard') active = 'me';
+        nav.querySelectorAll('.bn-item').forEach(b => {
+            b.classList.toggle('is-active', b.dataset.view === active);
+        });
+    },
+
+    // Wrapper called by every bottom-nav button. Centralises routing so we
+    // never end up with desynced URL + view state.
+    navigateTo: (view) => {
+        if (view === 'atlas') {
+            app.loadView('atlas');
+        } else if (view === 'why') {
+            app.loadView('why');
+        }
+        app._refreshBottomNavActive();
+    },
+
+    openQuiz: () => {
+        if (typeof quizApp !== 'undefined' && quizApp.openMenu) {
+            quizApp.openMenu();
+        }
+        app._refreshBottomNavActive();
+    },
+
+    openMe: () => {
+        app._teardownHighlightPopup();
+        app._loadViewInternal('me');
+        app.setHash('#/me');
+        app._renderMeStats();
+        app._refreshBottomNavActive();
+    },
+
+    _renderMeStats: () => {
+        const bm = (app._loadBookmarks() || []).length;
+        const hl = Object.values(app._loadAllHighlights() || {}).reduce((n, a) => n + a.length, 0);
+        const nt = Object.values(app._loadAllNotes() || {}).reduce((n, a) => n + a.length, 0);
+        const rd = (app._loadRead() || []).length;
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+        set('me-stat-bookmarks', bm);
+        set('me-stat-highlights', hl);
+        set('me-stat-notes', nt);
+        set('me-stat-read', rd);
+        const themeDesc = document.getElementById('me-theme-desc');
+        if (themeDesc) {
+            const isPro = document.body.classList.contains('professional-mode');
+            themeDesc.innerText = isPro ? 'Currently: Professional (medical) — tap to switch' : 'Currently: Student (neon) — tap to switch';
+        }
+        // --- Streak block ---
+        const streak = app._computeStreak();
+        set('streak-current', streak.current);
+        set('streak-longest', streak.longest);
+        set('streak-total', streak.totalDays);
+        // Toggle "is-active" class on the flame if current streak > 0 (drives the glow)
+        const flameEl = document.querySelector('.streak-block');
+        if (flameEl) flameEl.classList.toggle('is-active', streak.current > 0);
+
+        // --- Heatmap render ---
+        const grid = document.getElementById('heatmap-grid');
+        if (grid) {
+            const cells = app._buildHeatmapData();
+            // Group by week (12 columns × 7 days); cells[0] is oldest -> start of week
+            // Calculate offset so the first column aligns to its weekday
+            const firstDow = cells[0].dow;   // 0=Sunday..6=Saturday
+            const html = [];
+            // Build a 7-row grid where each column = 1 week. Use day-of-week as row.
+            for (let day = 0; day < 7; day++) {
+                for (let col = 0; col < 12; col++) {
+                    const idx = col * 7 + day - firstDow;
+                    if (idx < 0 || idx >= cells.length) {
+                        html.push('<span class="hm-cell hm-out"></span>');
+                    } else {
+                        const c = cells[idx];
+                        html.push(`<span class="hm-cell ${c.active ? 'hm-on' : 'hm-empty'}" title="${c.label}${c.active ? ' — active' : ''}"></span>`);
+                    }
+                }
+            }
+            grid.innerHTML = html.join('');
+        }
+        // --- Notification toggle state ---
+        const notifState = document.getElementById('me-notif-state');
+        const notifPill = document.getElementById('me-notif-pill');
+        const on = ('Notification' in window)
+            && Notification.permission === 'granted'
+            && localStorage.getItem(app.NOTIF_PREF_KEY) === '1';
+        if (notifState) notifState.innerText = on ? 'On — daily reminder when topics are due' : 'Off — tap to enable browser notifications';
+        if (notifPill) notifPill.classList.toggle('on', on);
+
+        // --- Nav-position picker selection state ---
+        const curPos = localStorage.getItem(app.NAV_POS_KEY) || 'bottom';
+        document.querySelectorAll('.nav-pos-option').forEach(b => {
+            b.classList.toggle('is-active', b.dataset.pos === curPos);
+        });
+    },
+
+    openAbout: () => {
+        const m = document.getElementById('about-modal');
+        if (m) m.style.display = 'flex';
+    },
+    closeAbout: () => {
+        const m = document.getElementById('about-modal');
+        if (m) m.style.display = 'none';
+    },
+
+    // ============== LIBRARY (unified Bookmarks + Highlights + Notes) ==============
+    _activeLibraryTab: 'bookmarks',
+
+    openLibrary: (tab) => {
+        const t = tab || app._activeLibraryTab || 'bookmarks';
+        app._activeLibraryTab = t;
+        app._teardownHighlightPopup();
+        // Atlas view hosts the library — it already has the sidebar/panel shell
+        app._loadViewInternal('atlas');
+        document.getElementById('atlas-selector').style.display = 'none';
+        document.getElementById('atlas-content').style.display = 'grid';
+
+        // Show the library tab bar at the top of the atlas content
+        const tabs = document.getElementById('library-tabs');
+        if (tabs) {
+            tabs.classList.add('is-open');
+            tabs.style.display = 'flex';
+            // Position the sliding indicator
+            const idx = ['bookmarks', 'highlights', 'notes', 'flashcards', 'glossary'].indexOf(t);
+            tabs.dataset.active = String(Math.max(0, idx));
+            tabs.querySelectorAll('.lib-tab').forEach(b => {
+                b.classList.toggle('is-active', b.dataset.tab === t);
+            });
+        }
+
+        // Dispatch to the existing renderer for the chosen tab
+        if (t === 'bookmarks') {
+            app.showBookmarks();
+            app.setHash('#/library/bookmarks');
+        } else if (t === 'highlights') {
+            app.showHighlights();
+            app.setHash('#/library/highlights');
+        } else if (t === 'notes') {
+            app.showNotes();
+            app.setHash('#/library/notes');
+        } else if (t === 'flashcards') {
+            app.showFlashcards();
+            app.setHash('#/library/flashcards');
+        } else if (t === 'glossary') {
+            app.showGlossary();
+            app.setHash('#/library/glossary');
+        }
+        app._refreshBottomNavActive();
+    },
+
+    // Hide the library tab bar when leaving library mode
+    _hideLibraryTabs: () => {
+        const tabs = document.getElementById('library-tabs');
+        if (tabs) {
+            tabs.classList.remove('is-open');
+            tabs.style.display = 'none';
+        }
+    },
+
+    // Reset the detail panel back to its "awaiting selection" placeholder.
+    // Used whenever we navigate to a new system but don't open a specific
+    // topic — otherwise the previous topic's content would stay visible
+    // (e.g. you click Histology after viewing Scapula → Scapula keeps showing
+    // until you click something in the new sidebar). That felt broken.
+    _resetDetailPanel: () => {
+        // Also clean up any selection popup tied to the old topic
+        app._teardownHighlightPopup();
+        const panel = document.getElementById('detail-panel');
+        if (!panel) return;
+        panel.innerHTML = `
+            <div style="height:100%; display:flex; flex-direction:column;
+                        justify-content:center; align-items:center;
+                        opacity:0.3; color: var(--text-mute);
+                        padding: 40px; text-align: center;">
+                <i class="fas fa-crosshairs" style="font-size:3rem; margin-bottom:20px;"></i>
+                <div style="font-family: var(--font-code); letter-spacing: 1.5px;">SELECT A TOPIC FROM THE LEFT</div>
+                <div style="font-size: .8rem; opacity: .7; margin-top: 8px;">
+                    Pick any structure to view its standard + elite description, comparative table, and clinical correlation.
+                </div>
+            </div>`;
     },
 
     // ============== HASH ROUTING ==============
@@ -65,25 +899,33 @@ const app = {
 
         if (view === 'why' || view === 'dashboard' || view === 'landing') {
             if (app.state.view !== view) app._loadViewInternal(view);
+            app._hideLibraryTabs();
+            app._refreshBottomNavActive();
             return;
         }
-        if (view === 'bookmarks') {
-            app._loadViewInternal('atlas');
-            app.showBookmarks();
+        if (view === 'me') {
+            app._loadViewInternal('me');
+            app._hideLibraryTabs();
+            app._renderMeStats();
+            app._refreshBottomNavActive();
             return;
         }
-        if (view === 'highlights') {
-            app._loadViewInternal('atlas');
-            app.showHighlights();
+        if (view === 'library') {
+            // Sub-route: #/library/bookmarks | /highlights | /notes | /flashcards | /glossary
+            const sub = parts[1] || app._activeLibraryTab || 'bookmarks';
+            app.openLibrary(sub);
             return;
         }
-        if (view === 'notes') {
-            app._loadViewInternal('atlas');
-            app.showNotes();
-            return;
-        }
+        // Legacy deep-links — route through Library so the tab bar appears
+        if (view === 'bookmarks')  { app.openLibrary('bookmarks');  return; }
+        if (view === 'highlights') { app.openLibrary('highlights'); return; }
+        if (view === 'notes')      { app.openLibrary('notes');      return; }
+        if (view === 'flashcards') { app.openLibrary('flashcards'); return; }
+        if (view === 'glossary')   { app.openLibrary('glossary');   return; }
         if (view === 'atlas') {
             app._loadViewInternal('atlas');
+            app._hideLibraryTabs();
+            app._refreshBottomNavActive();
             const region = parts[1] || null;
             const system = parts[2] || null;
             const idx = parts[3] != null ? parseInt(parts[3], 10) : null;
@@ -105,6 +947,11 @@ const app = {
                         const btn = document.querySelector(`.topic-btn[data-index="${idx}"]`);
                         if (btn) app.renderDetail(idx, btn);
                     }, 30);
+                } else {
+                    // New region/system but no specific topic — reset the
+                    // detail panel so the previous topic's content doesn't
+                    // bleed into the new context.
+                    app._resetDetailPanel();
                 }
             } else {
                 app.renderAtlasSelector();
@@ -211,10 +1058,15 @@ const app = {
         if (viewName === 'why' && typeof renderCards === 'function' && typeof anatomyData !== 'undefined') {
             renderCards(anatomyData);
         }
+        if (viewName === 'me') app._renderMeStats();
+        // Whenever the view switches, refresh the bottom-nav active indicator
+        app._refreshBottomNavActive();
     },
 
     // REGIONAL ANATOMY NAVIGATION
     renderAtlasSelector: () => {
+        // Returning to the region/system grid means we're not in Library either
+        app._hideLibraryTabs();
         const grid = document.getElementById('atlas-selector');
         const breadcrumb = document.getElementById('atlas-crumb');
         const eliteBtn = document.getElementById('elite-toggle');
@@ -354,6 +1206,9 @@ const app = {
         document.getElementById('atlas-content').style.display = 'grid';
         document.getElementById('atlas-crumb').innerHTML = `ATLAS > ${app.state.region.toUpperCase()} > ${system.toUpperCase()}`;
         app.renderTopicList();
+        // Fresh system = fresh detail panel; otherwise the previous topic
+        // (e.g. Scapula from Forelimb > Osteology) leaks into the new context.
+        app._resetDetailPanel();
 
         const eliteBtn = document.getElementById('elite-toggle');
         if (eliteBtn) {
@@ -370,6 +1225,16 @@ const app = {
     },
 
     atlasBack: () => {
+        // Special case: leaving the Library frame should always go back to the
+        // atlas region selector, not deeper into atlas state.
+        const libTabs = document.getElementById('library-tabs');
+        if (libTabs && libTabs.classList.contains('is-open')) {
+            app._hideLibraryTabs();
+            app.state.system = null;
+            app.setHash('#/atlas');
+            app.renderAtlasSelector();
+            return;
+        }
         if (document.getElementById('atlas-content').style.display === 'grid') {
             app.state.system = null;
             app.setHash(app.state.region ? `#/atlas/${encodeURIComponent(app.state.region)}` : '#/atlas');
@@ -462,7 +1327,13 @@ const app = {
         let contentHtml = `
             <div class="detail-header">
                 <div>
-                    <div class="h-title">${item.title} ${modeBadge}</div>
+                    <div class="h-title">
+                        ${item.title}
+                        <button class="speak-btn" onclick="app.speakCurrentTopic(this)" title="Read this topic aloud" aria-label="Read this topic aloud">
+                            <i class="fas fa-volume-high"></i>
+                        </button>
+                        ${modeBadge}
+                    </div>
                     <span class="h-sub">/// ${modeLabel} // ${app.state.system.toUpperCase()}</span>
                 </div>
                 <div class="detail-header-actions">
@@ -1476,6 +2347,7 @@ const app = {
 
     toggleRead: (index, btn) => {
         if (!app.state.region || !app.state.system) return;
+        app._recordActivityToday();
         const id = app.bookmarkId(app.state.region, app.state.system, index);
         const list = app._loadRead();
         const i = list.indexOf(id);
@@ -1619,6 +2491,7 @@ const app = {
     openBookmark: (region, system, idx) => {
         app.state.region = region;
         app.state.system = system;
+        app._hideLibraryTabs();  // leaving library mode
         app.setHash(`#/atlas/${encodeURIComponent(region)}/${encodeURIComponent(system)}/${idx}`);
         document.getElementById('atlas-crumb').innerHTML = `ATLAS > ${region.toUpperCase()} > ${system.toUpperCase()}`;
         app.renderTopicList();
@@ -1685,7 +2558,7 @@ function renderCards(data) {
 
     data.forEach((item, index) => {
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = `card ${item.category || ''}`;
         card.style.animationDelay = `${index * 0.05}s`;
         card.onclick = () => openModal(item);
 
@@ -2096,8 +2969,414 @@ const quizSession = {
             [arr[i], arr[j]] = [arr[j], arr[i]];
         }
         return arr;
+    },
+
+    // ==================== POCKET DICTIONARY GLOSSARY BROWSER ====================
+    showGlossary: () => {
+        app._teardownHighlightPopup();
+        document.getElementById('atlas-selector').style.display = 'none';
+        document.getElementById('atlas-content').style.display = 'grid';
+        document.getElementById('atlas-crumb').innerHTML = `LIBRARY > POCKET GLOSSARY`;
+
+        const list = document.getElementById('topic-list');
+        const panel = document.getElementById('detail-panel');
+
+        list.innerHTML = `
+            <div class="glossary-search-wrapper">
+                <div class="glossary-search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="glossary-search-input" id="glossary-search" placeholder="Search glossary terms..." oninput="app.filterGlossary(this.value)">
+                </div>
+            </div>
+            <div id="glossary-list-items" style="padding: 5px;"></div>
+        `;
+
+        app.filterGlossary('');
+
+        panel.innerHTML = `
+            <div style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;opacity:0.5;color:var(--text-mute);">
+                <i class="fas fa-book" style="font-size:3rem;margin-bottom:20px;color:var(--why-cyan);"></i>
+                <div>SELECT A TERM FROM THE DICTIONARY LIST</div>
+            </div>
+        `;
+    },
+
+    filterGlossary: (query) => {
+        const container = document.getElementById('glossary-list-items');
+        if (!container || typeof glossary === 'undefined') return;
+
+        const q = query.toLowerCase().trim();
+        const terms = Object.keys(glossary.terms).sort();
+        const filtered = terms.filter(t => t.toLowerCase().includes(q));
+
+        if (filtered.length === 0) {
+            container.innerHTML = '<div style="padding:20px; color:var(--text-mute); font-size:0.85rem; text-align:center;">No matching terms found.</div>';
+            return;
+        }
+
+        container.innerHTML = filtered.map(term => {
+            return `<button class="topic-btn" onclick="app.openGlossaryTerm('${term.replace(/'/g, "\\'")}', this)">
+                <i class="fas fa-book-open" style="margin-right:8px; opacity:0.6;"></i> ${term.toUpperCase()}
+            </button>`;
+        }).join('');
+    },
+
+    openGlossaryTerm: (term, btnElement) => {
+        if (btnElement) {
+            document.querySelectorAll('#glossary-list-items .topic-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+        }
+
+        const panel = document.getElementById('detail-panel');
+        if (typeof glossary === 'undefined' || !glossary.terms[term]) return;
+
+        const def = glossary.terms[term];
+
+        let category = 'GENERAL ANATOMY';
+        if (term.includes('vertebra') || term.includes('sacrum') || term.includes('fossa') || term.includes('crest') || term.includes('tuber') || term.includes('foramen')) {
+            category = 'OSTEOLOGY & SKELETAL';
+        } else if (term.includes('muscle') || term.includes('pronator') || term.includes('flexor') || term.includes('extensor') || term.includes('sarcomere') || term.includes('epimysium')) {
+            category = 'MYOLOGY & MUSCULOSKELETAL';
+        } else if (term.includes('joint') || term.includes('symphysis') || term.includes('synovia') || term.includes('meniscus')) {
+            category = 'ARTHROLOGY';
+        } else if (term.includes('nerve') || term.includes('plexus') || term.includes('ganglion') || term.includes('neuron') || term.includes('glial')) {
+            category = 'NEUROLOGY';
+        } else if (term.includes('artery') || term.includes('vein') || term.includes('capillary') || term.includes('cardio') || term.includes('ductus')) {
+            category = 'ANGIOLOGY & CIRCULATORY';
+        } else if (term.includes('gastric') || term.includes('rumen') || term.includes('colon') || term.includes('gut') || term.includes('hepatic') || term.includes('pancreas')) {
+            category = 'SPLANCHNOLOGY & VISCERAL';
+        } else if (term.includes('cell') || term.includes('tissue') || term.includes('stain') || term.includes('epithel') || term.includes('blast') || term.includes('cyte')) {
+            category = 'CYTOLOGY & HISTOLOGY';
+        } else if (term.includes('embryo') || term.includes('oocyte') || term.includes('fetus') || term.includes('placenta') || term.includes('blastocyst') || term.includes('gastrula')) {
+            category = 'EMBRYOLOGY & PLACENTATION';
+        }
+
+        panel.innerHTML = `
+            <div class="glossary-detail-container" style="animation: contentSlide 0.35s ease-out;">
+                <span class="glossary-meta">/// ${category}</span>
+                <h2 class="glossary-title">
+                    ${term.charAt(0).toUpperCase() + term.slice(1)}
+                    <button class="speak-btn" onclick="app.speakGlossaryTerm('${term.replace(/'/g, "\\'")}', this)" title="Read pronunciation aloud" aria-label="Speak">
+                        <i class="fas fa-volume-high"></i>
+                    </button>
+                </h2>
+                <div style="border-top:1px solid var(--border); padding-top:20px; margin-top:10px;">
+                    <strong style="color:var(--atlas-gold); display:block; margin-bottom:12px; font-family:var(--font-code);">DEFINITION:</strong>
+                    <p class="glossary-def">${def}</p>
+                </div>
+                <div style="margin-top:40px; padding:15px; background:rgba(255,255,255,0.02); border:1px dashed var(--border); border-radius:8px; font-size:0.82rem; color:var(--text-mute);">
+                    <i class="fas fa-lightbulb" style="color:var(--atlas-gold); margin-right:6px;"></i>
+                    Double-click any highlighted keyword inside Atlas descriptions to instantly open its tooltip popup during study.
+                </div>
+            </div>
+        `;
+    },
+
+    speakGlossaryTerm: (term, btn) => {
+        if (typeof glossary === 'undefined' || !glossary.terms[term]) return;
+        const def = glossary.terms[term];
+        const text = `${term}. Definition: ${def}`;
+
+        if (window.speechSynthesis) {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                if (btn) btn.classList.remove('is-playing');
+                return;
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.95;
+            utterance.pitch = 1.0;
+            
+            if (btn) {
+                btn.classList.add('is-playing');
+                utterance.onend = () => btn.classList.remove('is-playing');
+                utterance.onerror = () => btn.classList.remove('is-playing');
+            }
+            window.speechSynthesis.speak(utterance);
+        } else {
+            showToast('Voice output not supported on this browser', 'warning');
+        }
+    },
+
+    // ==================== CUSTOM FLASHCARDS WITH SRS ====================
+    _defaultFlashcards: [
+        { id: 1, front: "Spermatogenesis vs Spermiogenesis", back: "<b>Spermatogenesis:</b> Entire process of sperm cell formation from spermatogonia to mature spermatozoa.<br><br><b>Spermiogenesis:</b> The final morphological transformation of spherical spermatids into elongated, flagellated spermatozoa (no cell division).", box: 1, nextReview: 0 },
+        { id: 2, front: "Vertebral Formula of the Ox", back: "<b>C7 T13 L6 S5 Cy18-20</b><br><br>Note: 13 thoracic vertebrae correspond to 13 pairs of ribs.", box: 1, nextReview: 0 },
+        { id: 3, front: "Vertebral Formula of the Horse", back: "<b>C7 T18 L6 S5 Cy15-21</b><br><br>Note: The horse has 18 thoracic vertebrae, compared to 13 in the ox and dog.", box: 1, nextReview: 0 },
+        { id: 4, front: "Origin & Insertion of Biceps Brachii", back: "<b>Origin:</b> Supraglenoid tubercle of the scapula.<br><br><b>Insertion:</b> Radial tuberosity of the radius and ulna.<br><br><b>Action:</b> Flexes elbow joint, extends shoulder joint.", box: 1, nextReview: 0 },
+        { id: 5, front: "Margo Plicatus", back: "The jagged, internal dividing line in the <b>equine stomach</b> that separates the non-glandular (cutaneous) squamous mucosa from the glandular mucosa.<br><br>Clinical: Common site for equine gastric ulcers.", box: 1, nextReview: 0 }
+    ],
+
+    _loadFlashcards: () => {
+        try {
+            const data = localStorage.getItem('ivri-flashcards');
+            if (!data) {
+                localStorage.setItem('ivri-flashcards', JSON.stringify(app._defaultFlashcards));
+                return app._defaultFlashcards;
+            }
+            return JSON.parse(data);
+        } catch {
+            return app._defaultFlashcards;
+        }
+    },
+
+    _saveFlashcards: (cards) => {
+        localStorage.setItem('ivri-flashcards', JSON.stringify(cards));
+    },
+
+    showFlashcards: () => {
+        app._teardownHighlightPopup();
+        document.getElementById('atlas-selector').style.display = 'none';
+        document.getElementById('atlas-content').style.display = 'grid';
+        document.getElementById('atlas-crumb').innerHTML = `LIBRARY > MY FLASHCARDS`;
+
+        const list = document.getElementById('topic-list');
+        const panel = document.getElementById('detail-panel');
+        const cards = app._loadFlashcards();
+
+        const dueCount = cards.filter(c => c.nextReview <= Date.now()).length;
+
+        list.innerHTML = `
+            <div class="fc-sidebar-header">
+                <button class="fc-btn fc-btn-primary" onclick="app.openFlashcardCreator()">
+                    <i class="fas fa-plus"></i> Add Flashcard
+                </button>
+                ${dueCount > 0 ? `
+                <button class="fc-btn" style="background:#ff6b6b; border:none; color:#1a0606; font-weight:700;" onclick="app.startFlashcardSession()">
+                    <i class="fas fa-bolt"></i> Review Due (${dueCount})
+                </button>` : `
+                <button class="fc-btn" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-mute);" onclick="app.startFlashcardSession(true)">
+                    <i class="fas fa-redo"></i> Review All (${cards.length})
+                </button>`}
+            </div>
+            <div id="fc-list-items" style="padding:5px;"></div>
+        `;
+
+        const listItems = document.getElementById('fc-list-items');
+        if (cards.length === 0) {
+            listItems.innerHTML = '<div style="padding:20px; color:var(--text-mute); font-size:0.85rem; text-align:center;">No flashcards yet. Click "Add Flashcard" to create your first card!</div>';
+        } else {
+            listItems.innerHTML = cards.map((c, i) => {
+                const isDue = c.nextReview <= Date.now();
+                const dueBadge = isDue ? '<span class="badge" style="border-color:#ff6b6b; color:#ff6b6b; font-size:0.6rem; padding:1px 4px; margin-left:auto;">DUE</span>' : '';
+                return `<button class="topic-btn" onclick="app.openFlashcard(${c.id}, this)">
+                    <span class="fc-leitner-box fc-box-${c.box}">B${c.box}</span>
+                    <span style="margin-left:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:130px;">${c.front}</span>
+                    ${dueBadge}
+                </button>`;
+            }).join('');
+        }
+
+        panel.innerHTML = `
+            <div style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;opacity:0.5;color:var(--text-mute);">
+                <i class="fas fa-clone" style="font-size:3rem;margin-bottom:20px;color:var(--atlas-gold);"></i>
+                <div>SELECT A CARD OR START A STUDY SESSION</div>
+            </div>
+        `;
+    },
+
+    openFlashcard: (id, btnElement) => {
+        if (btnElement) {
+            document.querySelectorAll('#fc-list-items .topic-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+        }
+
+        const panel = document.getElementById('detail-panel');
+        const cards = app._loadFlashcards();
+        const card = cards.find(c => c.id === id);
+        if (!card) return;
+
+        panel.innerHTML = `
+            <div class="flashcard-perspective" onclick="app.flipFlashcard()">
+                <div class="flashcard-card-inner" id="fc-inner">
+                    <div class="flashcard-card-front">
+                        <span class="flashcard-badge">Front (Question)</span>
+                        <div class="flashcard-text">${card.front}</div>
+                        <span class="flashcard-prompt"><i class="fas fa-sync-alt"></i> Tap to flip</span>
+                    </div>
+                    <div class="flashcard-card-back">
+                        <span class="flashcard-badge" style="color:var(--why-cyan)">Back (Answer)</span>
+                        <div class="flashcard-text" style="font-size:1.1rem; text-align:left; font-weight:normal; width:100%;">${card.back}</div>
+                        <span class="flashcard-prompt"><i class="fas fa-sync-alt"></i> Tap to flip back</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fc-actions" id="fc-actions-container">
+                <button class="fc-btn" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-main); width:140px;" onclick="app.flipFlashcard()">
+                    <i class="fas fa-sync-alt"></i> Flip Card
+                </button>
+                <button class="fc-btn" style="background:#ff6b6b; border:none; color:#1a0606; font-weight:700; width:120px;" onclick="app.rateFlashcard(${card.id}, false)">
+                    <i class="fas fa-times"></i> Forgot it
+                </button>
+                <button class="fc-btn" style="background:#1dd1a1; border:none; color:#061a14; font-weight:700; width:120px;" onclick="app.rateFlashcard(${card.id}, true)">
+                    <i class="fas fa-check"></i> Got it
+                </button>
+                <button class="fc-btn danger-on-hover" style="background:transparent; border:1px dashed rgba(255,107,107,0.3); color:#ff6b6b; width:44px;" onclick="app.deleteFlashcard(${card.id})" title="Delete Card">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+    },
+
+    flipFlashcard: () => {
+        const inner = document.getElementById('fc-inner');
+        if (inner) inner.classList.toggle('is-flipped');
+    },
+
+    rateFlashcard: (id, correct) => {
+        const cards = app._loadFlashcards();
+        const cardIndex = cards.findIndex(c => c.id === id);
+        if (cardIndex === -1) return;
+
+        const card = cards[cardIndex];
+        const intervals = { 1: 1, 2: 3, 3: 7, 4: 14, 5: 30 };
+
+        if (correct) {
+            if (card.box < 5) card.box++;
+            showToast(`Card promoted to Box ${card.box}!`, 'success', 'fa-check');
+        } else {
+            card.box = 1;
+            showToast('Card reset to Box 1 for review tomorrow.', 'warning', 'fa-times');
+        }
+
+        const days = intervals[card.box];
+        card.nextReview = Date.now() + days * 24 * 60 * 60 * 1000;
+
+        app._saveFlashcards(cards);
+
+        if (app._fcSessionQueue && app._fcSessionQueue.length > 0) {
+            app._fcSessionQueue.shift();
+            if (app._fcSessionQueue.length > 0) {
+                app.openFlashcard(app._fcSessionQueue[0]);
+            } else {
+                showToast('Review session complete!', 'success', 'fa-trophy');
+                app._fcSessionQueue = null;
+                app.showFlashcards();
+            }
+        } else {
+            app.showFlashcards();
+        }
+    },
+
+    deleteFlashcard: (id) => {
+        if (!confirm('Are you sure you want to delete this card?')) return;
+        let cards = app._loadFlashcards();
+        cards = cards.filter(c => c.id !== id);
+        app._saveFlashcards(cards);
+        showToast('Card deleted.', 'info', 'fa-trash');
+        app.showFlashcards();
+    },
+
+    openFlashcardCreator: () => {
+        document.querySelectorAll('#fc-list-items .topic-btn').forEach(b => b.classList.remove('active'));
+        const panel = document.getElementById('detail-panel');
+
+        panel.innerHTML = `
+            <div class="fc-card-editor" style="animation: contentSlide 0.35s ease-out;">
+                <h3 style="color:var(--atlas-gold); font-family:var(--font-code); margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+                    <i class="fas fa-plus"></i> CREATE NEW FLASHCARD
+                </h3>
+                
+                <div class="fc-form-group">
+                    <label for="fc-front">Front (Question or Term)</label>
+                    <textarea id="fc-front" rows="3" placeholder="e.g. Vertabral Formula of the Dog..."></textarea>
+                </div>
+
+                <div class="fc-form-group">
+                    <label for="fc-back">Back (Answer or Definition - supports HTML tags)</label>
+                    <textarea id="fc-back" rows="6" placeholder="e.g. <b>C7 T13 L7 S3 Cy20-23</b>..."></textarea>
+                </div>
+
+                <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+                    <button class="fc-btn" style="width:100px; background:transparent; border:1px solid var(--border); color:var(--text-mute);" onclick="app.showFlashcards()">
+                        Cancel
+                    </button>
+                    <button class="fc-btn fc-btn-primary" style="width:140px;" onclick="app.saveFlashcard()">
+                        <i class="fas fa-save"></i> Save Card
+                    </button>
+                </div>
+            </div>
+        `;
+    },
+
+    saveFlashcard: () => {
+        const front = document.getElementById('fc-front')?.value.trim();
+        const back = document.getElementById('fc-back')?.value.trim();
+
+        if (!front || !back) {
+            alert('Please fill out both the front and back of the flashcard.');
+            return;
+        }
+
+        const cards = app._loadFlashcards();
+        const newCard = {
+            id: Date.now(),
+            front: front,
+            back: back.replace(/\n/g, '<br>'),
+            box: 1,
+            nextReview: 0
+        };
+
+        cards.push(newCard);
+        app._saveFlashcards(cards);
+        showToast('New flashcard created successfully!', 'success', 'fa-save');
+        app.showFlashcards();
+    },
+
+    _fcSessionQueue: null,
+
+    startFlashcardSession: (all = false) => {
+        const cards = app._loadFlashcards();
+        let queue = [];
+        
+        if (all) {
+            queue = cards.map(c => c.id);
+        } else {
+            queue = cards.filter(c => c.nextReview <= Date.now()).map(c => c.id);
+        }
+
+        if (queue.length === 0) {
+            showToast('No cards due for review!', 'info');
+            return;
+        }
+
+        app._shuffle(queue);
+        app._fcSessionQueue = queue;
+
+        showToast(`Started study session with ${queue.length} cards.`, 'info', 'fa-bolt');
+        app.openFlashcard(queue[0]);
     }
 };
+
+// ==================== GLOSSARY & FLASHCARDS METHOD BINDING ====================
+// Because the app object literal was closed at line 2527 and Glossary & Flashcards
+// were appended to the quizSession object, we dynamically assign them to the app
+// namespace to prevent TypeErrors in navigation and dashboard integrations.
+Object.assign(app, {
+    showGlossary: quizSession.showGlossary,
+    filterGlossary: quizSession.filterGlossary,
+    openGlossaryTerm: quizSession.openGlossaryTerm,
+    speakGlossaryTerm: quizSession.speakGlossaryTerm,
+    _defaultFlashcards: quizSession._defaultFlashcards,
+    _loadFlashcards: quizSession._loadFlashcards,
+    _saveFlashcards: quizSession._saveFlashcards,
+    showFlashcards: quizSession.showFlashcards,
+    openFlashcard: quizSession.openFlashcard,
+    flipFlashcard: quizSession.flipFlashcard,
+    rateFlashcard: quizSession.rateFlashcard,
+    deleteFlashcard: quizSession.deleteFlashcard,
+    openFlashcardCreator: quizSession.openFlashcardCreator,
+    saveFlashcard: quizSession.saveFlashcard,
+    _fcSessionQueue: quizSession._fcSessionQueue,
+    startFlashcardSession: quizSession.startFlashcardSession,
+    _shuffle: quizSession._shuffle
+});
+
+// Expose app to window for cross-module integrations
+if (typeof window !== 'undefined') {
+    window.app = app;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     app.init();

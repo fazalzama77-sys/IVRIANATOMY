@@ -1,0 +1,101 @@
+// ==========================================
+// NEW HISTOLOGY QUESTIONS (70 TOTAL)
+// 35 MCQ, 18 TF, 17 FIB
+// ==========================================
+
+const new_histology = {
+  "Cytology & Basic Tissues": {
+    mcq: [
+      { q: "The limit of resolution for a standard light microscope is approximately:", o: ["0.2 nanometers", "0.2 micrometers", "2.0 micrometers", "20 micrometers"], a: 1, e: "The maximum resolving power of a light microscope is around 0.2 µm, dictated by the wavelength of visible light." },
+      { q: "The Nissl bodies seen in the cytoplasm of neurons using light microscopy correspond to which organelle under electron microscopy?", o: ["Smooth endoplasmic reticulum", "Rough endoplasmic reticulum", "Golgi apparatus", "Lysosomes"], a: 1, e: "Nissl substance represents stacks of rough ER, reflecting the high rate of protein synthesis in neurons." },
+      { q: "Stereocilia, which are exceptionally long and non-motile microvilli, are characteristically found lining the:", o: ["Trachea", "Epididymis", "Fallopian tube", "Intestine"], a: 1, e: "Stereocilia increase surface area for absorption in the male reproductive tract and are also found in the inner ear." },
+      { q: "Which type of epithelium typically lines the larger excretory ducts of salivary glands and sweat glands?", o: ["Simple squamous", "Stratified cuboidal", "Transitional", "Pseudostratified columnar"], a: 1, e: "Stratified cuboidal epithelium usually consists of two layers of cuboidal cells and provides robust lining for larger ducts." },
+      { q: "Reticular fibers, which form the delicate supporting stroma of lymphoid organs and the liver, are composed primarily of:", o: ["Type I collagen", "Type II collagen", "Type III collagen", "Elastin"], a: 2, e: "Type III collagen forms a delicate, highly branched network." },
+      { q: "Which histological stain is specifically used to visualize reticular fibers, causing them to appear black?", o: ["Hematoxylin & Eosin", "Periodic Acid-Schiff (PAS)", "Silver stain (Argyrophilic stain)", "Masson's trichrome"], a: 2, e: "Reticular fibers are argyrophilic, meaning they readily bind silver salts." },
+      { q: "Brown adipose tissue (multilocular fat) is specialized for thermogenesis and is most abundant in:", o: ["Adult carnivores", "Neonatal animals and hibernating mammals", "Avian species", "Reptiles"], a: 1, e: "Brown fat contains many mitochondria and lipid droplets, producing heat instead of ATP via the uncoupling protein thermogenin." },
+      { q: "Osteoclasts are large, multinucleated bone-resorbing cells derived from:", o: ["Osteoprogenitor cells", "Fibroblasts", "The monocyte-macrophage lineage", "Chondroblasts"], a: 2, e: "Unlike osteoblasts which are mesenchymal, osteoclasts come from hematopoietic stem cells." },
+      { q: "How do osteocytes within lacunae communicate with each other in compact bone?", o: ["Via neurotransmitters", "Through cytoplasmic extensions inside canaliculi linked by gap junctions", "By diffusion through the solid calcified matrix", "Through Volkmann's canals directly"], a: 1, e: "The canalicular network allows nutrient exchange and signaling between osteocytes." },
+      { q: "The sarcolemma of skeletal muscle fibers invaginates deep into the cell to form the:", o: ["Sarcoplasmic reticulum", "T-tubule system (Transverse tubules)", "Terminal cisternae", "Z-line"], a: 1, e: "T-tubules rapidly conduct action potentials to the interior of the muscle fiber to trigger calcium release." },
+      { q: "Which glial cell is responsible for producing the myelin sheath around axons in the central nervous system (CNS)?", o: ["Schwann cell", "Astrocyte", "Oligodendrocyte", "Microglia"], a: 2, e: "One oligodendrocyte can myelinate segments of several different CNS axons." },
+      { q: "The peripheral nervous system (PNS) counterpart to the oligodendrocyte, which myelinates peripheral nerves, is the:", o: ["Schwann cell", "Ependymal cell", "Satellite cell", "Astrocyte"], a: 0, e: "Schwann cells wrap around a single axon segment in the PNS." }
+    ],
+    tf: [
+      { q: "Scanning electron microscopy (SEM) is primarily used to view the internal ultrastructure of cells in ultra-thin sections.", a: false, e: "False. Transmission electron microscopy (TEM) is used for internal ultrastructure. SEM is used to view 3D surface topography." },
+      { q: "Microvilli contain a core of actin microfilaments, whereas cilia contain a core of microtubules arranged in a 9+2 pattern.", a: true, e: "True. This structural difference accounts for the motility of cilia and the absorptive function of microvilli." },
+      { q: "Mesenchyme is an embryonic connective tissue characterized by star-shaped cells and a jelly-like, fluid ground substance.", a: true, e: "True. It gives rise to all adult connective tissues, bone, and cartilage." },
+      { q: "Skeletal muscle fibers are highly branched cells that contain a single, centrally located nucleus.", a: false, e: "False. Skeletal muscle fibers are long, unbranched, and multinucleated with peripherally located nuclei. Cardiac cells are branched and centrally nucleated." },
+      { q: "Hyaline cartilage on the articular surfaces of synovial joints is covered by a dense perichondrium.", a: false, e: "False. Articular cartilage lacks a perichondrium, which is why it receives nutrients from synovial fluid and has poor repair capacity." },
+      { q: "Ependymal cells are ciliated glial cells that line the ventricles of the brain and the central canal of the spinal cord.", a: true, e: "True. Their cilia help circulate cerebrospinal fluid (CSF)." }
+    ],
+    fib: [
+      { q: "The specialized cell surface modifications that increase the absorptive surface area of intestinal enterocytes are called _____.", a: ["microvilli"], e: "They form the striated or brush border seen under light microscopy." },
+      { q: "The connective tissue cell that differentiates from a B-lymphocyte and is responsible for the synthesis of antibodies is the _____ cell.", a: ["plasma"], e: "It features a 'clock-face' nucleus and abundant rough ER." },
+      { q: "The principal organic component of the bone matrix, providing tensile strength, is Type _____ collagen.", a: ["I", "1", "one"], e: "Type I collagen is the most abundant collagen in bone, skin, and tendons." },
+      { q: "The shallow depression or cavity on the bone surface created by an active osteoclast is called a _____ lacuna.", a: ["Howship's", "Howship"], e: "Also known as a resorption bay." },
+      { q: "The connective tissue sheath that surrounds an individual nerve fascicle (bundle of axons) is the _____.", a: ["perineurium"], e: "It forms the blood-nerve barrier." },
+      { q: "The unmyelinated gap between two adjacent Schwann cells on a peripheral axon is known as the node of _____.", a: ["Ranvier"], e: "Allows for rapid saltatory conduction of the action potential." }
+    ]
+  },
+  "Blood & Bone Marrow": {
+    mcq: [
+      { q: "In avian and reptilian blood, the functional equivalent of the mammalian neutrophil is the:", o: ["Eosinophil", "Heterophil", "Basophil", "Macrophage"], a: 1, e: "Heterophils contain rod-shaped, eosinophilic granules but function similarly to neutrophils." },
+      { q: "Which domestic species normally has characteristic rod-shaped (bacilliform) granules in its eosinophils?", o: ["Dog", "Cat", "Horse", "Pig"], a: 1, e: "Feline eosinophils have numerous small, rod-shaped granules." },
+      { q: "The eosinophils of which species are easily identified by their very large, tightly packed, raspberry-like granules?", o: ["Cow", "Dog", "Horse", "Cat"], a: 2, e: "Equine eosinophils have distinctly large, striking orange/red granules." },
+      { q: "Kurloff cells, which contain a large, distinct proteoglycan inclusion body, are unique mononuclear leukocytes found in the blood of:", o: ["Rabbits", "Guinea pigs", "Ferrets", "Mice"], a: 1, e: "They are considered a type of natural killer (NK) cell unique to the guinea pig and capybara." },
+      { q: "Hemal nodes, which structurally resemble lymph nodes but are interposed in blood vessels to filter blood instead of lymph, are normally found in:", o: ["Carnivores", "Equines", "Ruminants", "Swine"], a: 2, e: "They appear as small dark red/black nodules along blood vessels in cattle and sheep." },
+      { q: "In a lymph node, the paracortical zone (paracortex) is the primary location for:", o: ["B lymphocytes", "Plasma cells", "T lymphocytes", "Macrophages"], a: 2, e: "The paracortex is the thymus-dependent zone of the lymph node." },
+      { q: "Lymphocytes enter the lymph node from the blood stream primarily by crossing the specialized endothelium of:", o: ["Trabecular arteries", "High endothelial venules (HEVs)", "Lymphatic capillaries", "Medullary sinuses"], a: 1, e: "HEVs have plump, cuboidal endothelial cells expressing specific adhesion molecules for lymphocytes." },
+      { q: "In the avian immune system, the primary lymphoid organ for B-lymphocyte maturation is the:", o: ["Thymus", "Bone marrow", "Bursa of Fabricius", "Spleen"], a: 2, e: "Located dorsal to the cloaca, it is where B-cells (Bursa-derived) get their name." },
+      { q: "Avian thrombocytes differ from mammalian platelets because avian thrombocytes:", o: ["Are true nucleated cells", "Are much smaller", "Do not participate in clotting", "Contain hemoglobin"], a: 0, e: "Avian thrombocytes are intact mononuclear cells, whereas mammalian platelets are anucleate fragments." },
+      { q: "The main structural framework (stroma) of the bone marrow consists of a network of:", o: ["Dense regular connective tissue", "Reticular cells and reticular fibers", "Hyaline cartilage", "Elastic fibers"], a: 1, e: "This delicate meshwork supports the developing hematopoietic cells." },
+      { q: "Which cells form the continuous, though highly fenestrated, endothelial lining of bone marrow sinusoids?", o: ["Megakaryocytes", "Reticular cells", "Endothelial cells", "Macrophages"], a: 2, e: "The sinusoidal endothelium allows mature blood cells to squeeze through into the circulation." }
+    ],
+    tf: [
+      { q: "Porcine blood is unique among domestic mammals because its erythrocytes commonly display marked, physiologic rouleaux formation.", a: false, e: "False. Equine and feline blood normally show marked rouleaux. Porcine RBCs are known for displaying artifactual crenation (echinocytes) very easily." },
+      { q: "The spleen of the horse is characterized by a thick capsule and trabeculae with abundant smooth muscle, allowing it to contract and release stored RBCs during exercise.", a: true, e: "True. The equine spleen serves as a massive red blood cell reservoir." },
+      { q: "In the thymus, the blood-thymus barrier is located in the medulla to protect mature T cells from antigen exposure.", a: false, e: "False. The barrier is located in the CORTEX to protect developing, immature thymocytes from premature exposure to circulating antigens." },
+      { q: "The marginal zone of the spleen is located at the boundary between the red pulp and the white pulp, playing a key role in trapping blood-borne antigens.", a: true, e: "True. It is rich in specialized macrophages and B cells." },
+      { q: "Mammalian platelets contain a distinct, multi-lobed nucleus and replicate within the bloodstream.", a: false, e: "False. Platelets are anucleate cytoplasmic fragments of megakaryocytes; they do not have a nucleus and cannot replicate." },
+      { q: "Lymph flows through a lymph node sequentially from the subcapsular sinus, through trabecular sinuses, into medullary sinuses, and finally exits via the efferent lymphatic vessel.", a: true, e: "True. This slow percolation allows immune cells to survey the lymph." }
+    ],
+    fib: [
+      { q: "The white blood cell that is equivalent to the mammalian neutrophil in birds and reptiles is called the _____.", a: ["heterophil"], e: "It has rod-shaped eosinophilic granules." },
+      { q: "Unique to ruminants, _____ nodes are lymphoid organs that filter blood rather than lymph and appear dark red in gross anatomy.", a: ["hemal"], e: "They lack afferent and efferent lymphatic vessels." },
+      { q: "The specialized post-capillary vessels in the lymph node paracortex where lymphocytes exit the blood to enter the node are called _____ endothelial venules.", a: ["high", "HEV"], e: "Lined by cuboidal rather than squamous endothelium." },
+      { q: "The primary lymphoid organ responsible for B-cell maturation in birds is the bursa of _____.", a: ["Fabricius"], e: "A cloacal lymphoid organ." },
+      { q: "The megakaryocyte is a giant, polyploid bone marrow cell that fragments its cytoplasm to form blood _____.", a: ["platelets", "thrombocytes"], e: "Essential for hemostasis." }
+    ]
+  },
+  "Digestive & Other Systems": {
+    mcq: [
+      { q: "In the avian digestive system, the true glandular stomach that secretes HCl and pepsinogen is the:", o: ["Crop", "Proventriculus", "Ventriculus (Gizzard)", "Cloaca"], a: 1, e: "It precedes the mechanical grinding stomach." },
+      { q: "Which domestic species lacks a gallbladder?", o: ["Cow", "Dog", "Pig", "Horse"], a: 3, e: "Horses are continuous grazers and continuously secrete bile directly into the duodenum." },
+      { q: "The liver of which domestic animal has a highly distinct lobular appearance on the surface due to abundant interlobular connective tissue septa?", o: ["Dog", "Pig", "Horse", "Sheep"], a: 1, e: "The porcine liver has very clear hexagonal lobules visible even to the naked eye." },
+      { q: "The mechanical stomach of birds, characterized by a thick muscular wall and a tough keratinoid lining (koilin) for grinding food, is the:", o: ["Proventriculus", "Ventriculus (Gizzard)", "Crop", "Cecum"], a: 1, e: "Birds often ingest grit to aid the ventriculus in grinding seeds." },
+      { q: "Placentation in the dog and cat is histologically and morphologically classified as:", o: ["Endotheliochorial and zonary", "Epitheliochorial and diffuse", "Synepitheliochorial and cotyledonary", "Hemochorial and discoid"], a: 0, e: "The placenta forms a band (zone) around the fetus and invades the maternal endothelium." },
+      { q: "Placentation in ruminants (cow, sheep) is classified as:", o: ["Epitheliochorial and diffuse", "Endotheliochorial and zonary", "Synepitheliochorial and cotyledonary", "Hemochorial and discoid"], a: 2, e: "Fetal cotyledons interdigitate with maternal caruncles to form placentomes." },
+      { q: "The highly keratinized, backward-pointing papillae on the feline tongue that give it a rough, sandpaper-like texture for grooming and meat-stripping are the:", o: ["Fungiform papillae", "Vallate papillae", "Filiform papillae", "Foliate papillae"], a: 2, e: "Filiform papillae lack taste buds and are purely mechanical." },
+      { q: "Which lingual papillae are large, dome-shaped, located at the base of the tongue, and surrounded by a deep moat containing taste buds and serous von Ebner's glands?", o: ["Filiform papillae", "Vallate (Circumvallate) papillae", "Fungiform papillae", "Conical papillae"], a: 1, e: "The serous secretions wash tastants out of the moat." },
+      { q: "In the avian respiratory system, gas exchange does not occur in blind-ended alveoli, but rather in continuous tiny tubes called:", o: ["Bronchioles", "Parabronchi (and air capillaries)", "Air sacs", "Tracheoles"], a: 1, e: "This allows for highly efficient unidirectional airflow." },
+      { q: "The mammalian kidney structure varies by species. Which species has a distinctly multipyramidal (multilobar) kidney that is lobulated externally?", o: ["Dog", "Cat", "Horse", "Ox (Bovine)"], a: 3, e: "The bovine kidney retains its fetal lobulated appearance." },
+      { q: "Large arteries and veins have their own blood supply to nourish the outer layers of the tunica media and adventitia. These tiny blood vessels are collectively called:", o: ["Vasa vasorum", "Coronary arteries", "Portal veins", "Arteriovenous anastomoses"], a: 0, e: "Literally means 'vessels of the vessels'." },
+      { q: "The retina contains photoreceptor cells. Which cells are responsible for color vision and high visual acuity in bright daylight?", o: ["Rods", "Bipolar cells", "Cones", "Ganglion cells"], a: 2, e: "Cones are for color; rods are for dim light and peripheral vision." }
+    ],
+    tf: [
+      { q: "The canine and feline kidney is unipyramidal, meaning all the collecting ducts empty into a single renal crest and pelvis.", a: true, e: "True. Their kidneys are completely fused into a single lobe structure." },
+      { q: "In the dog, the anal sacs (paranal sinuses) are lined by stratified squamous epithelium and contain apocrine and sebaceous glands in their walls.", a: true, e: "True. The foul-smelling secretion is used for territorial marking." },
+      { q: "The crop in birds is a highly glandular expansion of the esophagus that secretes potent digestive enzymes.", a: false, e: "False. The crop is a non-glandular dilation used merely for food storage and softening, lined by stratified squamous epithelium." },
+      { q: "Placentation in the mare and sow is classified as epitheliochorial and diffuse.", a: true, e: "True. The chorionic villi are distributed over the entire surface of the chorion and do not invade maternal tissue deeply." },
+      { q: "The tapetum lucidum, which reflects light to enhance night vision, is located within the sensory retina of domestic animals.", a: false, e: "False. The tapetum lucidum is located in the choroid (vascular tunic), behind the retina." },
+      { q: "Paneth cells, which secrete antimicrobial lysozyme, are abundant in the intestinal crypts of the dog and cat.", a: false, e: "False. Dogs and cats typically lack Paneth cells, whereas they are prominent in horses, ruminants, humans, and rodents." }
+    ],
+    fib: [
+      { q: "In the bird, the muscular grinding organ of the digestive tract, often containing ingested grit, is the _____.", a: ["ventriculus", "gizzard"], e: "It mechanically breaks down seeds." },
+      { q: "The tongue papillae that are heavily keratinized and direct food caudally (very prominent and sharp in cats) are the _____ papillae.", a: ["filiform"], e: "They are the most numerous papillae and lack taste buds." },
+      { q: "The network of tiny blood vessels that supply oxygen and nutrients to the thick walls of large arteries and veins is called the vasa _____.", a: ["vasorum"], e: "Located primarily in the tunica adventitia." },
+      { q: "The mammalian placenta type found in dogs and cats, which forms a belt-like band around the middle of the fetus, is called a _____ placenta.", a: ["zonary"], e: "It is histologically endotheliochorial." },
+      { q: "The highly light-sensitive photoreceptor cells in the retina that are responsible for black-and-white vision in dim light are the _____.", a: ["rods"], e: "They vastly outnumber cones in most domestic animals to aid night vision." },
+      { q: "The multilobar kidney of the _____ has a distinctly lobulated external appearance, unique among the common domestic mammals.", a: ["ox", "bovine", "cow"], e: "Unlike the smooth bean-shape of sheep, dogs, and cats." }
+    ]
+  }
+};

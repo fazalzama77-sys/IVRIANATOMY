@@ -172,9 +172,31 @@ quizBank = {
 
 - **Single-page app:** `index.html` is a section-switcher. Each section is a `<section class="view-section">`. Navigation by `view-section.active` class + hash routing (`#/atlas/Forelimb/Osteology/2`).
 - **Image loading is already click-to-load:** Atlas modals only fetch images when user clicks a structure. WHY cards render text-only; image loads when user opens the modal. No lazy-loading library needed.
-- **localStorage keys:** `ivri-theme`, `ivri-elite`, `ivri-bookmarks`, `ivri-read`, `ivri-srs-state`, `ivri-quiz-progress`.
+- **localStorage keys:** `ivri-theme`, `ivri-elite`, `ivri-bookmarks`, `ivri-read`, `ivri-srs-state`, `ivri-quiz-progress`, `ivri-highlights`, `ivri-notes`, `ivri-visits`, `ivri-onboarded`, `ivri-install-dismissed`, `ivri-activity` (streak map), `ivri-notify-srs`, `ivri-notify-last`.
 - **PWA:** Service worker caches everything; app installs to Android home screen via `manifest.json`.
 - **State globals:** `atlasData` (regional), `anatomyData` (WHY), `quizBank` (questions), `srs.*` (SRS engine), `quizApp.*` (quiz state).
+
+### 🧭 Navigation architecture (v2 — premium-mobile redesign)
+
+The app uses a **3-layer navigation model**. Respect these boundaries when adding features:
+
+| Layer | Purpose | Where it lives |
+|---|---|---|
+| **L1 — Primary destinations** | 5 stable slots: Atlas · WHY · Quiz · Library · Me | `#bottom-nav` — fixed bottom bar on mobile, reconfigures via CSS into a top-centered pill dock on desktop (≥901px). Component is the same; layout differs. |
+| **L2 — Contextual actions** | Per-screen actions (Elite toggle, Highlight/Note/Share/Read/Bookmark on a topic) | Inline in the screen's `.nav-bar` (desktop) or `.detail-header-actions` row (atlas topic). Icon-only on mobile via CSS. |
+| **L3 — Settings & meta** | Theme · Reset Cache · About · Search · Dashboard | All routed through the **Me** tab (`#me-view`). The old top-left theme toggle is hidden on mobile (`.theme-toggle-btn { display:none }` ≤900px). |
+
+**Library is a unified hub** — Bookmarks + Highlights + Notes live behind the same Library route as 3 tabs. The legacy hashes (`#/bookmarks`, `#/highlights`, `#/notes`) still work — they redirect into Library with the right tab preselected.
+
+**Quiz Mode is the center FAB** on mobile (raised, gold gradient). Stays one-tap reachable everywhere. Also has a desktop top-bar shortcut on the Atlas view.
+
+**Bottom-nav auto-hide on scroll** is intentional — gives more vertical reading room when students are deep in content; reappears on scroll-up.
+
+**Active-slot logic** lives in `app._refreshBottomNavActive()` — it maps URL hash + `app.state.view` to one of: `atlas | why | library | me` (Quiz never stays "active" — it opens an overlay, not a destination).
+
+**When adding a new primary destination**, do NOT add a 6th bottom-nav slot — replace an existing one or nest the new thing into Library/Me. 5 slots is the proven limit (Google Material, iOS HIG).
+
+**When adding a contextual action**, put it in the screen's L2 toolbar — never the bottom nav.
 
 ---
 
@@ -198,6 +220,50 @@ quizBank = {
 5. **If unsure between two approaches**, ask me ONE short question. Don't write code both ways.
 6. **For big features**, give me a 5-line plan first. Wait for "yes go".
 7. **End your responses with a "what to test" checklist** so I can verify quickly.
+
+---
+
+### 🎯 Engagement layer (v3)
+
+Boot sequence (in `app._initEngagement`):
+1. **Visit counter** (`ivri-visits`) bumps every load — drives install-banner timing.
+2. **Daily activity log** (`ivri-activity`) records today's date — drives streak.
+3. **Onboarding tour** — 5 slides, shown once on first visit. Re-triggerable from Me page (`app.replayOnboarding()`). Storage key `ivri-onboarded`.
+4. **Install-as-app banner** — listens for `beforeinstallprompt`, shows after 2 visits. iOS fallback shows "Add to Home Screen" hint with the share icon.
+5. **SRS daily notification** — fires browser Notification (no service-worker push) on app open if: permission granted, user enabled it, SRS items due, and not already fired today.
+
+**Streak math** lives in `app._computeStreak()` — returns `{current, longest, totalDays}`. Counts backwards from today with a 1-day grace (if user hasn't logged today yet, counts from yesterday).
+
+**Heatmap** in Me page uses `app._buildHeatmapData()` — last 84 days, grouped 12 cols × 7 rows.
+
+**Audio pronunciation** uses the browser's `speechSynthesis` API — free, no API key, works offline. The speak-button next to an Atlas topic title now reads the **full content** (title + description + comparative + clinical) of the active topic via `app.speakCurrentTopic()`, with a play/stop toggle. Double-click any glossary term still triggers `app.speak()` for a one-shot pronunciation.
+
+**Backup & Restore** lives in `app.exportBackup()` / `app.importBackupFromFile()` — exports every IVRI localStorage key into a single JSON file (~10–200 KB), validates the file shape on import, asks confirmation if local data exists, then reloads to re-render. The keys covered are listed in `app._backupKeys()` — **add any new `ivri-*` key there** or backups will silently miss it.
+
+### 📸 Image folder structure (nested)
+
+Both `images-raw/atlas/` and `images/atlas/` follow this 3-level structure:
+```
+<region>/<system>/<file>.webp
+e.g. images/atlas/forelimb/osteology/scapula.webp
+```
+The compress script (`tools/compress.py`) walks the raw tree recursively and mirrors output paths. The mapper (`tools/map-images.py`) uses the folder path to scope matches by region+system — accuracy is ~95% when images sit in the right subfolder. Read `tools/IMAGE-WORKFLOW.md` for the full non-coder workflow.
+
+**No "25 MB folder" limit exists** — the only real cap is 25 MB per individual file (Cloudflare Pages), and the compressor pegs files at ~300 KB. The 20,000-files-per-deployment cap on Cloudflare leaves room for 80+ images per atlas entry.
+
+---
+
+## 🎨 DESIGN PRINCIPLES (applied throughout)
+
+Treat these as guardrails when proposing UI changes:
+
+1. **Thumb-zone first.** Anything tapped during normal use must sit in the bottom 60% of the viewport on mobile. The bottom nav follows this; so does the detail-panel action toolbar.
+2. **Three taps max to any feature.** Bottom-nav (1) → Library tab (2) → item (3). Don't add deeper.
+3. **Touch targets ≥44×44 px.** The mobile detail-toolbar icons hit this even when text is hidden.
+4. **Animations are GPU-only.** `transform` + `opacity` in every keyframe. No `filter` / `box-shadow` animations (causes jank on Android).
+5. **Hide-on-demand, never never-show.** Bottom nav auto-hides on deep scroll, but always returns on scroll-up. Never permanently hide primary nav behind a gesture.
+6. **One mental model per surface.** Library = "stuff I saved." Me = "settings + about me." Atlas = "what I'm studying." Don't cross-pollinate.
+7. **Backwards-compatible routes.** Every legacy `#/...` hash must still land somewhere sensible. Tested: `#/bookmarks`, `#/highlights`, `#/notes` all redirect into Library with the right tab.
 
 ---
 

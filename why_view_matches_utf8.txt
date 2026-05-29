@@ -1,0 +1,183 @@
+﻿
+style.css:1205:#why-view {
+style.css:1209:#why-view header {
+style.css:1216:#why-view header::before {
+style.css:1233:body.professional-mode #why-view header::before {
+style.css:1239:#why-view h1 {
+style.css:1251:#why-view .subtitle {
+style.css:1262:#why-view .container {
+style.css:1268:#why-view .badge {
+style.css:1287:#why-view .badge::before {
+style.css:1304:body.professional-mode #why-view .badge {
+style.css:1312:body.professional-mode #why-view .badge::before {
+style.css:1318:#why-view .controls {
+style.css:1343:#why-view .controls.controls-hidden {
+style.css:1351:    #why-view .controls {
+style.css:1357:    #why-view .controls .search-wrapper input { padding: 8px 12px; font-size: 0.85rem; }
+style.css:1358:    #why-view .controls .filters { gap: 6px; }
+style.css:1359:    #why-view .controls .filter-btn { padding: 6px 12px; font-size: 0.75rem; }
+style.css:1360:    #why-view .controls .ai-btn { padding: 8px 14px; font-size: 0.85rem; }
+style.css:1363:#why-view .search-wrapper {
+style.css:1369:#why-view .search-wrapper i {
+style.css:1379:#why-view .search-wrapper:focus-within i {
+style.css:1385:#why-view input[type="text"] {
+style.css:1398:#why-view input[type="text"]:focus {
+style.css:1405:#why-view .filters {
+style.css:1412:#why-view .filter-btn {
+style.css:1426:#why-view .filter-btn:hover {
+style.css:1432:#why-view .filter-btn.active {
+style.css:1439:#why-view .filter-btn.active::before {
+style.css:1448:#why-view .ai-btn {
+style.css:1476:#why-view .ai-btn:hover {
+style.css:1484:#why-view .ai-btn.loading {
+style.css:1489:#why-view .ai-btn.loading i {
+style.css:1494:#why-view .anatomy-grid {
+style.css:1502:#why-view .card {
+style.css:1534:#why-view .card::before {
+style.css:1547:#why-view .card::after {
+style.css:1566:#why-view .card:hover::after {
+style.css:1570:#why-view .card:hover {
+style.css:1580:#why-view .card:hover::before {
+style.css:1584:#why-view .card-header {
+style.css:1592:#why-view .card-category {
+style.css:1604:#why-view .card-title {
+style.css:1612:#why-view .card-comparison {
+style.css:1623:#why-view .card-comparison i {
+style.css:1628:#why-view .card-preview {
+style.css:1639:#why-view .card-footer {
+style.css:1645:#why-view .read-more {
+style.css:1656:#why-view .card:hover .read-more {
+style.css:1661:#why-view .modal-overlay {
+style.css:1679:#why-view .modal-overlay.open {
+style.css:1685:#why-view .modal-content {
+style.css:1703:#why-view .modal-content::before {
+style.css:1714:#why-view .modal-content::after {
+style.css:1725:#why-view .modal-overlay.open .modal-content {
+style.css:1729:#why-view .modal-close {
+style.css:1747:#why-view .modal-close:hover {
+style.css:1754:#why-view .modal-image-col {
+style.css:1765:#why-view .modal-image-col.img-loading::before {
+style.css:1779:#why-view .modal-image-col.img-loading::after {
+style.css:1790:#why-view .modal-image-col.img-error::before {
+style.css:1799:#why-view .modal-img {
+style.css:1809:#why-view .modal-img.img-loaded {
+style.css:1813:#why-view .modal-text-col {
+style.css:1819:#why-view .modal-category {
+style.css:1830:#why-view .modal-title {
+style.css:1838:#why-view .modal-comparison-tag {
+style.css:1852:#why-view .modal-section {
+style.css:1856:#why-view .modal-section-header {
+style.css:1865:#why-view .modal-section h3 {
+style.css:1877:#why-view .sm-btn {
+style.css:1889:#why-view .sm-btn:hover {
+style.css:1895:#why-view .modal-desc {
+style.css:1902:#why-view .modal-clinical {
+style.css:1915:#why-view .ai-response-box {
+style.css:1935:#why-view .ai-response-box::after {
+style.css:1948:#why-view .ai-response-box strong {
+style.css:1959:#why-view .quiz-overlay {
+style.css:1976:#why-view .quiz-overlay.open {
+style.css:1981:#why-view .quiz-card {
+style.css:1993:#why-view .quiz-question {
+style.css:1999:#why-view .quiz-options {
+style.css:2005:#why-view .quiz-btn {
+style.css:2017:#why-view .quiz-btn:hover {
+style.css:2022:#why-view .quiz-btn.correct {
+style.css:2027:#why-view .quiz-btn.wrong {
+style.css:2033:#why-view .quiz-feedback {
+style.css:2044:#why-view .quiz-feedback.fb-good {
+style.css:2050:#why-view .quiz-feedback.fb-bad {
+style.css:2055:#why-view .quiz-feedback strong { font-size: 1.05rem; display: inline-block; margin-bottom: 4px; }
+style.css:2056:#why-view .quiz-feedback .qf-correct { display: block; font-size: .9rem; opacity: .9; margin-top: 4px; }
+style.css:2057:#why-view .quiz-feedback .qf-explain { margin-top: 8px; font-size: .92rem; line-height: 1.55; opacity: 
+.92; }
+style.css:2060:#why-view .quiz-hud-cell .hud-bump {
+style.css:2117:    .qz-confetti, .qz-milestone, #why-view .quiz-hud-cell .hud-bump { animation: none !important; }
+style.css:2122:#why-view .quiz-card {
+style.css:2139:#why-view .quiz-card::before {
+style.css:2152:#why-view .quiz-card > * { position: relative; z-index: 1; }
+style.css:2154:#why-view .quiz-setup-title {
+style.css:2161:#why-view .quiz-setup-title::before {
+style.css:2164:#why-view .quiz-chips {
+style.css:2167:#why-view .quiz-chip {
+style.css:2177:#why-view .quiz-chip:hover {
+style.css:2182:#why-view .quiz-chip.active {
+style.css:2191:#why-view .quiz-start-btn {
+style.css:2205:#why-view .quiz-start-btn:hover {
+style.css:2209:#why-view .ai-btn-ghost {
+style.css:2215:#why-view .quiz-hud {
+style.css:2219:#why-view .quiz-hud-cell {
+style.css:2229:#why-view .quiz-hud-cell:hover { transform: translateY(-2px); }
+style.css:2230:#why-view .quiz-hud-lbl {
+style.css:2234:#why-view .quiz-hud-cell span:not(.quiz-hud-lbl) {
+style.css:2240:#why-view .quiz-progress-bar {
+style.css:2248:#why-view .quiz-progress-fill {
+style.css:2260:#why-view .quiz-topic-tag {
+style.css:2272:#why-view .quiz-question {
+style.css:2281:#why-view .quiz-btn {
+style.css:2294:#why-view .quiz-btn:hover:not(:disabled) {
+style.css:2300:#why-view .quiz-btn.correct {
+style.css:2312:#why-view .quiz-btn.wrong {
+style.css:2326:#why-view .quiz-result-badge {
+style.css:2344:#why-view .quiz-result-title {
+style.css:2354:#why-view .quiz-result-score {
+style.css:2365:#why-view .quiz-result-grade {
+style.css:2374:#why-view .quiz-result-stats {
+style.css:2380:#why-view .quiz-result-stats > div {
+style.css:2389:#why-view .quiz-result-stats > div:hover { transform: translateY(-2px); }
+style.css:2390:#why-view .quiz-result-stats > div span:last-child {
+style.css:2397:#why-view .quiz-result-stats span:first-child { display:block; font-size:.7rem; opacity:.65; 
+letter-spacing: 1.5px; }
+style.css:2398:#why-view .quiz-review-box {
+style.css:2403:#why-view .quiz-review-head {
+style.css:2407:#why-view .quiz-review-perfect {
+style.css:2410:#why-view .quiz-review-item {
+style.css:2415:#why-view .qri-title {
+style.css:2419:#why-view .qri-q { font-size: .95rem; margin-bottom: 4px; }
+style.css:2420:#why-view .qri-a { color: #00f2ff; font-size: .88rem; margin-bottom: 4px; }
+style.css:2421:#why-view .qri-exp { font-size: .82rem; opacity: .8; line-height: 1.4; }
+style.css:2423:#why-view .site-footer {
+style.css:2436:#why-view .site-footer:hover {
+style.css:2505:    #why-view h1 {
+style.css:2509:    #why-view .controls {
+style.css:2514:    #why-view .search-wrapper {
+style.css:2518:    #why-view .modal-content {
+style.css:2522:    #why-view .modal-image-col {
+style.css:2527:    #why-view .modal-text-col {
+style.css:2531:    #why-view .modal-title {
+style.css:2535:    #why-view .modal-img {
+style.css:2582:    #why-view .card {
+style.css:2587:    #why-view .card-title {
+style.css:2591:    #why-view .modal-title {
+style.css:3035:body.professional-mode #why-view {
+style.css:3040:body.professional-mode #why-view h1 {
+style.css:3046:body.professional-mode #why-view .subtitle {
+style.css:3052:body.professional-mode #why-view .controls {
+style.css:3060:body.professional-mode #why-view input[type="text"] {
+style.css:3066:body.professional-mode #why-view input[type="text"]:focus {
+style.css:3071:body.professional-mode #why-view .filter-btn {
+style.css:3077:body.professional-mode #why-view .filter-btn:hover,
+style.css:3078:body.professional-mode #why-view .filter-btn.active {
+style.css:3085:body.professional-mode #why-view .ai-btn {
+style.css:3093:body.professional-mode #why-view .ai-btn:hover {
+style.css:3100:body.professional-mode #why-view .card {
+style.css:3111:body.professional-mode #why-view .card:hover {
+style.css:3118:body.professional-mode #why-view .card-category {
+style.css:3126:body.professional-mode #why-view .card-title {
+style.css:3131:body.professional-mode #why-view .card-comparison {
+style.css:3137:body.professional-mode #why-view .read-more {
+style.css:3146:body.professional-mode #why-view .read-more:hover {
+style.css:3152:body.professional-mode #why-view .modal-content {
+style.css:3160:body.professional-mode #why-view .modal-image-col {
+style.css:3165:body.professional-mode #why-view .modal-text-col {
+style.css:3169:body.professional-mode #why-view .modal-category {
+style.css:3177:body.professional-mode #why-view .modal-title {
+style.css:3183:body.professional-mode #why-view .modal-comparison-tag {
+style.css:3193:body.professional-mode #why-view .modal-section-header {
+style.css:3197:body.professional-mode #why-view .modal-section h3 {
+style.css:3202:body.professional-mode #why-view .modal-clinical {
+style.css:3212:body.professional-mode #why-view .ai-response-box {
+style.css:3220:body.professional-mode #why-view .ai-response-box::after {
+style.css:3225:body.professional-mode #why-view .ai-response-box strong {
+
+
