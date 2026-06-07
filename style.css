@@ -438,86 +438,95 @@ body.professional-mode .landing-bg-video {
 
 #landing-view .portal-card {
     position: relative;
-    width: 310px;
-    height: 320px; /* More compact, solid, and premium */
-    background: rgba(10, 17, 32, 0.45) !important;
+    width: 290px;
+    height: 350px; /* Dimensions from screenshot */
+    background: rgba(10, 17, 32, 0.4) !important;
     backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(var(--accent-rgb), 0.15) !important;
     border-radius: 20px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    justify-content: flex-start !important;
+    justify-content: center !important; /* Perfect vertical alignment centering */
     padding: 32px 24px !important;
     overflow: hidden !important;
     contain: content !important;
-    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s !important;
+    z-index: 1 !important;
+    border: none !important; /* Border is rendered by rotating conic gradient */
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
 }
 
+/* Premium Rotating Conic Border Glow (GPU-Accelerated) - Enhanced brightness */
 #landing-view .portal-card::before {
     content: '' !important;
     position: absolute !important;
-    inset: 0 !important;
-    background: radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), 0.15), transparent 70%) !important;
-    opacity: 0.6 !important;
-    z-index: 1 !important;
-    pointer-events: none !important;
-    transition: opacity 0.3s ease !important;
-    animation: none !important; /* Disable spinning animation for landing cards to look premium and clean */
+    inset: -2px !important;
+    border-radius: 20px !important;
+    background: conic-gradient(from 0deg, transparent, var(--color) 10%, #ffffff 20%, transparent 45%) !important;
+    animation: spin-cw 7s linear infinite !important;
+    z-index: -2 !important;
+    opacity: 0.8 !important; /* Brighter default opacity */
+    will-change: transform !important;
+    transition: opacity 0.3s ease, animation-duration 0.3s ease !important;
 }
 
+/* Inner Card Mask to create a thin 2px border outline */
 #landing-view .portal-card::after {
     content: '' !important;
     position: absolute !important;
-    inset: 0 !important;
-    background: rgba(10, 20, 38, 0.85) !important;
-    border-radius: 20px !important;
+    inset: 1.5px !important;
+    background: #040a16 !important; /* Matches deep dark landing theme */
+    border-radius: 18.5px !important;
     z-index: -1 !important;
+    transition: background-color 0.3s ease !important;
 }
 
 #landing-view .portal-card:hover {
-    transform: translate3d(0, -8px, 0) scale(1.01) !important;
-    background: rgba(15, 23, 42, 0.7) !important;
-    border-color: rgba(var(--accent-rgb), 0.45) !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(var(--accent-rgb), 0.15) !important;
+    transform: translate3d(0, -8px, 0) scale(1.02) !important;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 30px rgba(var(--accent-rgb), 0.32) !important;
+}
+
+#landing-view .portal-card:hover::before {
+    opacity: 1 !important;
+    animation-duration: 4.5s !important; /* Speed up spin on hover */
+}
+
+#landing-view .portal-card:hover::after {
+    background: #060e20 !important; /* Slightly light up inner container on hover */
 }
 
 #landing-view .portal-card:active {
     transform: translate3d(0, -3px, 0) scale(1.002) !important;
 }
 
-/* Glowing Icon Core */
+/* Floating Clean Levitation Icon */
 #landing-view .orb-icon {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 54px !important;
-    height: 54px !important;
-    font-size: 1.5rem !important;
-    border-radius: 50% !important;
-    background: rgba(var(--accent-rgb), 0.08) !important;
-    border: 1px solid rgba(var(--accent-rgb), 0.2) !important;
-    box-shadow: inset 0 0 10px rgba(var(--accent-rgb), 0.1) !important;
-    margin-bottom: 20px !important;
-    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
-    animation: none !important; /* Disable levitation to keep text static and easily readable */
-    text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.4) !important;
+    display: inline-block !important;
+    width: auto !important;
+    height: auto !important;
+    font-size: 3.5rem !important;
+    margin-bottom: 20px !important; /* Tighter margins */
     color: var(--color) !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    text-shadow: 0 0 20px var(--glow) !important;
+    transition: transform 0.3s ease, text-shadow 0.3s ease !important;
+    animation: orb-levitate 4s ease-in-out infinite !important;
+    will-change: transform;
+    z-index: 2 !important;
 }
 
 #landing-view .portal-card:hover .orb-icon {
-    transform: scale(1.1) !important;
-    background: rgba(var(--accent-rgb), 0.15) !important;
-    border-color: rgba(var(--accent-rgb), 0.4) !important;
-    box-shadow: inset 0 0 15px rgba(var(--accent-rgb), 0.2), 0 0 20px rgba(var(--accent-rgb), 0.35) !important;
-    text-shadow: 0 0 20px rgba(var(--accent-rgb), 0.6) !important;
+    transform: scale(1.08) !important;
+    text-shadow: 0 0 30px var(--glow) !important;
 }
 
+/* Headline - Increased font size */
 #landing-view .card-label {
-    font-size: 1.25rem !important;
+    font-size: 1.75rem !important;
     font-weight: 800 !important;
     color: #ffffff !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 16px !important; /* Balanced spacing */
     letter-spacing: 0.5px !important;
     z-index: 2 !important;
     transition: color 0.3s !important;
@@ -527,58 +536,37 @@ body.professional-mode .landing-bg-video {
     color: var(--color) !important;
 }
 
-#landing-view .card-desc {
-    font-size: 0.8rem !important;
-    line-height: 1.55 !important;
-    color: var(--text-mute) !important;
+/* Features List - Increased size and brightness */
+#landing-view .card-features {
+    font-family: var(--font-code) !important;
+    font-size: 0.85rem !important;
+    color: #cbd5e1 !important; /* Brighter text color */
     text-align: center !important;
-    margin-bottom: 0 !important;
-    padding: 0 !important;
+    line-height: 2.2 !important; /* Generous spacing */
+    letter-spacing: 0.5px !important;
     z-index: 2 !important;
+    margin-top: 5px !important;
     transition: color 0.3s !important;
 }
 
-#landing-view .portal-card:hover .card-desc {
+#landing-view .portal-card:hover .card-features {
     color: var(--text-main) !important;
-}
-
-/* Sleek Action Button */
-#landing-view .card-action-link {
-    font-family: var(--font-code) !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    color: var(--color) !important;
-    padding: 8px 18px !important;
-    border-radius: 20px !important;
-    background: rgba(var(--accent-rgb), 0.06) !important;
-    border: 1px solid rgba(var(--accent-rgb), 0.18) !important;
-    margin-top: auto !important; /* Pushes to bottom cleanly */
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    z-index: 2 !important;
-    transition: all 0.25s ease !important;
-}
-
-#landing-view .portal-card:hover .card-action-link {
-    background: var(--color) !important;
-    color: #020c1b !important;
-    border-color: var(--color) !important;
-    box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.35) !important;
-    transform: translateY(-1px) !important;
 }
 
 /* Color Accent Variables for Landing cards */
 #landing-view .card-atlas {
     --color: var(--atlas-gold);
+    --glow: var(--atlas-glow);
     --accent-rgb: 255, 215, 0;
 }
 #landing-view .card-why {
     --color: var(--why-cyan);
+    --glow: var(--why-glow);
     --accent-rgb: 0, 242, 255;
 }
 #landing-view .card-dashboard {
     --color: #bd93f9;
+    --glow: rgba(189, 147, 249, 0.6);
     --accent-rgb: 189, 147, 249;
 }
 
@@ -593,7 +581,7 @@ body.professional-mode #landing-view .portal-card {
 }
 
 body.professional-mode #landing-view .portal-card::before {
-    background: radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), 0.06), transparent 70%) !important;
+    display: none !important;
 }
 
 body.professional-mode #landing-view .portal-card::after {
@@ -611,29 +599,12 @@ body.professional-mode #landing-view .card-label {
     color: #1a202c !important;
 }
 
-body.professional-mode #landing-view .card-desc {
+body.professional-mode #landing-view .card-features {
     color: #4a5568 !important;
 }
 
-body.professional-mode #landing-view .portal-card:hover .card-desc {
+body.professional-mode #landing-view .portal-card:hover .card-features {
     color: #1a202c !important;
-}
-
-body.professional-mode #landing-view .card-action-link {
-    background: rgba(var(--accent-rgb), 0.04) !important;
-    border-color: rgba(var(--accent-rgb), 0.25) !important;
-    color: rgba(var(--accent-rgb), 0.9) !important;
-}
-
-body.professional-mode #landing-view .portal-card:hover .card-action-link {
-    background: var(--color) !important;
-    color: #020c1b !important;
-    border-color: var(--color) !important;
-    box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.25) !important;
-}
-
-body.professional-mode #landing-view .card-dashboard:hover .card-action-link {
-    color: #ffffff !important;
 }
 
 /* Professional Mode (Light Theme) Landing Page Customizations */
@@ -716,17 +687,16 @@ body.professional-mode .portal-card:hover .card-desc {
         max-height: none;
     }
     .hero-left-pane {
-        padding: 50px 24px 40px 24px;
+        padding: 40px 24px 30px 24px;
         align-items: flex-start;
         text-align: left;
     }
     .hero-right-pane {
-        width: calc(100% - 48px);
-        max-width: 380px;
-        aspect-ratio: 9 / 16;
+        width: 220px; /* Scale down to prevent it from pushing content down too much */
+        aspect-ratio: 9 / 16; /* Locked vertical aspect ratio */
         height: auto;
         min-height: auto;
-        margin: 0 auto 40px auto;
+        margin: 0 auto 30px auto; /* Centered with bottom gap */
         border-top: none;
         border-radius: 16px;
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
@@ -739,15 +709,25 @@ body.professional-mode .portal-card:hover .card-desc {
         border: 1px solid rgba(0, 0, 0, 0.08);
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
     }
+    .hero-sys-tag {
+        font-size: 0.72rem; /* Fits on a single line on mobile viewports */
+        margin-bottom: 12px;
+    }
+    .tag-line {
+        width: 16px;
+        margin-right: 8px;
+    }
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.1rem; /* Fits long words like 'technology' on mobile */
+        line-height: 1.15;
         text-align: left;
     }
     .hero-subtitle {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
         text-align: left;
         max-width: 100%;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
     .hero-ctas {
         flex-direction: column;
@@ -755,7 +735,7 @@ body.professional-mode .portal-card:hover .card-desc {
         gap: 12px;
         width: 100%;
         max-width: 320px;
-        margin: 0;
+        margin: 0 0 24px 0; /* Add bottom margin to separate from the video card */
     }
     .hero-cta {
         width: 100%;
