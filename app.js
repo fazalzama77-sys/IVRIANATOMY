@@ -53,6 +53,7 @@ const app = {
             app.routeFromHash();
             app._initBottomNav();
             app._initEngagement();   // visit counter, install prompt, streak, onboarding
+            app._initLandingCanvas();
         }, 0);
     },
 
@@ -66,6 +67,273 @@ const app = {
         try { app._showOnboardingIfFirstTime(); } catch (e) { console.warn('onboard', e); }
         try { app._setupInstallPrompt(); } catch (e) { console.warn('install', e); }
         try { app._maybeShowSrsNotification(); } catch (e) { console.warn('notify', e); }
+    },
+
+    // Renders and controls the interactive 3D holographic vertebra on the landing page
+    _initLandingCanvas: () => {
+        const canvas = document.getElementById('landing-anatomy-canvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        let width = 0, height = 0;
+        
+        // Resize handler
+        const resize = () => {
+            width = canvas.width = canvas.clientWidth;
+            height = canvas.height = canvas.clientHeight;
+        };
+        window.addEventListener('resize', resize);
+        resize();
+
+        // 3D Model Vertices and Edges for Vertebra
+        const vertices = [];
+        const edges = [];
+        
+        const rings = 4;
+        const segments = 12;
+        const radius = 24;
+        
+        // 1. Vertebral Body (cylinder)
+        for (let r = 0; r < rings; r++) {
+            const z = (r - (rings - 1) / 2) * 10;
+            for (let s = 0; s < segments; s++) {
+                const theta = (s / segments) * Math.PI * 2;
+                const cos = Math.cos(theta);
+                const sin = Math.sin(theta);
+                
+                vertices.push({ x: cos * radius, y: sin * radius, z: z, type: 'body' });
+                const idx = vertices.length - 1;
+                
+                if (s > 0) edges.push([idx - 1, idx]);
+                else edges.push([idx + segments - 1, idx]);
+                
+                if (r > 0) edges.push([idx - segments, idx]);
+            }
+        }
+        
+        // 2. Dorsal Spinous Process (vertebral spine)
+        vertices.push({ x: 0, y: -68, z: 0, type: 'spine' });
+        const spineIdx = vertices.length - 1;
+        for (let r = 0; r < rings; r++) {
+            edges.push([r * segments + 9, spineIdx]); // Connect top segment to spine
+        }
+        
+        // 3. Transverse Processes (left/right wings)
+        vertices.push({ x: -60, y: 8, z: -4, type: 'transverse-l' });
+        const leftIdx = vertices.length - 1;
+        vertices.push({ x: 60, y: 8, z: -4, type: 'transverse-r' });
+        const rightIdx = vertices.length - 1;
+        
+        for (let r = 0; r < rings; r++) {
+            edges.push([r * segments + 6, leftIdx]); // Left
+            edges.push([r * segments + 0, rightIdx]); // Right
+        }
+        
+        // 4. Vertebral Arch
+        const archRadius = 32;
+        for (let r = 0; r < rings; r++) {
+            const z = (r - (rings - 1) / 2) * 10;
+            for (let a = 0; a < 5; a++) {
+                const theta = Math.PI + (a / 4) * Math.PI;
+                vertices.push({ x: Math.cos(theta) * archRadius, y: Math.sin(theta) * archRadius - 12, z: z, type: 'arch' });
+                const idx = vertices.length - 1;
+                
+                if (a > 0) edges.push([idx - 1, idx]);
+                if (a === 0) edges.push([idx, r * segments + 6]);
+                if (a === 4) edges.push([idx, r * segments + 0]);
+                if (r > 0) edges.push([idx - 5, idx]);
+            }
+        }
+
+        // State for rotation
+        let angleX = 0.3;
+        let angleY = 0.5;
+        let targetAngleX = 0.3;
+        let targetAngleY = 0.5;
+        let dragStartX = 0, dragStartY = 0;
+        let isDragging = false;
+
+        // Interactive mouse drag rotation
+        const landingView = document.getElementById('landing-view');
+        if (landingView) {
+            landingView.addEventListener('mousedown', (e) => {
+                // Ignore clicks on buttons/cards
+                if (e.target.closest('.hero-cta, .portal-card, .lh-link, .theme-toggle-btn, .search-toggle-btn, .resume-btn')) return;
+                isDragging = true;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const dx = e.clientX - dragStartX;
+                    const dy = e.clientY - dragStartY;
+                    targetAngleY = angleY + dx * 0.008;
+                    targetAngleX = angleX + dy * 0.008;
+                    dragStartX = e.clientX;
+                    dragStartY = e.clientY;
+                    angleX = targetAngleX;
+                    angleY = targetAngleY;
+                } else {
+                    // Parallax hover drift
+                    const rx = (e.clientX - window.innerWidth / 2) / window.innerWidth;
+                    const ry = (e.clientY - window.innerHeight / 2) / window.innerHeight;
+                    targetAngleY = angleY + rx * 0.2;
+                    targetAngleX = angleX + ry * 0.2;
+                }
+            });
+
+            // Mobile touch drag rotation
+            landingView.addEventListener('touchstart', (e) => {
+                if (e.target.closest('.hero-cta, .portal-card, .lh-link, .theme-toggle-btn, .search-toggle-btn, .resume-btn')) return;
+                isDragging = true;
+                dragStartX = e.touches[0].clientX;
+                dragStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            landingView.addEventListener('touchmove', (e) => {
+                if (isDragging && e.touches.length > 0) {
+                    const dx = e.touches[0].clientX - dragStartX;
+                    const dy = e.touches[0].clientY - dragStartY;
+                    targetAngleY = angleY + dx * 0.008;
+                    targetAngleX = angleX + dy * 0.008;
+                    dragStartX = e.touches[0].clientX;
+                    dragStartY = e.touches[0].clientY;
+                    angleX = targetAngleX;
+                    angleY = targetAngleY;
+                }
+            }, { passive: true });
+
+            landingView.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+        }
+
+        // Animation Loop
+        const loop = () => {
+            // Only execute draw if we're on the landing view
+            if (app.state.view !== 'landing') {
+                requestAnimationFrame(loop);
+                return;
+            }
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Auto rotation drift (when not dragging)
+            if (!isDragging) {
+                angleY += 0.003;
+                targetAngleY += 0.003;
+            }
+
+            // Smooth interpolation for parallax
+            const smoothAngleX = angleX + (targetAngleX - angleX) * 0.1;
+            const smoothAngleY = angleY + (targetAngleY - angleY) * 0.1;
+
+            // Compute rotated coordinates
+            const cosX = Math.cos(smoothAngleX), sinX = Math.sin(smoothAngleX);
+            const cosY = Math.cos(smoothAngleY), sinY = Math.sin(smoothAngleY);
+
+            const projected = vertices.map(v => {
+                // Rotate Y
+                const x1 = v.x * cosY - v.z * sinY;
+                const z1 = v.z * cosY + v.x * sinY;
+
+                // Rotate X
+                const y2 = v.y * cosX - z1 * sinX;
+                const z2 = z1 * cosX + v.y * sinX;
+
+                // Perspective projection
+                const fov = 350;
+                const offsetY = -40; // Offset up to sit centered under the hero title
+                const scale = fov / (fov + z2);
+                
+                return {
+                    x: x1 * scale + width / 2,
+                    y: y2 * scale + height / 2.3 + offsetY,
+                    z: z2
+                };
+            });
+
+            const isPro = document.body.classList.contains('professional-mode');
+
+            // Draw HUD Circles in background
+            ctx.beginPath();
+            ctx.arc(width / 2, height / 2.3 - 40, 140, 0, Math.PI * 2);
+            ctx.strokeStyle = isPro ? 'rgba(126, 87, 194, 0.04)' : 'rgba(0, 242, 255, 0.04)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(width / 2, height / 2.3 - 40, 170, angleY * 0.5, angleY * 0.5 + Math.PI * 0.8);
+            ctx.strokeStyle = isPro ? 'rgba(126, 87, 194, 0.06)' : 'rgba(255, 215, 0, 0.06)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Draw Wireframe Edges
+            ctx.lineWidth = 1.2;
+            edges.forEach(([i1, i2]) => {
+                const p1 = projected[i1];
+                const p2 = projected[i2];
+                if (!p1 || !p2) return;
+
+                // Depth-based opacity (farther lines are fainter)
+                const maxZ = 60;
+                const opacityFactor = 1 - (p1.z + p2.z) / (2 * maxZ); // 0 to 1
+                const baseOpacity = isPro ? 0.16 : 0.28;
+                const opacity = Math.max(0.06, opacityFactor * baseOpacity);
+
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                
+                // Color depending on type & mode
+                if (isPro) {
+                    ctx.strokeStyle = `rgba(126, 87, 194, ${opacity})`; // Lilac clinical
+                } else {
+                    // Mix cyan and gold depending on Z depth
+                    const color = p1.z > 0 ? `rgba(0, 242, 255, ${opacity})` : `rgba(255, 215, 0, ${opacity})`;
+                    ctx.strokeStyle = color;
+                }
+                ctx.stroke();
+            });
+
+            // Draw Nodes (vertices points)
+            projected.forEach(p => {
+                // Depth-based radius and opacity
+                const radius = Math.max(1, (1 - p.z / 60) * 2.5);
+                const opacity = Math.max(0.1, (1 - p.z / 60) * 0.6);
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+                if (isPro) {
+                    ctx.fillStyle = `rgba(126, 87, 194, ${opacity * 0.7})`;
+                } else {
+                    ctx.fillStyle = p.z > 0 ? `rgba(0, 242, 255, ${opacity})` : `rgba(255, 215, 0, ${opacity})`;
+                }
+                ctx.fill();
+            });
+
+            // Draw Holographic Telemetry overlay text in bottom-right/left corners of canvas
+            ctx.font = '10px JetBrains Mono, Courier New, monospace';
+            ctx.fillStyle = isPro ? 'rgba(84, 110, 122, 0.4)' : 'rgba(136, 146, 176, 0.4)';
+            
+            const txtLeftY = height - 40;
+            ctx.fillText(`SYS_SCANNER: ACTIVE [FOV_350]`, 30, txtLeftY);
+            ctx.fillText(`OSTEOLOGY_WIRE: VERTICES=106 EDGES=180`, 30, txtLeftY + 14);
+
+            const txtRightY = height - 40;
+            const yawDeg = Math.round(((smoothAngleY % (Math.PI * 2)) * 180) / Math.PI);
+            ctx.fillText(`ROT_YAW: ${yawDeg}° // DEPTH_REF: COMP`, width - 240, txtRightY);
+            ctx.fillText(`IVRI_CORE_ANATOMY // VCI_UNIT_1_8`, width - 240, txtRightY + 14);
+
+            requestAnimationFrame(loop);
+        };
+        
+        loop();
     },
 
     // ---------- Nav-bar position (desktop only — mobile is always bottom) ----------
@@ -496,10 +764,8 @@ const app = {
         if (!app._ttsCleanupHooked) {
             app._ttsCleanupHooked = true;
             window.addEventListener('hashchange', () => {
-                if (window.speechSynthesis) {
-                    window.speechSynthesis.cancel();
-                }
                 if (app._ttsActive) {
+                    window.speechSynthesis.cancel();
                     app._ttsActive = false;
                     app._setSpeakBtnPlaying(false);
                 }
@@ -824,7 +1090,7 @@ const app = {
             tabs.classList.add('is-open');
             tabs.style.display = 'flex';
             // Position the sliding indicator
-            const idx = ['bookmarks', 'highlights', 'notes', 'flashcards', 'glossary'].indexOf(t);
+            const idx = ['bookmarks', 'highlights', 'notes'].indexOf(t);
             tabs.dataset.active = String(Math.max(0, idx));
             tabs.querySelectorAll('.lib-tab').forEach(b => {
                 b.classList.toggle('is-active', b.dataset.tab === t);
@@ -838,15 +1104,9 @@ const app = {
         } else if (t === 'highlights') {
             app.showHighlights();
             app.setHash('#/library/highlights');
-        } else if (t === 'notes') {
+        } else {
             app.showNotes();
             app.setHash('#/library/notes');
-        } else if (t === 'flashcards') {
-            app.showFlashcards();
-            app.setHash('#/library/flashcards');
-        } else if (t === 'glossary') {
-            app.showGlossary();
-            app.setHash('#/library/glossary');
         }
         app._refreshBottomNavActive();
     },
@@ -911,7 +1171,7 @@ const app = {
             return;
         }
         if (view === 'library') {
-            // Sub-route: #/library/bookmarks | /highlights | /notes | /flashcards | /glossary
+            // Sub-route: #/library/bookmarks | /highlights | /notes
             const sub = parts[1] || app._activeLibraryTab || 'bookmarks';
             app.openLibrary(sub);
             return;
@@ -920,8 +1180,6 @@ const app = {
         if (view === 'bookmarks')  { app.openLibrary('bookmarks');  return; }
         if (view === 'highlights') { app.openLibrary('highlights'); return; }
         if (view === 'notes')      { app.openLibrary('notes');      return; }
-        if (view === 'flashcards') { app.openLibrary('flashcards'); return; }
-        if (view === 'glossary')   { app.openLibrary('glossary');   return; }
         if (view === 'atlas') {
             app._loadViewInternal('atlas');
             app._hideLibraryTabs();
@@ -1048,6 +1306,11 @@ const app = {
         app.state.view = viewName;
         window.scrollTo(0, 0);
 
+        if (viewName === 'landing') {
+            app.state.region = null;
+            app.state.system = null;
+            app.renderLandingView();
+        }
         if (viewName === 'atlas') {
             // Reset to selector unless hash is restoring deeper state
             app.state.region = null;
@@ -1061,6 +1324,87 @@ const app = {
         if (viewName === 'me') app._renderMeStats();
         // Whenever the view switches, refresh the bottom-nav active indicator
         app._refreshBottomNavActive();
+    },
+
+    // Renders a dynamic and personalized "Welcome back" card on the landing page if study history is present
+    renderLandingView: () => {
+        const panel = document.getElementById('dynamic-resume-panel');
+        if (!panel) return;
+
+        // Clear previous panel content
+        panel.innerHTML = '';
+
+        // Read study stats
+        const bookmarks = app._loadBookmarks();
+        const readList = app._loadRead();
+        const streakObj = app._computeStreak(); // { current, longest, totalDays }
+        const srsDueCount = (typeof srs !== 'undefined') ? srs.getDueQids().length : 0;
+        const lastStudiedHash = localStorage.getItem('ivri-last-studied-hash');
+        const lastStudiedTitle = localStorage.getItem('ivri-last-studied-title');
+
+        // Check if there's any active study progress
+        const hasBookmarks = bookmarks.length > 0;
+        const hasRead = readList.length > 0;
+        const hasStreak = streakObj.current > 0;
+        const hasSrsDue = srsDueCount > 0;
+        const hasLastStudied = !!lastStudiedHash && !!lastStudiedTitle;
+
+        if (!hasBookmarks && !hasRead && !hasStreak && !hasSrsDue && !hasLastStudied) {
+            // No study history at all, keep panel hidden
+            panel.style.display = 'none';
+            return;
+        }
+
+        panel.style.display = 'block';
+
+        // Choose what to prioritize in the welcome banner:
+        // 1. SRS Due items (highest priority for active recall)
+        // 2. Resume studying last active topic
+        // 3. Keep streak alive if they haven't logged activity today
+        let cardIcon = 'fa-fire';
+        let titleText = 'Welcome back!';
+        let subtitleText = '';
+        let buttonText = 'Continue';
+        let buttonAction = `app.loadView('atlas')`;
+
+        if (hasSrsDue) {
+            cardIcon = 'fa-brain';
+            titleText = `${srsDueCount} Question${srsDueCount > 1 ? 's' : ''} Due for Review`;
+            subtitleText = 'Keep your memory sharp! Your Spaced Repetition queue is ready.';
+            buttonText = 'Review Now';
+            buttonAction = `app.loadView('dashboard')`; // Navigate to dashboard which holds the SRS panel
+        } else if (hasLastStudied) {
+            cardIcon = 'fa-book-open';
+            titleText = `Resume studying: ${lastStudiedTitle}`;
+            subtitleText = `Pick up right where you left off.`;
+            buttonText = 'Resume';
+            buttonAction = `location.hash = '${lastStudiedHash}'`;
+        } else if (hasStreak) {
+            cardIcon = 'fa-fire';
+            titleText = `${streakObj.current}-Day Study Streak!`;
+            subtitleText = `Keep your streak alive. Review weak areas or read a new structure!`;
+            buttonText = 'Practice';
+            buttonAction = `app.openQuiz()`;
+        } else {
+            cardIcon = 'fa-graduation-cap';
+            titleText = 'Ready to continue?';
+            subtitleText = `You have ${bookmarks.length} bookmarked structure${bookmarks.length > 1 ? 's' : ''}.`;
+            buttonText = 'Open Atlas';
+            buttonAction = `app.loadView('atlas')`;
+        }
+
+        panel.innerHTML = `
+            <div class="resume-card">
+                <div class="resume-card-body">
+                    <i class="fas ${cardIcon}"></i>
+                    <div>
+                        <div class="resume-text-title">${titleText}</div>
+                        <div class="resume-text-subtitle">${subtitleText}</div>
+                    </div>
+                </div>
+                <button onclick="${buttonAction}" class="resume-btn">${buttonText} <i class="fas fa-chevron-right" style="font-size:0.75rem; margin-left:4px;"></i></button>
+            </div>
+        `;
     },
 
     // REGIONAL ANATOMY NAVIGATION
@@ -1290,7 +1634,12 @@ const app = {
         const panel = document.getElementById('detail-panel');
 
         // Update URL so refresh / Back works on this exact topic
-        app.setHash(`#/atlas/${encodeURIComponent(app.state.region)}/${encodeURIComponent(app.state.system)}/${index}`);
+        const lastStudiedPath = `#/atlas/${encodeURIComponent(app.state.region)}/${encodeURIComponent(app.state.system)}/${index}`;
+        app.setHash(lastStudiedPath);
+        
+        // Save to localStorage for the landing page "Resume Study" panel
+        localStorage.setItem('ivri-last-studied-hash', lastStudiedPath);
+        localStorage.setItem('ivri-last-studied-title', item.title);
 
         // Override page title to include the structure name for sharper bookmarks/sharing
         document.title = `${item.title} · ${app.state.system} · ${app.state.region} · IVRI Anatomy`;
@@ -2969,414 +3318,8 @@ const quizSession = {
             [arr[i], arr[j]] = [arr[j], arr[i]];
         }
         return arr;
-    },
-
-    // ==================== POCKET DICTIONARY GLOSSARY BROWSER ====================
-    showGlossary: () => {
-        app._teardownHighlightPopup();
-        document.getElementById('atlas-selector').style.display = 'none';
-        document.getElementById('atlas-content').style.display = 'grid';
-        document.getElementById('atlas-crumb').innerHTML = `LIBRARY > POCKET GLOSSARY`;
-
-        const list = document.getElementById('topic-list');
-        const panel = document.getElementById('detail-panel');
-
-        list.innerHTML = `
-            <div class="glossary-search-wrapper">
-                <div class="glossary-search-container">
-                    <i class="fas fa-search"></i>
-                    <input type="text" class="glossary-search-input" id="glossary-search" placeholder="Search glossary terms..." oninput="app.filterGlossary(this.value)">
-                </div>
-            </div>
-            <div id="glossary-list-items" style="padding: 5px;"></div>
-        `;
-
-        app.filterGlossary('');
-
-        panel.innerHTML = `
-            <div style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;opacity:0.5;color:var(--text-mute);">
-                <i class="fas fa-book" style="font-size:3rem;margin-bottom:20px;color:var(--why-cyan);"></i>
-                <div>SELECT A TERM FROM THE DICTIONARY LIST</div>
-            </div>
-        `;
-    },
-
-    filterGlossary: (query) => {
-        const container = document.getElementById('glossary-list-items');
-        if (!container || typeof glossary === 'undefined') return;
-
-        const q = query.toLowerCase().trim();
-        const terms = Object.keys(glossary.terms).sort();
-        const filtered = terms.filter(t => t.toLowerCase().includes(q));
-
-        if (filtered.length === 0) {
-            container.innerHTML = '<div style="padding:20px; color:var(--text-mute); font-size:0.85rem; text-align:center;">No matching terms found.</div>';
-            return;
-        }
-
-        container.innerHTML = filtered.map(term => {
-            return `<button class="topic-btn" onclick="app.openGlossaryTerm('${term.replace(/'/g, "\\'")}', this)">
-                <i class="fas fa-book-open" style="margin-right:8px; opacity:0.6;"></i> ${term.toUpperCase()}
-            </button>`;
-        }).join('');
-    },
-
-    openGlossaryTerm: (term, btnElement) => {
-        if (btnElement) {
-            document.querySelectorAll('#glossary-list-items .topic-btn').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-        }
-
-        const panel = document.getElementById('detail-panel');
-        if (typeof glossary === 'undefined' || !glossary.terms[term]) return;
-
-        const def = glossary.terms[term];
-
-        let category = 'GENERAL ANATOMY';
-        if (term.includes('vertebra') || term.includes('sacrum') || term.includes('fossa') || term.includes('crest') || term.includes('tuber') || term.includes('foramen')) {
-            category = 'OSTEOLOGY & SKELETAL';
-        } else if (term.includes('muscle') || term.includes('pronator') || term.includes('flexor') || term.includes('extensor') || term.includes('sarcomere') || term.includes('epimysium')) {
-            category = 'MYOLOGY & MUSCULOSKELETAL';
-        } else if (term.includes('joint') || term.includes('symphysis') || term.includes('synovia') || term.includes('meniscus')) {
-            category = 'ARTHROLOGY';
-        } else if (term.includes('nerve') || term.includes('plexus') || term.includes('ganglion') || term.includes('neuron') || term.includes('glial')) {
-            category = 'NEUROLOGY';
-        } else if (term.includes('artery') || term.includes('vein') || term.includes('capillary') || term.includes('cardio') || term.includes('ductus')) {
-            category = 'ANGIOLOGY & CIRCULATORY';
-        } else if (term.includes('gastric') || term.includes('rumen') || term.includes('colon') || term.includes('gut') || term.includes('hepatic') || term.includes('pancreas')) {
-            category = 'SPLANCHNOLOGY & VISCERAL';
-        } else if (term.includes('cell') || term.includes('tissue') || term.includes('stain') || term.includes('epithel') || term.includes('blast') || term.includes('cyte')) {
-            category = 'CYTOLOGY & HISTOLOGY';
-        } else if (term.includes('embryo') || term.includes('oocyte') || term.includes('fetus') || term.includes('placenta') || term.includes('blastocyst') || term.includes('gastrula')) {
-            category = 'EMBRYOLOGY & PLACENTATION';
-        }
-
-        panel.innerHTML = `
-            <div class="glossary-detail-container" style="animation: contentSlide 0.35s ease-out;">
-                <span class="glossary-meta">/// ${category}</span>
-                <h2 class="glossary-title">
-                    ${term.charAt(0).toUpperCase() + term.slice(1)}
-                    <button class="speak-btn" onclick="app.speakGlossaryTerm('${term.replace(/'/g, "\\'")}', this)" title="Read pronunciation aloud" aria-label="Speak">
-                        <i class="fas fa-volume-high"></i>
-                    </button>
-                </h2>
-                <div style="border-top:1px solid var(--border); padding-top:20px; margin-top:10px;">
-                    <strong style="color:var(--atlas-gold); display:block; margin-bottom:12px; font-family:var(--font-code);">DEFINITION:</strong>
-                    <p class="glossary-def">${def}</p>
-                </div>
-                <div style="margin-top:40px; padding:15px; background:rgba(255,255,255,0.02); border:1px dashed var(--border); border-radius:8px; font-size:0.82rem; color:var(--text-mute);">
-                    <i class="fas fa-lightbulb" style="color:var(--atlas-gold); margin-right:6px;"></i>
-                    Double-click any highlighted keyword inside Atlas descriptions to instantly open its tooltip popup during study.
-                </div>
-            </div>
-        `;
-    },
-
-    speakGlossaryTerm: (term, btn) => {
-        if (typeof glossary === 'undefined' || !glossary.terms[term]) return;
-        const def = glossary.terms[term];
-        const text = `${term}. Definition: ${def}`;
-
-        if (window.speechSynthesis) {
-            if (window.speechSynthesis.speaking) {
-                window.speechSynthesis.cancel();
-                if (btn) btn.classList.remove('is-playing');
-                return;
-            }
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.95;
-            utterance.pitch = 1.0;
-            
-            if (btn) {
-                btn.classList.add('is-playing');
-                utterance.onend = () => btn.classList.remove('is-playing');
-                utterance.onerror = () => btn.classList.remove('is-playing');
-            }
-            window.speechSynthesis.speak(utterance);
-        } else {
-            showToast('Voice output not supported on this browser', 'warning');
-        }
-    },
-
-    // ==================== CUSTOM FLASHCARDS WITH SRS ====================
-    _defaultFlashcards: [
-        { id: 1, front: "Spermatogenesis vs Spermiogenesis", back: "<b>Spermatogenesis:</b> Entire process of sperm cell formation from spermatogonia to mature spermatozoa.<br><br><b>Spermiogenesis:</b> The final morphological transformation of spherical spermatids into elongated, flagellated spermatozoa (no cell division).", box: 1, nextReview: 0 },
-        { id: 2, front: "Vertebral Formula of the Ox", back: "<b>C7 T13 L6 S5 Cy18-20</b><br><br>Note: 13 thoracic vertebrae correspond to 13 pairs of ribs.", box: 1, nextReview: 0 },
-        { id: 3, front: "Vertebral Formula of the Horse", back: "<b>C7 T18 L6 S5 Cy15-21</b><br><br>Note: The horse has 18 thoracic vertebrae, compared to 13 in the ox and dog.", box: 1, nextReview: 0 },
-        { id: 4, front: "Origin & Insertion of Biceps Brachii", back: "<b>Origin:</b> Supraglenoid tubercle of the scapula.<br><br><b>Insertion:</b> Radial tuberosity of the radius and ulna.<br><br><b>Action:</b> Flexes elbow joint, extends shoulder joint.", box: 1, nextReview: 0 },
-        { id: 5, front: "Margo Plicatus", back: "The jagged, internal dividing line in the <b>equine stomach</b> that separates the non-glandular (cutaneous) squamous mucosa from the glandular mucosa.<br><br>Clinical: Common site for equine gastric ulcers.", box: 1, nextReview: 0 }
-    ],
-
-    _loadFlashcards: () => {
-        try {
-            const data = localStorage.getItem('ivri-flashcards');
-            if (!data) {
-                localStorage.setItem('ivri-flashcards', JSON.stringify(app._defaultFlashcards));
-                return app._defaultFlashcards;
-            }
-            return JSON.parse(data);
-        } catch {
-            return app._defaultFlashcards;
-        }
-    },
-
-    _saveFlashcards: (cards) => {
-        localStorage.setItem('ivri-flashcards', JSON.stringify(cards));
-    },
-
-    showFlashcards: () => {
-        app._teardownHighlightPopup();
-        document.getElementById('atlas-selector').style.display = 'none';
-        document.getElementById('atlas-content').style.display = 'grid';
-        document.getElementById('atlas-crumb').innerHTML = `LIBRARY > MY FLASHCARDS`;
-
-        const list = document.getElementById('topic-list');
-        const panel = document.getElementById('detail-panel');
-        const cards = app._loadFlashcards();
-
-        const dueCount = cards.filter(c => c.nextReview <= Date.now()).length;
-
-        list.innerHTML = `
-            <div class="fc-sidebar-header">
-                <button class="fc-btn fc-btn-primary" onclick="app.openFlashcardCreator()">
-                    <i class="fas fa-plus"></i> Add Flashcard
-                </button>
-                ${dueCount > 0 ? `
-                <button class="fc-btn" style="background:#ff6b6b; border:none; color:#1a0606; font-weight:700;" onclick="app.startFlashcardSession()">
-                    <i class="fas fa-bolt"></i> Review Due (${dueCount})
-                </button>` : `
-                <button class="fc-btn" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-mute);" onclick="app.startFlashcardSession(true)">
-                    <i class="fas fa-redo"></i> Review All (${cards.length})
-                </button>`}
-            </div>
-            <div id="fc-list-items" style="padding:5px;"></div>
-        `;
-
-        const listItems = document.getElementById('fc-list-items');
-        if (cards.length === 0) {
-            listItems.innerHTML = '<div style="padding:20px; color:var(--text-mute); font-size:0.85rem; text-align:center;">No flashcards yet. Click "Add Flashcard" to create your first card!</div>';
-        } else {
-            listItems.innerHTML = cards.map((c, i) => {
-                const isDue = c.nextReview <= Date.now();
-                const dueBadge = isDue ? '<span class="badge" style="border-color:#ff6b6b; color:#ff6b6b; font-size:0.6rem; padding:1px 4px; margin-left:auto;">DUE</span>' : '';
-                return `<button class="topic-btn" onclick="app.openFlashcard(${c.id}, this)">
-                    <span class="fc-leitner-box fc-box-${c.box}">B${c.box}</span>
-                    <span style="margin-left:8px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:130px;">${c.front}</span>
-                    ${dueBadge}
-                </button>`;
-            }).join('');
-        }
-
-        panel.innerHTML = `
-            <div style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;opacity:0.5;color:var(--text-mute);">
-                <i class="fas fa-clone" style="font-size:3rem;margin-bottom:20px;color:var(--atlas-gold);"></i>
-                <div>SELECT A CARD OR START A STUDY SESSION</div>
-            </div>
-        `;
-    },
-
-    openFlashcard: (id, btnElement) => {
-        if (btnElement) {
-            document.querySelectorAll('#fc-list-items .topic-btn').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-        }
-
-        const panel = document.getElementById('detail-panel');
-        const cards = app._loadFlashcards();
-        const card = cards.find(c => c.id === id);
-        if (!card) return;
-
-        panel.innerHTML = `
-            <div class="flashcard-perspective" onclick="app.flipFlashcard()">
-                <div class="flashcard-card-inner" id="fc-inner">
-                    <div class="flashcard-card-front">
-                        <span class="flashcard-badge">Front (Question)</span>
-                        <div class="flashcard-text">${card.front}</div>
-                        <span class="flashcard-prompt"><i class="fas fa-sync-alt"></i> Tap to flip</span>
-                    </div>
-                    <div class="flashcard-card-back">
-                        <span class="flashcard-badge" style="color:var(--why-cyan)">Back (Answer)</span>
-                        <div class="flashcard-text" style="font-size:1.1rem; text-align:left; font-weight:normal; width:100%;">${card.back}</div>
-                        <span class="flashcard-prompt"><i class="fas fa-sync-alt"></i> Tap to flip back</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="fc-actions" id="fc-actions-container">
-                <button class="fc-btn" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text-main); width:140px;" onclick="app.flipFlashcard()">
-                    <i class="fas fa-sync-alt"></i> Flip Card
-                </button>
-                <button class="fc-btn" style="background:#ff6b6b; border:none; color:#1a0606; font-weight:700; width:120px;" onclick="app.rateFlashcard(${card.id}, false)">
-                    <i class="fas fa-times"></i> Forgot it
-                </button>
-                <button class="fc-btn" style="background:#1dd1a1; border:none; color:#061a14; font-weight:700; width:120px;" onclick="app.rateFlashcard(${card.id}, true)">
-                    <i class="fas fa-check"></i> Got it
-                </button>
-                <button class="fc-btn danger-on-hover" style="background:transparent; border:1px dashed rgba(255,107,107,0.3); color:#ff6b6b; width:44px;" onclick="app.deleteFlashcard(${card.id})" title="Delete Card">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
-    },
-
-    flipFlashcard: () => {
-        const inner = document.getElementById('fc-inner');
-        if (inner) inner.classList.toggle('is-flipped');
-    },
-
-    rateFlashcard: (id, correct) => {
-        const cards = app._loadFlashcards();
-        const cardIndex = cards.findIndex(c => c.id === id);
-        if (cardIndex === -1) return;
-
-        const card = cards[cardIndex];
-        const intervals = { 1: 1, 2: 3, 3: 7, 4: 14, 5: 30 };
-
-        if (correct) {
-            if (card.box < 5) card.box++;
-            showToast(`Card promoted to Box ${card.box}!`, 'success', 'fa-check');
-        } else {
-            card.box = 1;
-            showToast('Card reset to Box 1 for review tomorrow.', 'warning', 'fa-times');
-        }
-
-        const days = intervals[card.box];
-        card.nextReview = Date.now() + days * 24 * 60 * 60 * 1000;
-
-        app._saveFlashcards(cards);
-
-        if (app._fcSessionQueue && app._fcSessionQueue.length > 0) {
-            app._fcSessionQueue.shift();
-            if (app._fcSessionQueue.length > 0) {
-                app.openFlashcard(app._fcSessionQueue[0]);
-            } else {
-                showToast('Review session complete!', 'success', 'fa-trophy');
-                app._fcSessionQueue = null;
-                app.showFlashcards();
-            }
-        } else {
-            app.showFlashcards();
-        }
-    },
-
-    deleteFlashcard: (id) => {
-        if (!confirm('Are you sure you want to delete this card?')) return;
-        let cards = app._loadFlashcards();
-        cards = cards.filter(c => c.id !== id);
-        app._saveFlashcards(cards);
-        showToast('Card deleted.', 'info', 'fa-trash');
-        app.showFlashcards();
-    },
-
-    openFlashcardCreator: () => {
-        document.querySelectorAll('#fc-list-items .topic-btn').forEach(b => b.classList.remove('active'));
-        const panel = document.getElementById('detail-panel');
-
-        panel.innerHTML = `
-            <div class="fc-card-editor" style="animation: contentSlide 0.35s ease-out;">
-                <h3 style="color:var(--atlas-gold); font-family:var(--font-code); margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px;">
-                    <i class="fas fa-plus"></i> CREATE NEW FLASHCARD
-                </h3>
-                
-                <div class="fc-form-group">
-                    <label for="fc-front">Front (Question or Term)</label>
-                    <textarea id="fc-front" rows="3" placeholder="e.g. Vertabral Formula of the Dog..."></textarea>
-                </div>
-
-                <div class="fc-form-group">
-                    <label for="fc-back">Back (Answer or Definition - supports HTML tags)</label>
-                    <textarea id="fc-back" rows="6" placeholder="e.g. <b>C7 T13 L7 S3 Cy20-23</b>..."></textarea>
-                </div>
-
-                <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
-                    <button class="fc-btn" style="width:100px; background:transparent; border:1px solid var(--border); color:var(--text-mute);" onclick="app.showFlashcards()">
-                        Cancel
-                    </button>
-                    <button class="fc-btn fc-btn-primary" style="width:140px;" onclick="app.saveFlashcard()">
-                        <i class="fas fa-save"></i> Save Card
-                    </button>
-                </div>
-            </div>
-        `;
-    },
-
-    saveFlashcard: () => {
-        const front = document.getElementById('fc-front')?.value.trim();
-        const back = document.getElementById('fc-back')?.value.trim();
-
-        if (!front || !back) {
-            alert('Please fill out both the front and back of the flashcard.');
-            return;
-        }
-
-        const cards = app._loadFlashcards();
-        const newCard = {
-            id: Date.now(),
-            front: front,
-            back: back.replace(/\n/g, '<br>'),
-            box: 1,
-            nextReview: 0
-        };
-
-        cards.push(newCard);
-        app._saveFlashcards(cards);
-        showToast('New flashcard created successfully!', 'success', 'fa-save');
-        app.showFlashcards();
-    },
-
-    _fcSessionQueue: null,
-
-    startFlashcardSession: (all = false) => {
-        const cards = app._loadFlashcards();
-        let queue = [];
-        
-        if (all) {
-            queue = cards.map(c => c.id);
-        } else {
-            queue = cards.filter(c => c.nextReview <= Date.now()).map(c => c.id);
-        }
-
-        if (queue.length === 0) {
-            showToast('No cards due for review!', 'info');
-            return;
-        }
-
-        app._shuffle(queue);
-        app._fcSessionQueue = queue;
-
-        showToast(`Started study session with ${queue.length} cards.`, 'info', 'fa-bolt');
-        app.openFlashcard(queue[0]);
     }
 };
-
-// ==================== GLOSSARY & FLASHCARDS METHOD BINDING ====================
-// Because the app object literal was closed at line 2527 and Glossary & Flashcards
-// were appended to the quizSession object, we dynamically assign them to the app
-// namespace to prevent TypeErrors in navigation and dashboard integrations.
-Object.assign(app, {
-    showGlossary: quizSession.showGlossary,
-    filterGlossary: quizSession.filterGlossary,
-    openGlossaryTerm: quizSession.openGlossaryTerm,
-    speakGlossaryTerm: quizSession.speakGlossaryTerm,
-    _defaultFlashcards: quizSession._defaultFlashcards,
-    _loadFlashcards: quizSession._loadFlashcards,
-    _saveFlashcards: quizSession._saveFlashcards,
-    showFlashcards: quizSession.showFlashcards,
-    openFlashcard: quizSession.openFlashcard,
-    flipFlashcard: quizSession.flipFlashcard,
-    rateFlashcard: quizSession.rateFlashcard,
-    deleteFlashcard: quizSession.deleteFlashcard,
-    openFlashcardCreator: quizSession.openFlashcardCreator,
-    saveFlashcard: quizSession.saveFlashcard,
-    _fcSessionQueue: quizSession._fcSessionQueue,
-    startFlashcardSession: quizSession.startFlashcardSession,
-    _shuffle: quizSession._shuffle
-});
-
-// Expose app to window for cross-module integrations
-if (typeof window !== 'undefined') {
-    window.app = app;
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     app.init();

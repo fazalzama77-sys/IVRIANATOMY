@@ -235,8 +235,58 @@
 
   <!-- ================= VIEW 1: LANDING ================= -->
   <section id="landing-view" class="view-section active">
-    <div class="badge">IVRI BAREILLY • ANATOMY Section</div>
-    <h1 class="hero-title">EXPLORING ANATOMY<br>THROUGH TECHNOLOGY</h1>
+    <!-- Split Hero Container -->
+    <div class="hero-split-container">
+      <!-- Left Side: Text and Actions -->
+      <div class="hero-left-pane">
+        <div class="hero-sys-tag"><span class="tag-line"></span> [SYS.INIT] BIOMECHANICAL ENGINE ONLINE</div>
+        <h1 class="hero-title">Exploring anatomy<br>through technology.</h1>
+        <p class="hero-subtitle">
+          An academic veterinary anatomy atlas developed at IVRI. We bridge classical science with modern technology to teach regional anatomy.
+        </p>
+        <div class="hero-ctas">
+          <button onclick="app.loadView('atlas')" class="hero-cta cta-primary">
+            <i class="fas fa-book-open"></i> Explore Atlas
+          </button>
+          <button onclick="app.openQuiz()" class="hero-cta cta-secondary">
+            <i class="fas fa-bolt"></i> Practice Quiz
+          </button>
+        </div>
+      </div>
+      
+      <!-- Right Side: Video Background Pane -->
+      <div class="hero-right-pane">
+        <video id="landing-bg-video" class="landing-bg-video" autoplay loop muted playsinline aria-hidden="true">
+          <source src="pomelli_creative_video_9_16_0607.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+
+    <!-- Statistics Strip -->
+    <div class="hero-stats-strip">
+      <div class="stat-item">
+        <span class="stat-number">2,420+</span>
+        <span class="stat-label">QUIZ QUESTIONS</span>
+      </div>
+      <div class="stat-item-divider" aria-hidden="true"></div>
+      <div class="stat-item">
+        <span class="stat-number">8</span>
+        <span class="stat-label">SYLLABUS UNITS</span>
+      </div>
+      <div class="stat-item-divider" aria-hidden="true"></div>
+      <div class="stat-item">
+        <span class="stat-number">5</span>
+        <span class="stat-label">SPECIES COMPARED</span>
+      </div>
+      <div class="stat-item-divider" aria-hidden="true"></div>
+      <div class="stat-item">
+        <span class="stat-number">100%</span>
+        <span class="stat-label">OFFLINE PWA</span>
+      </div>
+    </div>
+
+    <!-- Dynamic Welcome / Resume Studied Banner -->
+    <div id="dynamic-resume-panel" class="dynamic-resume-panel"></div>
 
     <div class="portal-grid">
 
@@ -244,36 +294,25 @@
       <div class="portal-card card-atlas" onclick="app.loadView('atlas')">
         <i class="fas fa-star orb-icon" style="color: var(--atlas-gold);"></i>
         <div class="card-label">THE ATLAS</div>
-        <div class="card-sub">
-          REGIONAL ANATOMY<br>
-          HIGH-RESOLUTION DATABASE<br>
-          QUIZ & VISUALS
-        </div>
+        <p class="card-desc">Navigate gross anatomy structures across 8 VCI syllabus regions with comparative species analysis.</p>
+        <span class="card-action-link">Explore Atlas <i class="fas fa-arrow-right"></i></span>
       </div>
 
       <!-- OPTION B: THE WHY -->
       <div class="portal-card card-why" onclick="app.loadView('why')">
         <i class="fas fa-question orb-icon" style="color: var(--why-cyan);"></i>
         <div class="card-label">THE WHY</div>
-        <div class="card-sub">
-          BIOMECHANICAL ENGINE<br>
-          FUNCTIONAL LOGIC<br>
-          ENGINEERING ANALOGIES
-        </div>
+        <p class="card-desc">Understand the biomechanical logic, domestic-vs-wildlife adaptations, and engineering of animal bodies.</p>
+        <span class="card-action-link">Solve Cases <i class="fas fa-arrow-right"></i></span>
       </div>
 
       <!-- OPTION C: DASHBOARD -->
       <div class="portal-card card-dashboard" onclick="app.loadView('dashboard')">
         <i class="fas fa-chart-line orb-icon" style="color: #bd93f9;"></i>
         <div class="card-label">DASHBOARD</div>
-        <div class="card-sub">
-          PERFORMANCE TRACKER<br>
-          QUIZ HISTORY<br>
-          TOPIC STRENGTHS
-        </div>
+        <p class="card-desc">Track study streaks, analyze topic-strength heatmaps, and review Leitner Spaced Repetition (SRS) items.</p>
+        <span class="card-action-link">Analyze Progress <i class="fas fa-arrow-right"></i></span>
       </div>
-
-    </div>
 
     <!-- FOOTER -->
     <footer class="footer">
@@ -357,7 +396,7 @@
         <!-- Injected by JavaScript -->
       </div>
 
-      <!-- LIBRARY TAB BAR (only visible when in Library mode — bookmarks/highlights/notes/flashcards/glossary) -->
+      <!-- LIBRARY TAB BAR (only visible when in Library mode — bookmarks/highlights/notes) -->
       <div id="library-tabs" class="library-tabs" style="display:none;">
         <button class="lib-tab" data-tab="bookmarks" onclick="app.openLibrary('bookmarks')">
           <i class="fas fa-star"></i> <span>Bookmarks</span>
@@ -367,12 +406,6 @@
         </button>
         <button class="lib-tab" data-tab="notes" onclick="app.openLibrary('notes')">
           <i class="fas fa-sticky-note"></i> <span>Notes</span>
-        </button>
-        <button class="lib-tab" data-tab="flashcards" onclick="app.openLibrary('flashcards')">
-          <i class="fas fa-clone"></i> <span>Flashcards</span>
-        </button>
-        <button class="lib-tab" data-tab="glossary" onclick="app.openLibrary('glossary')">
-          <i class="fas fa-book"></i> <span>Glossary</span>
         </button>
         <span class="lib-tab-indicator" aria-hidden="true"></span>
       </div>
@@ -881,69 +914,50 @@
         </button>
       </div>
 
-      <!-- DASHBOARD TABS -->
-      <div id="dashboard-tabs" class="dashboard-tabs">
-        <button class="dash-tab active" data-tab="analytics" onclick="dashboard.switchTab('analytics')">
-          <i class="fas fa-chart-pie"></i> <span>Performance Analytics</span>
-        </button>
-        <button class="dash-tab" data-tab="planner" onclick="dashboard.switchTab('planner')">
-          <i class="fas fa-calendar-check"></i> <span>VCI Syllabus &amp; Planner</span>
-        </button>
-        <span class="dash-tab-indicator" aria-hidden="true"></span>
+      <!-- Overview Stats -->
+      <div class="dash-stats-row" id="dash-overview-stats">
+        <!-- Injected by JS -->
       </div>
 
-      <!-- ANALYTICS TAB CONTENT -->
-      <div id="dash-analytics-content">
-        <!-- Overview Stats -->
-        <div class="dash-stats-row" id="dash-overview-stats">
-          <!-- Injected by JS -->
-        </div>
-
-        <!-- Smart Review (Spaced Repetition) Panel — Auto-rendered if quiz answered -->
-        <div class="dash-srs-panel" id="dash-srs-panel">
-          <!-- Injected by JS via dashboard.renderSrsPanel() -->
-        </div>
-
-        <!-- Main Dashboard Grid -->
-        <div class="dash-grid">
-          <!-- Accuracy Trend -->
-          <div class="dash-card dash-card-wide">
-            <div class="dash-card-header">
-              <h3><i class="fas fa-chart-line"></i> Accuracy Trend</h3>
-              <span class="dash-card-subtitle">Last 20 sessions</span>
-            </div>
-            <div id="dash-accuracy-chart" class="dash-chart">
-              <!-- Injected by JS -->
-            </div>
-          </div>
-
-          <!-- Topic Strength Heatmap -->
-          <div class="dash-card dash-card-wide">
-            <div class="dash-card-header">
-              <h3><i class="fas fa-th"></i> Topic Strength Map</h3>
-              <span class="dash-card-subtitle">Accuracy by Syllabus Unit × Topic</span>
-            </div>
-            <div id="dash-heatmap" class="dash-heatmap">
-              <!-- Injected by JS -->
-            </div>
-          </div>
-
-          <!-- Recent Quiz History -->
-          <div class="dash-card dash-card-full">
-            <div class="dash-card-header">
-              <h3><i class="fas fa-history"></i> Recent Quiz History</h3>
-              <span class="dash-card-subtitle">Your last sessions</span>
-            </div>
-            <div id="dash-history" class="dash-history">
-              <!-- Injected by JS -->
-            </div>
-          </div>
-        </div>
+      <!-- Smart Review (Spaced Repetition) Panel — Auto-rendered if quiz answered -->
+      <div class="dash-srs-panel" id="dash-srs-panel">
+        <!-- Injected by JS via dashboard.renderSrsPanel() -->
       </div>
 
-      <!-- SYLLABUS & PLANNER TAB CONTENT -->
-      <div id="dash-planner-content" style="display:none;">
-        <!-- Injected dynamically by dashboard.js -->
+      <!-- Main Dashboard Grid -->
+      <div class="dash-grid">
+        <!-- Accuracy Trend -->
+        <div class="dash-card dash-card-wide">
+          <div class="dash-card-header">
+            <h3><i class="fas fa-chart-line"></i> Accuracy Trend</h3>
+            <span class="dash-card-subtitle">Last 20 sessions</span>
+          </div>
+          <div id="dash-accuracy-chart" class="dash-chart">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+
+        <!-- Topic Strength Heatmap -->
+        <div class="dash-card dash-card-wide">
+          <div class="dash-card-header">
+            <h3><i class="fas fa-th"></i> Topic Strength Map</h3>
+            <span class="dash-card-subtitle">Accuracy by Syllabus Unit × Topic</span>
+          </div>
+          <div id="dash-heatmap" class="dash-heatmap">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+
+        <!-- Recent Quiz History -->
+        <div class="dash-card dash-card-full">
+          <div class="dash-card-header">
+            <h3><i class="fas fa-history"></i> Recent Quiz History</h3>
+            <span class="dash-card-subtitle">Your last sessions</span>
+          </div>
+          <div id="dash-history" class="dash-history">
+            <!-- Injected by JS -->
+          </div>
+        </div>
       </div>
     </div>
   </section>
