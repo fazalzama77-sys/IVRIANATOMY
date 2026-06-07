@@ -726,7 +726,10 @@ body.professional-mode .portal-card:hover .card-desc {
     color: #263238;
 }
 
-/* Mobile responsive styles for new landing elements */
+/* ================================================================
+   MOBILE LAYOUT — Premium Academic App Experience
+   Stacked hero → inline stats → compact video → horizontal cards
+   ================================================================ */
 @media (max-width: 900px) {
     .hero-split-container {
         flex-direction: column;
@@ -734,80 +737,113 @@ body.professional-mode .portal-card:hover .card-desc {
         min-height: auto;
         max-height: none;
     }
+
+    /* ── Hero Text Pane ── */
     .hero-left-pane {
-        padding: 40px 24px 30px 24px;
-        align-items: flex-start;
-        text-align: left;
+        padding: 32px 22px 20px 22px;
+        align-items: center;
+        text-align: center;
     }
+    .hero-sys-tag {
+        font-size: 0.68rem;
+        margin-bottom: 10px;
+        justify-content: center;
+    }
+    .tag-line {
+        width: 14px;
+        margin-right: 7px;
+    }
+    .hero-title {
+        font-size: 1.85rem;
+        line-height: 1.12;
+        text-align: center;
+        letter-spacing: -0.3px;
+    }
+    .hero-subtitle {
+        font-size: 0.88rem;
+        line-height: 1.55;
+        text-align: center;
+        max-width: 340px;
+        margin: 0 auto 18px auto;
+        opacity: 0.8;
+    }
+
+    /* ── CTA Buttons — Side by side, compact pill style ── */
+    .hero-ctas {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto 0 auto;
+    }
+    .hero-cta {
+        flex: 1;
+        justify-content: center;
+        padding: 11px 16px;
+        font-size: 0.82rem;
+        border-radius: 26px;
+        min-width: 0;
+    }
+
+    /* ── Video Card — Cinematic framed preview ── */
     .hero-right-pane {
-        width: 220px; /* Scale down to prevent it from pushing content down too much */
-        aspect-ratio: 9 / 16; /* Locked vertical aspect ratio */
+        width: 200px;
+        aspect-ratio: 9 / 16;
         height: auto;
         min-height: auto;
-        margin: 0 auto 30px auto; /* Centered with bottom gap */
+        margin: 22px auto 10px auto;
         border-top: none;
-        border-radius: 16px;
-        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55),
+                    0 0 0 1px rgba(255, 255, 255, 0.06),
+                    inset 0 0 30px rgba(0, 0, 0, 0.3);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
     }
     .hero-right-pane::before {
         display: none;
     }
     body.professional-mode .hero-right-pane {
-        border: 1px solid rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.1);
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
     }
-    .hero-sys-tag {
-        font-size: 0.72rem; /* Fits on a single line on mobile viewports */
-        margin-bottom: 12px;
-    }
-    .tag-line {
-        width: 16px;
-        margin-right: 8px;
-    }
-    .hero-title {
-        font-size: 2.1rem; /* Fits long words like 'technology' on mobile */
-        line-height: 1.15;
-        text-align: left;
-    }
-    .hero-subtitle {
-        font-size: 0.95rem;
-        line-height: 1.5;
-        text-align: left;
-        max-width: 100%;
-        margin-bottom: 20px;
-    }
-    .hero-ctas {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-        width: 100%;
-        max-width: 320px;
-        margin: 0 0 24px 0; /* Add bottom margin to separate from the video card */
-    }
-    .hero-cta {
-        width: 100%;
-        justify-content: center;
-    }
+
+    /* ── Stats Strip — Horizontal row, compact ── */
     .hero-stats-strip {
-        flex-direction: column;
-        gap: 12px;
-        padding: 16px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 0;
+        padding: 14px 16px;
         border-radius: 16px;
-        width: calc(100% - 32px);
-        margin: 20px 16px;
+        width: calc(100% - 36px);
+        margin: 16px 18px;
+    }
+    .stat-item {
+        flex: 1;
+        min-width: 0;
+    }
+    .stat-number {
+        font-size: 1.1rem;
+    }
+    .stat-label {
+        font-size: 0.58rem;
+        letter-spacing: 0.3px;
     }
     .stat-item-divider {
-        width: 40px;
-        height: 1px;
+        width: 1px;
+        height: 28px;
+        margin: 0 2px;
     }
+
+    /* ── Resume Banner ── */
     .resume-card {
         flex-direction: column;
         align-items: stretch;
         text-align: center;
         padding: 14px;
-        margin: 0 16px 20px 16px;
-        width: calc(100% - 32px);
+        margin: 0 18px 16px 18px;
+        width: calc(100% - 36px);
     }
     .resume-card-body {
         flex-direction: column;
@@ -816,9 +852,93 @@ body.professional-mode .portal-card:hover .card-desc {
     .resume-btn {
         width: 100%;
     }
+
+    /* ── Portal Cards — Horizontal scroll strip ── */
     #landing-view .portal-grid {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        gap: 16px !important;
+        margin-top: 28px !important;
+        padding: 12px 18px 20px 18px !important;
+        /* Hide scrollbar for a clean native look */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    #landing-view .portal-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    #landing-view .portal-card {
+        width: 200px !important;
+        min-width: 200px !important;
+        height: 260px !important;
+        flex-shrink: 0 !important;
+        scroll-snap-align: center;
+        padding: 24px 18px !important;
+    }
+
+    #landing-view .orb-icon {
+        font-size: 2.6rem !important;
+        margin-bottom: 14px !important;
+    }
+
+    #landing-view .card-label {
+        font-size: 1.25rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    #landing-view .card-features {
+        font-size: 0.7rem !important;
+        line-height: 2 !important;
+        letter-spacing: 0.3px !important;
+    }
+
+    /* ── Footer — Bottom nav clearance ── */
+    .footer {
+        padding-bottom: calc(40px + 74px + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+/* Small phones (under 380px) — tighten everything further */
+@media (max-width: 380px) {
+    .hero-left-pane {
+        padding: 28px 16px 16px 16px;
+    }
+    .hero-title {
+        font-size: 1.6rem;
+    }
+    .hero-subtitle {
+        font-size: 0.82rem;
+    }
+    .hero-ctas {
         flex-direction: column;
-        align-items: center;
+        gap: 8px;
+        max-width: 280px;
+    }
+    .hero-cta {
+        padding: 10px 14px;
+        font-size: 0.78rem;
+    }
+    .hero-right-pane {
+        width: 170px;
+    }
+    #landing-view .portal-card {
+        width: 180px !important;
+        min-width: 180px !important;
+        height: 240px !important;
+    }
+    #landing-view .orb-icon {
+        font-size: 2.2rem !important;
+    }
+    #landing-view .card-label {
+        font-size: 1.1rem !important;
+    }
+    #landing-view .card-features {
+        font-size: 0.62rem !important;
     }
 }
 
