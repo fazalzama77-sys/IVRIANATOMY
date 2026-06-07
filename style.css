@@ -252,14 +252,38 @@ body.professional-mode .landing-bg-video {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
+    position: relative;
+}
+
+.hero-sys-tag::after {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 12px;
+    background-color: #bd93f9;
+    margin-left: 6px;
+    animation: sys-caret-blink 1s infinite alternate;
 }
 
 .tag-line {
     display: inline-block;
     width: 24px;
-    height: 1px;
-    background-color: #bd93f9;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(189, 147, 249, 0.2), #bd93f9, rgba(189, 147, 249, 0.2));
+    background-size: 200% 100%;
     margin-right: 12px;
+    border-radius: 1px;
+    animation: tag-line-pulse 2s infinite linear;
+}
+
+@keyframes sys-caret-blink {
+    0%, 40% { opacity: 0; }
+    60%, 100% { opacity: 1; }
+}
+
+@keyframes tag-line-pulse {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
 }
 
 .hero-title {
@@ -455,18 +479,27 @@ body.professional-mode .landing-bg-video {
     transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
 }
 
-/* Premium Rotating Conic Border Glow (GPU-Accelerated) - Enhanced brightness */
+/* Premium Rotating Conic Border Glow (GPU-Accelerated) - Balanced brightness & pulsing animation */
 #landing-view .portal-card::before {
     content: '' !important;
     position: absolute !important;
     inset: -2px !important;
     border-radius: 20px !important;
-    background: conic-gradient(from 0deg, transparent, var(--color) 10%, #ffffff 20%, transparent 45%) !important;
-    animation: spin-cw 7s linear infinite !important;
+    background: conic-gradient(from 0deg, transparent, var(--color) 10%, rgba(255, 255, 255, 0.75) 20%, transparent 45%) !important;
+    animation: spin-cw 7s linear infinite, border-glow-breath 3s ease-in-out infinite alternate !important; /* Gentle rotation + energy pulse */
     z-index: -2 !important;
-    opacity: 0.8 !important; /* Brighter default opacity */
-    will-change: transform !important;
+    opacity: 0.73 !important; /* Reduced default brightness by 7% (from 80% to 73%) */
+    will-change: transform, opacity !important;
     transition: opacity 0.3s ease, animation-duration 0.3s ease !important;
+}
+
+@keyframes border-glow-breath {
+    0% {
+        opacity: 0.66;
+    }
+    100% {
+        opacity: 0.78; /* Breathe around the 73% target */
+    }
 }
 
 /* Inner Card Mask to create a thin 2px border outline */
@@ -482,12 +515,13 @@ body.professional-mode .landing-bg-video {
 
 #landing-view .portal-card:hover {
     transform: translate3d(0, -8px, 0) scale(1.02) !important;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 30px rgba(var(--accent-rgb), 0.32) !important;
+    /* Soft glowing drop shadow + elegant colored inner glow */
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65), 0 0 30px rgba(var(--accent-rgb), 0.28), inset 0 0 15px rgba(var(--accent-rgb), 0.12) !important;
 }
 
 #landing-view .portal-card:hover::before {
-    opacity: 1 !important;
-    animation-duration: 4.5s !important; /* Speed up spin on hover */
+    opacity: 0.93 !important; /* Reduced hover brightness by 7% (from 100% to 93%) */
+    animation: spin-cw 4.5s linear infinite !important; /* Locks to a solid, faster spin on hover */
 }
 
 #landing-view .portal-card:hover::after {
@@ -534,6 +568,7 @@ body.professional-mode .landing-bg-video {
 
 #landing-view .portal-card:hover .card-label {
     color: var(--color) !important;
+    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.35) !important; /* Glow shadow on title */
 }
 
 /* Features List - Increased size and brightness */
@@ -630,11 +665,24 @@ body.professional-mode .hero-title {
 body.professional-mode .hero-sys-tag {
     color: #7e57c2;
 }
-body.professional-mode .tag-line {
+body.professional-mode .hero-sys-tag::after {
     background-color: #7e57c2;
+}
+body.professional-mode .tag-line {
+    background: linear-gradient(90deg, rgba(126, 87, 194, 0.2), #7e57c2, rgba(126, 87, 194, 0.2));
+    background-size: 200% 100%;
 }
 body.professional-mode .hero-subtitle {
     color: #455a64;
+}
+body.professional-mode .cta-primary {
+    background: linear-gradient(135deg, var(--atlas-gold) 0%, #0d47a1 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.2);
+}
+body.professional-mode .cta-primary:hover {
+    background: linear-gradient(135deg, #1e88e5 0%, var(--atlas-gold) 100%);
+    box-shadow: 0 6px 16px rgba(21, 101, 192, 0.35);
 }
 body.professional-mode .cta-secondary {
     background: #ffffff;
@@ -775,7 +823,7 @@ body.professional-mode .portal-card:hover .card-desc {
 }
 
 /* Staggered entrance for landing — each element slides in 80ms after the previous */
-#landing-view.active .hero-sys-tag { animation: heroEnter .55s cubic-bezier(.4,0,.2,1)  .05s both; }
+#landing-view.active .hero-sys-tag { animation: sysTagInit 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both; }
 #landing-view.active .hero-title   { animation: heroEnter .65s cubic-bezier(.4,0,.2,1)  .12s both; }
 #landing-view.active .hero-subtitle { animation: heroEnter .65s cubic-bezier(.4,0,.2,1)  .18s both; }
 #landing-view.active .hero-ctas     { animation: heroEnter .65s cubic-bezier(.4,0,.2,1)  .24s both; }
@@ -785,6 +833,34 @@ body.professional-mode .portal-card:hover .card-desc {
 #landing-view.active .portal-card:nth-child(2) { animation: cardEnter .55s cubic-bezier(.4,0,.2,1)  .50s both; }
 #landing-view.active .portal-card:nth-child(3) { animation: cardEnter .55s cubic-bezier(.4,0,.2,1)  .58s both; }
 #landing-view.active .footer      { animation: heroEnter .6s  cubic-bezier(.4,0,.2,1)  .66s both; }
+
+@keyframes sysTagInit {
+    0% {
+        opacity: 0;
+        transform: translateX(-15px);
+        filter: blur(2px);
+    }
+    15% {
+        opacity: 0.8;
+        transform: translateX(2px);
+        filter: blur(0);
+    }
+    30% {
+        opacity: 0.4;
+        transform: translateX(-1px);
+    }
+    45% {
+        opacity: 0.9;
+        transform: translateX(1px);
+    }
+    60% {
+        opacity: 0.7;
+    }
+    80%, 100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
 
 @keyframes heroEnter {
     from { opacity: 0; transform: translateY(18px); }
