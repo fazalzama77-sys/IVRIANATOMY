@@ -3,3 +3,10 @@
 *.bak
 tools/image-map-report.html
 __server_*.log
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
